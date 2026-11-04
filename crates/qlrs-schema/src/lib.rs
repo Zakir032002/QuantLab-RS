@@ -388,13 +388,15 @@ pub struct TraceStore {
     pub prepared: bool,
 }
 impl TraceStore {
-    /// Resolve an order symbol. Builder order IDs increase in intern order.
+    /// Resolve an order symbol, including names first interned in another role.
     #[must_use]
     pub fn order_index(&self, name: &str) -> Option<usize> {
-        self.orders
-            .id
-            .binary_search(&self.strings.lookup(name)?)
-            .ok()
+        let symbol = self.strings.lookup(name)?;
+        self.orders.id.binary_search(&symbol).ok().or_else(|| {
+            // Order/trade/claim strings share the arena. Reusing an earlier
+            // symbol as a new order name can break numeric insertion order.
+            self.orders.id.iter().position(|id| *id == symbol)
+        })
     }
     /// Create empty typed columns. Validation belongs to the strict I/O builder.
     #[must_use]

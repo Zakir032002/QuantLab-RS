@@ -52,6 +52,14 @@ pass by the initial removable-unit count plus one: every successful pass must
 remove a unit and the extra pass checks the fixed point. The certificate still
 requires an actual complete no-progress pass, and limit exhaustion stays false.
 
+Order, trade and claim strings share one arena. A new order can reuse a symbol
+first seen in another role, so order symbols are not necessarily numerically
+sorted. Preserve the binary-search common path with a numeric linear fallback
+and test a long-lived order whose name reuses an earlier bootstrap trade ID.
+This lookup correction is outside the three broadly mutated packages; retain
+the frozen broad-campaign source record and validate the added fallback with
+focused schema mutations, native tests and the scale gates.
+
 ## Consequences
 
 Checkpoint and log fields extend the v0 contract; older absent optional context

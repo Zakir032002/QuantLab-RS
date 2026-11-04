@@ -316,6 +316,54 @@ fn req_checkpoint_002_open_and_terminal_orders_and_prior_trades_survive_cut() {
         assert_eq!(twice, witness.source);
         assert_eq!(again.checkpoint.as_ref(), Some(cp));
     }
+    let fixture = generate_rich(
+        GeneratorConfig::profile("long-lived", 96, 42).unwrap(),
+        Some((Defect::D08, 0)),
+    )
+    .unwrap();
+    let reference = parse(fixture.bytes.clone(), None);
+    let alias = reference
+        .store
+        .strings
+        .get(*reference.store.fills.trade.first().unwrap())
+        .unwrap();
+    let renamed = String::from_utf8(fixture.bytes).unwrap().replace(
+        "\"client_order_id\":\"O0\"",
+        &format!("\"client_order_id\":\"{alias}\""),
+    );
+    let trace = parse(renamed.into_bytes(), None);
+    assert!(
+        trace
+            .store
+            .orders
+            .id
+            .windows(2)
+            .any(|pair| pair.first() > pair.get(1))
+    );
+    assert!(trace.store.order_index(alias).is_some());
+    let reduced = qlrs_reduce::reduce(
+        &trace.store,
+        &qlrs_io::digest(&trace.source),
+        None,
+        fixture.target_seq,
+    )
+    .unwrap();
+    let cp = reduced.checkpoint.as_ref().unwrap();
+    let order = cp
+        .orders
+        .iter()
+        .find(|order| order.client_order_id == alias)
+        .unwrap();
+    assert_eq!(order.status, OrderState::Partial);
+    assert_eq!(order.filled_quantity, "5.000");
+    let mut bytes = Vec::new();
+    trace.write_kept(&reduced.alive, &mut bytes).unwrap();
+    let witness = parse(bytes, Some(cp));
+    assert!(
+        report(&witness, Some(cp))
+            .keys()
+            .any(|key| Some(key) == reduced.target.instance_key.as_ref())
+    );
 }
 #[test]
 fn req_graph_002_checkpoint_inventory_replaces_historical_buy_dependencies() {
