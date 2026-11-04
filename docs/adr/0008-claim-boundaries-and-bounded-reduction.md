@@ -46,7 +46,11 @@ reinserted a zero remainder and timed out. Do not count those timeouts as kills
 or loosen the zero-timeout gate. Consume queue entries monotonically and return
 a residual lot only after consumption finishes. Extend the FIFO regression to
 cover a partially consumed buy lot spanning two sells, then rerun the complete
-campaign on the corrected source.
+campaign on the corrected source. A third mutant negated the final no-progress
+certificate condition and repeatedly waited for the time budget. Bound that
+pass by the initial removable-unit count plus one: every successful pass must
+remove a unit and the extra pass checks the fixed point. The certificate still
+requires an actual complete no-progress pass, and limit exhaustion stays false.
 
 ## Consequences
 

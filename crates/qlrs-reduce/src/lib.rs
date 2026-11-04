@@ -796,7 +796,17 @@ pub fn reduce_with_limits(
         }
     }
     let mut certified = false;
-    while budget.reason().is_none() {
+    // Every successful pass removes at least one initially removable unit;
+    // one additional no-progress pass certifies the fixed point.
+    let max_passes = current
+        .iter()
+        .filter(|unit| !pinned.contains(*unit))
+        .count()
+        .saturating_add(1);
+    for _ in 0..max_passes {
+        if budget.reason().is_some() {
+            break;
+        }
         let mut improved = false;
         for unit in current
             .iter()
