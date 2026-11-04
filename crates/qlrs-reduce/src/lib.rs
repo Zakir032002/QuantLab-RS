@@ -294,40 +294,6 @@ impl UnitEvents {
         events
     }
 }
-fn frontier(store: &TraceStore, start: usize, anchor: usize) -> Result<usize, String> {
-    let mut cash = false;
-    let mut positions = vec![false; store.header.instruments.len()];
-    for event in start..store.len() {
-        let payload = *store.spine.payload_idx.get(event).ok_or("invalid event")? as usize;
-        match store.spine.kind.get(event) {
-            Some(Kind::Filled) => {
-                cash = true;
-                let instrument = store
-                    .fills
-                    .order
-                    .get(payload)
-                    .and_then(|order| store.orders.instrument.get(*order as usize))
-                    .copied()
-                    .ok_or("invalid fill")? as usize;
-                *positions.get_mut(instrument).ok_or("invalid instrument")? = true;
-            }
-            Some(Kind::CashClaim) => cash = false,
-            Some(Kind::PositionClaim) => {
-                let instrument = *store
-                    .position_claims
-                    .instrument
-                    .get(payload)
-                    .ok_or("invalid claim")? as usize;
-                *positions.get_mut(instrument).ok_or("invalid instrument")? = false;
-            }
-            _ => {}
-        }
-        if event >= anchor && !cash && positions.iter().all(|pending| !pending) {
-            return Ok(event);
-        }
-    }
-    Err("missing later claim frontier".into())
-}
 fn window(
     store: &TraceStore,
     target: &Finding,
@@ -361,10 +327,28 @@ fn window(
     let first = cut.map_or(0, |seq| {
         store.spine.seq.partition_point(|value| *value < seq)
     });
-    let end = frontier(store, first, anchor)?;
+    let end = anchor;
     let end_seq = *store.spine.seq.get(end).ok_or("missing end")?;
     let mut mask = AliveMask::empty(store.units.len()).with_range(cut, Some(end_seq));
     for event in first..=end {
+        let kind = store.spine.kind.get(event).ok_or("invalid event")?;
+        let wanted_claim = match kind {
+            Kind::CashClaim => key.invariant_id == Invariant::I1,
+            Kind::PositionClaim => {
+                key.invariant_id == Invariant::I2
+                    && store
+                        .spine
+                        .payload_idx
+                        .get(event)
+                        .and_then(|payload| store.position_claims.instrument.get(*payload as usize))
+                        .and_then(|instrument| store.header.instruments.get(*instrument as usize))
+                        .is_some_and(|instrument| instrument.id == key.scope)
+            }
+            _ => true,
+        };
+        if !wanted_claim {
+            continue;
+        }
         mask.set(
             *store.spine.unit.get(event).ok_or("invalid unit")? as usize,
             true,
@@ -475,11 +459,11 @@ impl<'a> ReductionPredicate<'a> {
     fn report(&self, mask: &AliveMask) -> Result<Report, String> {
         let cp = self.candidate_checkpoint(mask)?;
         let events = self.events.kept(mask);
-        Ok(Checker::check_selected(
+        Ok(Checker::check_witness_selected(
             self.store,
             mask,
             cp.as_ref(),
-            true,
+            &self.target,
             &events,
         ))
     }
@@ -638,10 +622,14 @@ pub fn reduce_with_limits(
     let all = AliveMask::all(store.units.len());
     let original = Checker::check(store, &all, checkpoint, true);
     if original.status != Status::Violation
-        || original
-            .findings
-            .iter()
-            .any(|finding| matches!(finding.status, Status::Unsupported | Status::Inconclusive))
+        || original.findings.iter().any(|finding| {
+            finding.status == Status::Unsupported
+                || (finding.status == Status::Inconclusive
+                    && !finding
+                        .reason
+                        .as_deref()
+                        .is_some_and(|reason| reason.starts_with("missing-later-")))
+        })
     {
         return Err("reduction requires complete supported violation evidence".into());
     }
@@ -978,69 +966,6 @@ fn pin_window(
                 *store.spine.unit.get(event).ok_or("invalid unit")? as usize,
                 true,
             );
-        }
-    }
-    loop {
-        let before = pinned.clone();
-        let mut cash_fills = Vec::new();
-        let mut position_fills = vec![Vec::new(); store.header.instruments.len()];
-        for &event in &events {
-            let unit = *store.spine.unit.get(event).ok_or("invalid unit")? as usize;
-            let payload = *store
-                .spine
-                .payload_idx
-                .get(event)
-                .ok_or("invalid payload")? as usize;
-            match store.spine.kind.get(event) {
-                Some(Kind::Filled) => {
-                    cash_fills.push(unit);
-                    let instrument = store
-                        .fills
-                        .order
-                        .get(payload)
-                        .and_then(|order| store.orders.instrument.get(*order as usize))
-                        .copied()
-                        .ok_or("invalid instrument")? as usize;
-                    position_fills
-                        .get_mut(instrument)
-                        .ok_or("invalid instrument")?
-                        .push(unit);
-                }
-                Some(Kind::CashClaim) => {
-                    if cash_fills.iter().any(|fill| pinned.contains(*fill)) {
-                        pinned.set(unit, true);
-                    }
-                    if pinned.contains(unit) {
-                        for fill in &cash_fills {
-                            pinned.set(*fill, true);
-                        }
-                    }
-                    cash_fills.clear();
-                }
-                Some(Kind::PositionClaim) => {
-                    let instrument = *store
-                        .position_claims
-                        .instrument
-                        .get(payload)
-                        .ok_or("invalid claim")? as usize;
-                    let fills = position_fills
-                        .get_mut(instrument)
-                        .ok_or("invalid instrument")?;
-                    if fills.iter().any(|fill| pinned.contains(*fill)) {
-                        pinned.set(unit, true);
-                    }
-                    if pinned.contains(unit) {
-                        for fill in fills.iter() {
-                            pinned.set(*fill, true);
-                        }
-                    }
-                    fills.clear();
-                }
-                _ => {}
-            }
-        }
-        if pinned == before {
-            break;
         }
     }
     Ok(pinned)

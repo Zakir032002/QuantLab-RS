@@ -184,7 +184,7 @@ fn req_reduce_004_sparse_fast_predicate_matches_full_replay() {
         }
         let mask = predicate.candidate_mask(&mask);
         let checkpoint = predicate.candidate_checkpoint(&mask).unwrap();
-        let report = Checker::check(store, &mask, checkpoint.as_ref(), true);
+        let report = Checker::check_witness(store, &mask, checkpoint.as_ref(), &key);
         let reference = report.keys().any(|existing| *existing == key)
             && report.findings.iter().all(|finding| {
                 !matches!(finding.status, Status::Unsupported | Status::Inconclusive)

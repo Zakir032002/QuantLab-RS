@@ -78,8 +78,14 @@ fn req_check_011_every_fill_needs_later_cash_and_same_asset_position() {
     mixed.truncate(cutoff);
     let trace = parse(mixed, None);
     let result = report(&trace, None);
-    assert_eq!(result.status, Status::Inconclusive);
+    assert_eq!(result.status, Status::Violation);
     assert!(result.keys().any(|key| key.invariant_id == Invariant::I1));
+    assert!(result.findings.iter().any(|finding| {
+        finding
+            .reason
+            .as_deref()
+            .is_some_and(|reason| reason.starts_with("missing-later-"))
+    }));
 }
 #[test]
 fn req_check_012_i2_uses_local_claim_windows_for_carried_errors() {
@@ -445,8 +451,9 @@ fn req_reduce_005_limits_return_best_verified_uncertified_bundles() {
             },
         )
         .unwrap();
-        assert!(!reduced.closure_1_minimal);
-        assert_eq!(reduced.stop_reason, Some(reason));
+        let exhausted = reduced.predicate_calls == calls || time == Duration::ZERO;
+        assert_eq!(reduced.closure_1_minimal, !exhausted);
+        assert_eq!(reduced.stop_reason, exhausted.then_some(reason));
         assert!(reduced.predicate_calls <= calls);
         for entry in &reduced.log {
             let bytes = qlrs_io::encode(entry).unwrap();
@@ -459,9 +466,12 @@ fn req_reduce_005_limits_return_best_verified_uncertified_bundles() {
         }
         let path = temp();
         let manifest = qlrs_bundle::write(&path, &trace, &reduced).unwrap();
-        assert!(!manifest.closure_1_minimal);
-        assert_eq!(manifest.stop_reason, Some(reason));
-        assert!(manifest.minimality_guarantee.contains("not certified"));
+        assert_eq!(manifest.closure_1_minimal, !exhausted);
+        assert_eq!(manifest.stop_reason, exhausted.then_some(reason));
+        assert_eq!(
+            manifest.minimality_guarantee.contains("not certified"),
+            exhausted
+        );
         assert_eq!(qlrs_bundle::verify(&path).unwrap(), manifest);
         std::fs::remove_dir_all(path).unwrap();
     }
@@ -666,13 +676,13 @@ fn req_reduce_006_sparse_dense_and_incremental_patterns_match_on_all_defects() {
                 }
             }
             let cp = predicate.candidate_checkpoint(&mask).unwrap();
-            let dense = Checker::check(&trace.store, &mask, cp.as_ref(), true);
+            let dense = Checker::check_witness(&trace.store, &mask, cp.as_ref(), &key);
             let selected: Vec<_> = (0..trace.store.len())
                 .filter(|event| mask.contains_event(&trace.store, *event))
                 .collect();
             assert_eq!(
                 dense,
-                Checker::check_selected(&trace.store, &mask, cp.as_ref(), true, &selected)
+                Checker::check_witness_selected(&trace.store, &mask, cp.as_ref(), &key, &selected)
             );
             let admitted = dense.status == Status::Violation
                 && dense.keys().any(|candidate| *candidate == key)

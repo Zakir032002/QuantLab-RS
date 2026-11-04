@@ -1,0 +1,14 @@
+   Compiling qlrs-check v0.1.0 (/workspace/QuantLab-RS/crates/qlrs-check)
+   Compiling qlrs-reduce v0.1.0 (/workspace/QuantLab-RS/crates/qlrs-reduce)
+   Compiling qlrs-bundle v0.1.0 (/workspace/QuantLab-RS/crates/qlrs-bundle)
+   Compiling qlrs-testkit v0.1.0 (/workspace/QuantLab-RS/crates/qlrs-testkit)
+    Finished `test` profile [optimized + debuginfo] target(s) in 3.64s
+     Running tests/part2.rs (target/debug/deps/part2-92efa8aed6fbf5b4)
+
+running 3 tests
+test req_check_014_violation_dominates_uncovered_tail_and_is_reducible ... ok
+test req_reduce_009_i2_witness_needs_only_its_instrument_and_position_claims ... ok
+test req_reduce_010_r1_d04_sizes_finish_under_existing_budgets ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s
+

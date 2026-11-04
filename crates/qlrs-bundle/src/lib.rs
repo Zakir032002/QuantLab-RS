@@ -129,7 +129,7 @@ pub fn write(
     files.push(put(dir, "REPRODUCE.md", reproduce.as_bytes())?);
     files.sort_by(|a, b| a.path.cmp(&b.path));
     let manifest = Manifest {
-        schema: "qlrs-bundle/v0".into(),
+        schema: "qlrs-bundle/v1".into(),
         qlrs_version: env!("CARGO_PKG_VERSION").into(),
         git_commit: env!("QLRS_GIT_COMMIT").into(),
         rustc_version: env!("QLRS_RUSTC_VERSION").into(),
@@ -179,8 +179,10 @@ pub fn verify(dir: impl AsRef<Path>) -> Result<Manifest, String> {
     if encode(&manifest).map_err(|e| e.to_string())? != manifest_bytes {
         return Err("manifest is not canonical".into());
     }
-    if manifest.schema != "qlrs-bundle/v0"
-        || manifest.verdict != Status::Violation
+    if !matches!(
+        manifest.schema.as_str(),
+        "qlrs-bundle/v0" | "qlrs-bundle/v1"
+    ) || manifest.verdict != Status::Violation
         || manifest.minimality_guarantee != minimality_text(manifest.closure_1_minimal)
         || manifest.closure_1_minimal == manifest.stop_reason.is_some()
         || manifest.original_trace.blake3.len() != 64
@@ -246,12 +248,17 @@ pub fn verify(dir: impl AsRef<Path>) -> Result<Manifest, String> {
     {
         return Err("trace and manifest metadata disagree".into());
     }
-    let report = Checker::check(
-        &trace.store,
-        &AliveMask::all(trace.store.units.len()),
-        checkpoint.as_ref(),
-        true,
-    );
+    let alive = AliveMask::all(trace.store.units.len());
+    let report = if manifest.schema == "qlrs-bundle/v1" {
+        Checker::check_witness(
+            &trace.store,
+            &alive,
+            checkpoint.as_ref(),
+            &manifest.instance_key,
+        )
+    } else {
+        Checker::check(&trace.store, &alive, checkpoint.as_ref(), true)
+    };
     if report
         .findings
         .iter()

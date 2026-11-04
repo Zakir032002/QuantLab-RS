@@ -64,3 +64,7 @@ Every requirement maps to an executable test. CI checks the mapping.
 | REQ-REDUCE-006 | `req_reduce_006_sparse_dense_and_incremental_patterns_match_on_all_defects` | [corrections.rs](../crates/qlrs-testkit/tests/corrections.rs) |
 | REQ-REDUCE-007 | `req_reduce_007_other_lifecycle_breaches_are_not_admitted_or_returned_on_limits` | [corrections.rs](../crates/qlrs-testkit/tests/corrections.rs) |
 | REQ-REDUCE-008 | `req_reduce_008_short_logs_read_legacy_removed_unit_lists` | [corrections.rs](../crates/qlrs-testkit/tests/corrections.rs) |
+
+| REQ-CHECK-014 | `req_check_014_violation_dominates_uncovered_tail_and_is_reducible` | [part2.rs](../crates/qlrs-testkit/tests/part2.rs) |
+| REQ-REDUCE-009 | `req_reduce_009_i2_witness_needs_only_its_instrument_and_position_claims` | [part2.rs](../crates/qlrs-testkit/tests/part2.rs) |
+| REQ-REDUCE-010 | `req_reduce_010_r1_d04_sizes_finish_under_existing_budgets` | [part2.rs](../crates/qlrs-testkit/tests/part2.rs) |

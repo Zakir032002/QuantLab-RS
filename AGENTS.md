@@ -3,6 +3,10 @@
 An independent exact ledger and dependency-aware counterexample reducer for synthetic financial traces.
 
 Use the existing isolated checkout; do not create a worktree unless requested.
+For current Part 2 work, read `docs/PART_02_REBASE.md` first; it overrides stale
+Part 1/Part 2 assumptions. Part 2 benchmark outputs use `bench/results/CP2.x/`.
+Part 2 commits use `CP2.x: <objective>` and tags `part2-cp2.x` only when passed.
+
 Read `docs/BLOCKERS.md`, `docs/HANDOFF_CLAIM_BOUNDARIES.md` and
 `docs/PART_01_INSTRUCTIONS.md` before resuming. The corrections handoff records
 the user's later requirements and current evidence; the original Part 1 handoff

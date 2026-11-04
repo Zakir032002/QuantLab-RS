@@ -170,6 +170,31 @@ impl Checker {
     ) -> Report {
         Self::check_events(store, alive, checkpoint, partial, Some(events))
     }
+    /// Replay a witness under its declared target scope. Tail-coverage checks
+    /// belong to full traces; all retained lifecycle/model checks still apply.
+    #[must_use]
+    pub fn check_witness(
+        store: &TraceStore,
+        alive: &AliveMask,
+        checkpoint: Option<&SyntheticCheckpoint>,
+        target: &InstanceKey,
+    ) -> Report {
+        witness_report(Self::check(store, alive, checkpoint, true), target)
+    }
+    /// Scoped witness replay over sorted retained event indices.
+    #[must_use]
+    pub fn check_witness_selected(
+        store: &TraceStore,
+        alive: &AliveMask,
+        checkpoint: Option<&SyntheticCheckpoint>,
+        target: &InstanceKey,
+        events: &[usize],
+    ) -> Report {
+        witness_report(
+            Self::check_selected(store, alive, checkpoint, true, events),
+            target,
+        )
+    }
     // SAFETY-BOUNDS: validated column shapes and payload references guard the core loop.
     #[allow(clippy::indexing_slicing)]
     fn check_events(
@@ -797,12 +822,6 @@ fn finish(mut report: Report, partial: bool) -> Report {
         .any(|f| f.status == Status::Unsupported)
     {
         Status::Unsupported
-    } else if report.findings.iter().any(|f| {
-        f.reason
-            .as_deref()
-            .is_some_and(|reason| reason.starts_with("missing-later-"))
-    }) {
-        Status::Inconclusive
     } else if report
         .findings
         .iter()
@@ -822,6 +841,22 @@ fn finish(mut report: Report, partial: bool) -> Report {
         report.findings.retain(|f| f.status != Status::Violation);
     }
     report
+}
+
+fn witness_report(mut report: Report, target: &InstanceKey) -> Report {
+    report.findings.retain(|finding| {
+        !finding
+            .reason
+            .as_deref()
+            .is_some_and(|reason| reason.starts_with("missing-later-"))
+            && finding.instance_key.as_ref().is_none_or(|key| {
+                key.invariant_id == Invariant::I3
+                    || (key.invariant_id == target.invariant_id
+                        && key.account == target.account
+                        && key.scope == target.scope)
+            })
+    });
+    finish(report, true)
 }
 fn violation(
     store: &TraceStore,

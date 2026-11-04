@@ -111,13 +111,18 @@ A flat position after closing is valid. I3 uses the transition table and checks
 filled quantity plus per-instrument trade uniqueness, seeded by checkpoint order
 status, filled quantity and relevant prior trade IDs.
 
-A retained fill needs a strictly later account claim AND a strictly later
-same-instrument position claim. Earlier observations do not satisfy this rule.
-Overall precedence is input error, UNSUPPORTED, missing-later-evidence
-INCONCLUSIVE, VIOLATION, other INCONCLUSIVE, CONSISTENT. Complete earlier
-contradictions remain diagnostic findings when tail evidence is missing.
+Full-trace verification requires every fill to have a strictly later account
+claim AND a strictly later same-instrument position claim. Earlier observations
+do not satisfy this rule. Overall precedence is input error, UNSUPPORTED,
+VIOLATION, INCONCLUSIVE, CONSISTENT. Missing later evidence remains in findings
+even when a proven violation determines the verdict.
+
+Witness verification checks only the target financial scope, plus lifecycle and
+ledger validity. Full-trace evidence completeness does not apply inside a witness.
+An I2 witness needs neither other instruments' fills nor a cash claim.
 `--partial` permits supported-prefix findings while keeping UNSUPPORTED.
-This precedence change is explicitly requested in the follow-up (ADR-0008).
+The Part 2 rebase explicitly authorizes this correction (ADR-0010), superseding
+the earlier precedence decision in ADR-0008.
 
 ## Fingerprint encoding: qlrs-fp1
 
@@ -163,9 +168,8 @@ state. The opening claim at the cut is not audited again. This context preserves
 carried errors without inventing new violations. Context fields absent from old
 checkpoints retain their legacy initial-state meaning.
 
-The observation ends at a complete claim frontier after the target, so unrelated
-future fills do not force entire long-lived lifecycles back into the witness.
-Evidence support pins the required later claims and their fill windows. CSR
+The observation ends at the target event. Only same-scope boundary claims are
+retained; unrelated evidence schedules do not extend the window. CSR
 inventory dependencies consume checkpoint positions first and only reference
 post-cut buys for uncovered sells. Removing units closes over dependents.
 
@@ -179,7 +183,7 @@ Candidate hashing commits a u64 unit count, then each optional inclusive sequenc
 bound as a presence byte/u64 little-endian pair, then little-endian mask words.
 The cache stores both admission and the exact verified finding. A u32 CSR event
 index supplies sorted retained events to the complete checker for I1/I2/I3,
-preconditions and evidence completeness. Dense/sparse differential tests and an
+preconditions and target scope. Dense/sparse differential tests and an
 independent fingerprint-window counter protect equivalence. Incremental global
 and per-order kind counts replace repeated source-history scans. All accepted
 candidates have already passed complete replay; final bundle verification also
@@ -283,3 +287,7 @@ positions need no invented buy unit. Full financial replay remains authoritative
 - REQ-REDUCE-007: other lifecycle breaches are not admitted or returned on limits.
 
 - REQ-REDUCE-008: short logs read legacy removed unit lists.
+
+- REQ-CHECK-014: a proven violation outranks uncovered tails and remains reducible.
+- REQ-REDUCE-009: I2 witnesses retain only target-scope position evidence.
+- REQ-REDUCE-010: R1 D04 sizes finish within the existing bounded search.
