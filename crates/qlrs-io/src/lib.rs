@@ -359,9 +359,9 @@ impl ParsedTrace {
                 || self
                     .store
                     .spine
-                    .unit
+                    .seq
                     .get(line - 1)
-                    .is_some_and(|id| alive.contains(*id as usize));
+                    .is_some_and(|_| alive.contains_event(&self.store, line - 1));
             if keep {
                 writer
                     .write_all(

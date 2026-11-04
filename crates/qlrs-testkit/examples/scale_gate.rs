@@ -41,7 +41,10 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             );
         }
         let mut parsed = qlrs_io::ParsedTrace::parse(witness)?;
-        qlrs_ledger::Ledger::prepare(&mut parsed.store);
+        qlrs_ledger::Ledger::prepare_with_checkpoint(
+            &mut parsed.store,
+            reduced.checkpoint.as_ref(),
+        )?;
         let replay = qlrs_check::Checker::check(
             &parsed.store,
             &qlrs_schema::AliveMask::all(parsed.store.units.len()),

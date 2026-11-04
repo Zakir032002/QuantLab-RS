@@ -11,6 +11,11 @@ use qlrs_ledger::{ExpectedState, Ledger};
 use qlrs_num::{Fixed, NumericError, Rounding};
 use qlrs_schema::{AliveMask, Kind, OrderState, Status, SyntheticCheckpoint, TraceStore};
 use serde::{Deserialize, Serialize};
+mod checkpoint;
+mod fingerprint;
+mod lifecycle;
+pub use fingerprint::{class_fingerprint, fingerprint_bytes};
+use lifecycle::{ProgressTable, quantity_limit, terminal};
 use std::collections::HashSet;
 
 /// Invariant identifier, stable across evidence versions.
@@ -128,6 +133,13 @@ impl Checker {
     pub fn prepare(store: &mut TraceStore) {
         Ledger::prepare(store);
     }
+    /// Restore checkpoint order metadata before preparing a truncated witness.
+    pub fn prepare_with_checkpoint(
+        store: &mut TraceStore,
+        checkpoint: Option<&SyntheticCheckpoint>,
+    ) -> Result<(), String> {
+        Ledger::prepare_with_checkpoint(store, checkpoint)
+    }
     /// Stable Part 2 entry point for complete traces.
     #[must_use]
     pub fn evaluate(store: &TraceStore, _expected: &ExpectedState) -> Report {
@@ -144,6 +156,29 @@ impl Checker {
         checkpoint: Option<&SyntheticCheckpoint>,
         partial: bool,
     ) -> Report {
+        Self::check_events(store, alive, checkpoint, partial, None)
+    }
+    /// Complete invariant checking over sorted retained event indices.
+    /// The same core checker is used for dense and sparse replay.
+    #[must_use]
+    pub fn check_selected(
+        store: &TraceStore,
+        alive: &AliveMask,
+        checkpoint: Option<&SyntheticCheckpoint>,
+        partial: bool,
+        events: &[usize],
+    ) -> Report {
+        Self::check_events(store, alive, checkpoint, partial, Some(events))
+    }
+    // SAFETY-BOUNDS: validated column shapes and payload references guard the core loop.
+    #[allow(clippy::indexing_slicing)]
+    fn check_events(
+        store: &TraceStore,
+        alive: &AliveMask,
+        checkpoint: Option<&SyntheticCheckpoint>,
+        partial: bool,
+        events: Option<&[usize]>,
+    ) -> Report {
         let mut report = Report {
             status: Status::Consistent,
             findings: Vec::new(),
@@ -158,37 +193,45 @@ impl Checker {
             ));
             return finish(report, partial);
         }
-        for issue in &store.issues {
+        if events.is_some_and(|events| {
+            events.last().is_some_and(|event| *event >= store.len())
+                || events.windows(2).any(|pair| pair.first() >= pair.get(1))
+        }) {
+            report.findings.push(limitation(
+                Status::Inconclusive,
+                0,
+                "invalid-selected-event-order",
+            ));
+            return finish(report, partial);
+        }
+        let applicable: Vec<_> = store
+            .issues
+            .iter()
+            .filter(|issue| {
+                issue.seq.is_none_or(|seq| {
+                    checkpoint.is_none_or(|cp| seq >= cp.cut_seq)
+                        && store
+                            .spine
+                            .seq
+                            .binary_search(&seq)
+                            .is_ok_and(|event| alive.contains_event(store, event))
+                })
+            })
+            .collect();
+        for issue in &applicable {
             report.findings.push(limitation(
                 issue.status,
                 issue.seq.unwrap_or(0),
                 &issue.reason,
             ));
         }
-        if store
-            .issues
+        if applicable
             .iter()
             .any(|issue| issue.seq.is_none() || (issue.status == Status::Unsupported && !partial))
         {
             return finish(report, partial);
         }
-        let uncertain_after = store.issues.iter().filter_map(|issue| issue.seq).min();
-        if checkpoint.is_some_and(|cp| {
-            store
-                .spine
-                .unit
-                .iter()
-                .position(|u| alive.contains(*u as usize))
-                .and_then(|e| store.spine.seq.get(e))
-                .is_some_and(|seq| cp.cut_seq > *seq)
-        }) {
-            report.findings.push(limitation(
-                Status::Inconclusive,
-                0,
-                "checkpoint-cut-after-first-kept-event",
-            ));
-            return finish(report, partial);
-        }
+        let uncertain_after = applicable.iter().filter_map(|issue| issue.seq).min();
         let mut state = match Ledger::initial(store, checkpoint) {
             Ok(s) => s,
             Err(reason) => {
@@ -198,23 +241,136 @@ impl Checker {
                 return finish(report, partial);
             }
         };
-        let mut states = vec![OrderState::Missing; store.orders.id.len()];
-        let mut totals = vec![0_i128; store.orders.id.len()];
-        let mut first = vec![None; store.orders.id.len()];
+        let mut progress = match ProgressTable::new(store, checkpoint, events.is_some()) {
+            Ok(value) => value,
+            Err(reason) => {
+                report
+                    .findings
+                    .push(limitation(Status::Inconclusive, 0, &reason));
+                return finish(report, partial);
+            }
+        };
         let mut trades = HashSet::with_capacity_and_hasher(
-            store.fills.order.len(),
+            store
+                .fills
+                .order
+                .len()
+                .min(events.map_or(usize::MAX, <[usize]>::len)),
             foldhash::fast::RandomState::default(),
         );
+        if let Some(cp) = checkpoint {
+            for trade in &cp.trades {
+                let Some(instrument) = store
+                    .header
+                    .instruments
+                    .iter()
+                    .position(|i| i.id == trade.instrument_id)
+                else {
+                    report.findings.push(limitation(
+                        Status::Inconclusive,
+                        0,
+                        "unknown-checkpoint-trade-instrument",
+                    ));
+                    return finish(report, partial);
+                };
+                if let Some(symbol) = store.strings.lookup(&trade.trade_id) {
+                    trades.insert((instrument, symbol));
+                }
+            }
+        }
         let mut base = state.cash;
         let mut window_delta = 0_i128;
         let mut previous = None;
-        let mut window_start = 0_usize;
-        let mut cash_claim_count = 0_usize;
-        let mut filled_instruments = vec![false; state.positions.len()];
-        let mut claimed_instruments = vec![false; state.positions.len()];
+        let mut window_start = checkpoint.map_or(0, |cp| {
+            store.spine.seq.partition_point(|seq| *seq < cp.cut_seq)
+        });
+        let mut cash_pattern = [0_u64; 8];
+        let mut prefix_pattern = [0_u64; 8];
+        let mut position_pattern = vec![[0_u64; 8]; state.positions.len()];
+        let mut position_base = state.positions.clone();
+        let mut position_delta = vec![0_i128; state.positions.len()];
+        let mut previous_position = vec![None; state.positions.len()];
+        let mut pending_cash = None;
+        let mut pending_positions = vec![None; state.positions.len()];
+        if let Some(cp) = checkpoint {
+            if let Some(opening) = &cp.cash_window {
+                let context = Fixed::parse(&opening.observed, 18)
+                    .and_then(|v| v.rescale(store.cash_scale, Rounding::Exact))
+                    .and_then(|v| {
+                        Ok((
+                            v.raw(),
+                            Fixed::parse(&opening.delta, 18)?
+                                .rescale(store.cash_scale, Rounding::Exact)?
+                                .raw(),
+                        ))
+                    });
+                match context {
+                    Ok((value, delta)) if opening.seq.is_none_or(|seq| seq <= cp.cut_seq) => {
+                        base = value;
+                        window_delta = delta;
+                        previous = opening.seq;
+                    }
+                    _ => {
+                        report.findings.push(limitation(
+                            Status::Inconclusive,
+                            cp.cut_seq,
+                            "invalid-opening-cash",
+                        ));
+                        return finish(report, partial);
+                    }
+                }
+            }
+            let mut seen = HashSet::new();
+            for opening in &cp.position_windows {
+                let Some(index) = store
+                    .header
+                    .instruments
+                    .iter()
+                    .position(|i| i.id == opening.instrument_id)
+                else {
+                    report.findings.push(limitation(
+                        Status::Inconclusive,
+                        cp.cut_seq,
+                        "invalid-opening-position",
+                    ));
+                    return finish(report, partial);
+                };
+                let scale = store.header.instruments[index].qty_precision;
+                let value = Fixed::parse(&opening.observed, scale)
+                    .and_then(|v| v.rescale(scale, Rounding::Exact));
+                let delta = Fixed::parse(&opening.delta, scale)
+                    .and_then(|v| v.rescale(scale, Rounding::Exact));
+                match (value, delta) {
+                    (Ok(value), Ok(delta))
+                        if seen.insert(index)
+                            && opening.seq.is_none_or(|seq| seq <= cp.cut_seq) =>
+                    {
+                        position_base[index] = value.raw();
+                        position_delta[index] = delta.raw();
+                        previous_position[index] = opening.seq;
+                    }
+                    _ => {
+                        report.findings.push(limitation(
+                            Status::Inconclusive,
+                            cp.cut_seq,
+                            "invalid-opening-position",
+                        ));
+                        return finish(report, partial);
+                    }
+                }
+            }
+        }
         let mut financial = true;
-        for event in 0..store.len() {
-            if !alive.contains(store.spine.unit[event] as usize) {
+        let start = checkpoint.map_or(0, |cp| {
+            store.spine.seq.partition_point(|seq| *seq < cp.cut_seq)
+        });
+        let sequence: Box<dyn Iterator<Item = usize> + '_> = if let Some(events) = events {
+            Box::new(events.iter().copied())
+        } else {
+            Box::new(start..store.len())
+        };
+        for event in sequence {
+            if !alive.contains_event(store, event) || event < start {
                 continue;
             }
             let kind = store.spine.kind[event];
@@ -222,6 +378,12 @@ impl Checker {
             let seq = store.spine.seq[event];
             if uncertain_after.is_some_and(|cut| seq >= cut) {
                 break;
+            }
+            if let Some(count) = cash_pattern.get_mut(kind as usize) {
+                *count = count.saturating_add(1);
+            }
+            if let Some(count) = prefix_pattern.get_mut(kind as usize) {
+                *count = count.saturating_add(1);
             }
             if matches!(
                 kind,
@@ -237,7 +399,7 @@ impl Checker {
                 } else {
                     payload
                 };
-                if order >= states.len() {
+                if order >= store.orders.id.len() {
                     report.findings.push(limitation(
                         Status::Inconclusive,
                         seq,
@@ -246,15 +408,30 @@ impl Checker {
                     financial = false;
                     continue;
                 }
-                if first[order].is_none() {
-                    first[order] = Some(seq);
-                }
-                let state_before = states[order];
+                let Some(order_state) = progress.get_mut(order) else {
+                    report.findings.push(limitation(
+                        Status::Inconclusive,
+                        seq,
+                        "invalid-order-index",
+                    ));
+                    financial = false;
+                    continue;
+                };
+                let limit = quantity_limit(store, order).ok();
+                let qty = if kind == Kind::Filled {
+                    store.fill_qty.get(payload).copied().unwrap_or(0)
+                } else {
+                    0
+                };
+                let Ok(state_before) = order_state.observe(kind, seq, qty, limit) else {
+                    report
+                        .findings
+                        .push(limitation(Status::Inconclusive, seq, "numeric-overflow"));
+                    financial = false;
+                    continue;
+                };
                 let mut codes = Vec::new();
-                let terminal = matches!(
-                    state_before,
-                    OrderState::Filled | OrderState::Canceled | OrderState::Rejected
-                );
+                let terminal = terminal(state_before);
                 if terminal {
                     codes.push("event-after-terminal");
                 } else if kind == Kind::Filled && state_before == OrderState::Submitted {
@@ -278,33 +455,28 @@ impl Checker {
                 }
                 let mut excess = 0_i128;
                 if kind == Kind::Filled {
-                    if instrument < filled_instruments.len() {
-                        filled_instruments[instrument] = true;
+                    if pending_cash.is_none() {
+                        pending_cash = Some(seq);
+                    }
+                    if let Some(pending) = pending_positions.get_mut(instrument)
+                        && pending.is_none()
+                    {
+                        *pending = Some(seq);
                     }
                     if store.header.instruments.get(instrument).is_some()
                         && !trades.insert((instrument, store.fills.trade[payload]))
                     {
                         codes.push("duplicate-trade-id");
                     }
-                    let qty = store.fill_qty.get(payload).copied().unwrap_or(0);
-                    if let Some(total) = totals[order].checked_add(qty) {
-                        totals[order] = total;
-                    } else {
-                        report.findings.push(limitation(
-                            Status::Inconclusive,
-                            seq,
-                            "numeric-overflow",
-                        ));
-                        financial = false;
-                    }
                     if let Some(metadata) = store.header.instruments.get(instrument) {
                         match Fixed::new(store.orders.qty_raw[order], store.orders.qty_scale[order])
                             .and_then(|q| q.rescale(metadata.qty_precision, Rounding::Exact))
                         {
                             Ok(quantity) => {
-                                if totals[order] > quantity.raw() {
+                                if order_state.total > quantity.raw() {
                                     codes.push("overfill");
-                                    excess = totals[order].checked_sub(quantity.raw()).unwrap_or(0);
+                                    excess =
+                                        order_state.total.checked_sub(quantity.raw()).unwrap_or(0);
                                 }
                             }
                             Err(error) => {
@@ -334,7 +506,7 @@ impl Checker {
                         .instruments
                         .get(instrument)
                         .map_or("<unknown>", |i| i.id.as_str());
-                    let pattern = order_pattern(store, alive, order, event);
+                    let pattern = counts_pattern(&order_state.counts);
                     report.findings.push(violation(
                         store,
                         Invariant::I3,
@@ -346,35 +518,12 @@ impl Checker {
                         None,
                         None,
                         Window {
-                            start_seq: first[order],
+                            start_seq: order_state.first,
                             end_seq: seq,
                         },
                         &pattern,
                         "other",
                     ));
-                }
-                if let Some((_, _, next)) = TRANSITIONS
-                    .iter()
-                    .find(|(s, k, _)| *s == state_before && *k == kind)
-                {
-                    states[order] = *next;
-                }
-                if kind == Kind::Filled && !terminal {
-                    let complete = store
-                        .header
-                        .instruments
-                        .get(instrument)
-                        .and_then(|metadata| {
-                            Fixed::new(store.orders.qty_raw[order], store.orders.qty_scale[order])
-                                .and_then(|q| q.rescale(metadata.qty_precision, Rounding::Exact))
-                                .ok()
-                        })
-                        .is_some_and(|quantity| totals[order] >= quantity.raw());
-                    states[order] = if complete {
-                        OrderState::Filled
-                    } else {
-                        OrderState::Partial
-                    };
                 }
             }
             if kind == Kind::Filled && financial {
@@ -383,6 +532,26 @@ impl Checker {
                         .findings
                         .push(limitation(error.status, seq, error.reason));
                     financial = false;
+                }
+                let order = store.fills.order[payload] as usize;
+                let instrument = store.orders.instrument[order] as usize;
+                if let Some(delta) = position_delta.get_mut(instrument) {
+                    let quantity = store.fill_qty[payload];
+                    let signed = if store.orders.side[order] == qlrs_schema::Side::Buy {
+                        Some(quantity)
+                    } else {
+                        quantity.checked_neg()
+                    };
+                    if let Some(sum) = signed.and_then(|quantity| delta.checked_add(quantity)) {
+                        *delta = sum;
+                    } else {
+                        report.findings.push(limitation(
+                            Status::Inconclusive,
+                            seq,
+                            "numeric-overflow",
+                        ));
+                        financial = false;
+                    }
                 }
                 if let Some(sum) = window_delta.checked_add(store.delta_cash[event]) {
                     window_delta = sum;
@@ -394,8 +563,21 @@ impl Checker {
                 }
             }
             if kind == Kind::CashClaim {
-                cash_claim_count = cash_claim_count.saturating_add(1);
-                if financial {
+                pending_cash = None;
+                let opening = checkpoint.is_some_and(|cp| {
+                    seq == cp.cut_seq
+                        || cp.cash_window.as_ref().and_then(|window| window.seq) == Some(seq)
+                });
+                if opening
+                    && let Ok(value) = Fixed::new(
+                        store.cash_claims.raw[payload],
+                        store.cash_claims.scale[payload],
+                    )
+                    .and_then(|v| v.rescale(store.cash_scale, Rounding::Exact))
+                {
+                    base = value.raw();
+                }
+                if financial && !opening {
                     let observed = Fixed::new(
                         store.cash_claims.raw[payload],
                         store.cash_claims.scale[payload],
@@ -425,7 +607,7 @@ impl Checker {
                                         expected.raw(),
                                         observed.raw(),
                                     );
-                                    let pattern = window_pattern(store, alive, window_start, event);
+                                    let pattern = counts_pattern(&cash_pattern);
                                     report.findings.push(violation(
                                         store,
                                         Invariant::I1,
@@ -472,6 +654,7 @@ impl Checker {
                 previous = Some(seq);
                 window_delta = 0;
                 window_start = event.saturating_add(1);
+                cash_pattern.fill(0);
             }
             if kind == Kind::PositionClaim {
                 let instrument = store.position_claims.instrument[payload] as usize;
@@ -483,8 +666,15 @@ impl Checker {
                     ));
                     continue;
                 }
-                claimed_instruments[instrument] = true;
-                if financial {
+                pending_positions[instrument] = None;
+                let opening = checkpoint.is_some_and(|cp| {
+                    seq == cp.cut_seq
+                        || cp.position_windows.iter().any(|window| {
+                            window.instrument_id == store.header.instruments[instrument].id
+                                && window.seq == Some(seq)
+                        })
+                });
+                if financial && !opening {
                     let metadata = &store.header.instruments[instrument];
                     let scale = metadata.qty_precision;
                     match Fixed::new(
@@ -494,10 +684,11 @@ impl Checker {
                     .and_then(|v| v.rescale(scale, Rounding::Exact))
                     {
                         Ok(observed) => {
-                            if let Some(residual) =
-                                observed.raw().checked_sub(state.positions[instrument])
+                            if let Some(expected) =
+                                position_base[instrument].checked_add(position_delta[instrument])
+                                && let Some(residual) = observed.raw().checked_sub(expected)
                             {
-                                if residual != 0 {
+                                if residual != 0 && !opening {
                                     report.findings.push(violation(
                                         store,
                                         Invariant::I2,
@@ -506,9 +697,7 @@ impl Checker {
                                         seq,
                                         residual,
                                         scale,
-                                        Fixed::new(state.positions[instrument], scale)
-                                            .ok()
-                                            .map(|v| v.to_string()),
+                                        Fixed::new(expected, scale).ok().map(|v| v.to_string()),
                                         Some(observed_text(
                                             store,
                                             store.position_claims.text[payload],
@@ -516,10 +705,13 @@ impl Checker {
                                             store.position_claims.scale[payload],
                                         )),
                                         Window {
-                                            start_seq: None,
+                                            start_seq: previous_position[instrument],
                                             end_seq: seq,
                                         },
-                                        &window_pattern(store, alive, 0, event),
+                                        &counts_pattern(&pattern_difference(
+                                            &prefix_pattern,
+                                            &position_pattern[instrument],
+                                        )),
                                         "other",
                                     ));
                                 }
@@ -538,21 +730,36 @@ impl Checker {
                         )),
                     }
                 }
+                if let Ok(observed) = Fixed::new(
+                    store.position_claims.raw[payload],
+                    store.position_claims.scale[payload],
+                )
+                .and_then(|v| {
+                    v.rescale(
+                        store.header.instruments[instrument].qty_precision,
+                        Rounding::Exact,
+                    )
+                }) {
+                    position_base[instrument] = observed.raw();
+                }
+                position_delta[instrument] = 0;
+                previous_position[instrument] = Some(seq);
+                position_pattern[instrument] = prefix_pattern;
             }
         }
-        if filled_instruments.iter().any(|v| *v) && cash_claim_count == 0 {
-            report
-                .findings
-                .push(limitation(Status::Inconclusive, 0, "missing-account-claim"));
+        if let Some(seq) = pending_cash {
+            report.findings.push(limitation(
+                Status::Inconclusive,
+                seq,
+                "missing-later-account-claim",
+            ));
         }
-        for (filled, claimed) in filled_instruments.iter().zip(&claimed_instruments) {
-            if *filled && !claimed {
-                report.findings.push(limitation(
-                    Status::Inconclusive,
-                    0,
-                    "missing-position-claim",
-                ));
-            }
+        for seq in pending_positions.into_iter().flatten() {
+            report.findings.push(limitation(
+                Status::Inconclusive,
+                seq,
+                "missing-later-position-claim",
+            ));
         }
         report.expected_cash = Fixed::new(state.cash, store.cash_scale)
             .map_or_else(|_| String::new(), |v| v.to_string());
@@ -590,6 +797,12 @@ fn finish(mut report: Report, partial: bool) -> Report {
         .any(|f| f.status == Status::Unsupported)
     {
         Status::Unsupported
+    } else if report.findings.iter().any(|f| {
+        f.reason
+            .as_deref()
+            .is_some_and(|reason| reason.starts_with("missing-later-"))
+    }) {
+        Status::Inconclusive
     } else if report
         .findings
         .iter()
@@ -646,75 +859,7 @@ fn violation(
         reason: None,
     }
 }
-/// Canonical fingerprint bytes: see SPEC.md for the versioned field encoding.
-#[must_use]
-pub fn fingerprint_bytes(
-    invariant: Invariant,
-    code: &str,
-    pattern: &[(Kind, u64)],
-    sign: i8,
-    relation: &str,
-) -> Vec<u8> {
-    let mut bytes = Vec::new();
-    let mut string = |text: &str| {
-        bytes.extend_from_slice(&u32::try_from(text.len()).unwrap_or(u32::MAX).to_le_bytes());
-        bytes.extend_from_slice(text.as_bytes());
-    };
-    string(invariant.name());
-    string(code);
-    let mut sorted = pattern.to_vec();
-    sorted.sort_by_key(|p| p.0);
-    bytes.extend_from_slice(
-        &u32::try_from(sorted.len())
-            .unwrap_or(u32::MAX)
-            .to_le_bytes(),
-    );
-    for (kind, count) in sorted {
-        bytes.push(kind as u8);
-        bytes.extend_from_slice(&count.to_le_bytes());
-    }
-    bytes.extend_from_slice(&sign.to_le_bytes());
-    bytes.extend_from_slice(
-        &u32::try_from(relation.len())
-            .unwrap_or(u32::MAX)
-            .to_le_bytes(),
-    );
-    bytes.extend_from_slice(relation.as_bytes());
-    bytes
-}
-/// Class-level heuristic hash, distinct from the exact reduction instance key.
-#[must_use]
-pub fn class_fingerprint(
-    invariant: Invariant,
-    code: &str,
-    pattern: &[(Kind, u64)],
-    sign: i8,
-    relation: &str,
-) -> String {
-    format!(
-        "qlrs-fp1:{}",
-        blake3::hash(&fingerprint_bytes(invariant, code, pattern, sign, relation)).to_hex()
-    )
-}
-fn window_pattern(
-    store: &TraceStore,
-    alive: &AliveMask,
-    start: usize,
-    end: usize,
-) -> Vec<(Kind, u64)> {
-    let mut counts = [0_u64; 8];
-    for event in start..=end {
-        if store
-            .spine
-            .unit
-            .get(event)
-            .is_some_and(|u| alive.contains(*u as usize))
-            && let Some(kind) = store.spine.kind.get(event)
-            && let Some(count) = counts.get_mut(*kind as usize)
-        {
-            *count = count.saturating_add(1);
-        }
-    }
+fn counts_pattern(counts: &[u64; 8]) -> Vec<(Kind, u64)> {
     [
         Kind::Submitted,
         Kind::Accepted,
@@ -726,47 +871,18 @@ fn window_pattern(
         Kind::Unsupported,
     ]
     .into_iter()
-    .zip(counts)
+    .zip(*counts)
     .filter(|(_, count)| *count > 0)
     .collect()
 }
-fn order_pattern(
-    store: &TraceStore,
-    alive: &AliveMask,
-    order: usize,
-    end: usize,
-) -> Vec<(Kind, u64)> {
-    let unit = store
-        .orders
-        .unit
-        .get(order)
-        .copied()
-        .unwrap_or(qlrs_schema::NONE);
-    let mut counts = [0_u64; 8];
-    for event in 0..=end {
-        if store.spine.unit.get(event) == Some(&unit)
-            && alive.contains(unit as usize)
-            && let Some(kind) = store.spine.kind.get(event)
-            && let Some(count) = counts.get_mut(*kind as usize)
-        {
-            *count = count.saturating_add(1);
-        }
-    }
-    let kinds = [
-        Kind::Submitted,
-        Kind::Accepted,
-        Kind::Rejected,
-        Kind::Filled,
-        Kind::Canceled,
-        Kind::CashClaim,
-        Kind::PositionClaim,
-        Kind::Unsupported,
-    ];
-    kinds
-        .into_iter()
-        .zip(counts)
-        .filter(|(_, c)| *c > 0)
-        .collect()
+fn pattern_difference(current: &[u64; 8], previous: &[u64; 8]) -> [u64; 8] {
+    std::array::from_fn(|index| {
+        current
+            .get(index)
+            .copied()
+            .unwrap_or(0)
+            .saturating_sub(previous.get(index).copied().unwrap_or(0))
+    })
 }
 fn relation(
     store: &TraceStore,
@@ -778,12 +894,7 @@ fn relation(
     observed: i128,
 ) -> String {
     let last = (start..end).rev().find(|event| {
-        store.spine.kind.get(*event) == Some(&Kind::Filled)
-            && store
-                .spine
-                .unit
-                .get(*event)
-                .is_some_and(|u| alive.contains(*u as usize))
+        store.spine.kind.get(*event) == Some(&Kind::Filled) && alive.contains_event(store, *event)
     });
     if let Some(fill) = last
         .and_then(|e| store.spine.payload_idx.get(e))
@@ -880,37 +991,6 @@ fn observed_text(store: &TraceStore, id: u32, raw: i128, scale: u8) -> String {
 #[allow(clippy::unwrap_used, clippy::arithmetic_side_effects)]
 mod tests {
     use super::*;
-    #[test]
-    fn req_fp_001_canonical_vector_and_order_independence() {
-        let pattern = [(Kind::Filled, 1), (Kind::CashClaim, 1)];
-        let bytes = fingerprint_bytes(Invariant::I1, "cash-conservation", &pattern, -1, "-fee");
-        let mut hex = String::new();
-        for byte in &bytes {
-            use std::fmt::Write as _;
-            write!(hex, "{byte:02x}").unwrap();
-        }
-        assert_eq!(
-            hex,
-            include_str!("../../../fixtures/golden/fingerprint-vector.hex").trim()
-        );
-        assert_eq!(
-            class_fingerprint(Invariant::I1, "cash-conservation", &pattern, -1, "-fee"),
-            "qlrs-fp1:d36cbaabf8cae916908640e54736cc3856466a66ffc4e3d37f08f9f55d373a72"
-        );
-        assert_eq!(
-            class_fingerprint(Invariant::I1, "cash-conservation", &pattern, -1, "-fee"),
-            class_fingerprint(
-                Invariant::I1,
-                "cash-conservation",
-                &[(Kind::CashClaim, 1), (Kind::Filled, 1)],
-                -1,
-                "-fee"
-            )
-        );
-        assert_eq!(Invariant::I1.name(), "I1");
-        assert_eq!(Invariant::I2.name(), "I2");
-        assert_eq!(Invariant::I3.name(), "I3");
-    }
     #[test]
     fn req_fp_002_at_seq_filters_status_and_anchor() {
         let mut report = Report {

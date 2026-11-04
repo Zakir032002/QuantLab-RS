@@ -36,6 +36,12 @@ enum Command {
         checkpoint: Option<PathBuf>,
         #[arg(long)]
         target_seq: Option<u64>,
+        /// Cooperative search time limit in milliseconds.
+        #[arg(long, default_value_t = 30_000)]
+        time_limit_ms: u64,
+        /// Maximum candidate predicate calls, including cache hits.
+        #[arg(long, default_value_t = 10_000)]
+        max_calls: u64,
     },
     /// Verify an existing evidence bundle offline.
     Bundle {
@@ -64,7 +70,7 @@ fn run(cli: Cli) -> Result<u8, String> {
         } => {
             let cp = checkpoint(cp)?;
             let mut trace = qlrs_io::ParsedTrace::read(trace).map_err(|e| e.to_string())?;
-            qlrs_ledger::Ledger::prepare(&mut trace.store);
+            qlrs_ledger::Ledger::prepare_with_checkpoint(&mut trace.store, cp.as_ref())?;
             if let Some(cp) = &cp {
                 qlrs_ledger::Ledger::initial(&trace.store, Some(cp))?;
             }
@@ -85,15 +91,21 @@ fn run(cli: Cli) -> Result<u8, String> {
             output,
             checkpoint: cp,
             target_seq,
+            time_limit_ms,
+            max_calls,
         } => {
             let cp = checkpoint(cp)?;
             let mut trace = qlrs_io::ParsedTrace::read(trace).map_err(|e| e.to_string())?;
-            qlrs_ledger::Ledger::prepare(&mut trace.store);
-            let reduction = qlrs_reduce::reduce(
+            qlrs_ledger::Ledger::prepare_with_checkpoint(&mut trace.store, cp.as_ref())?;
+            let reduction = qlrs_reduce::reduce_with_limits(
                 &trace.store,
                 &qlrs_io::digest(&trace.source),
                 cp.as_ref(),
                 target_seq,
+                qlrs_reduce::ReductionLimits {
+                    max_calls,
+                    time_limit: std::time::Duration::from_millis(time_limit_ms),
+                },
             )?;
             let manifest = qlrs_bundle::write(output, &trace, &reduction)?;
             io::stdout()

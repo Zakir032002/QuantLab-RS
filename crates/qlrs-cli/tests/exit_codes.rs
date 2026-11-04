@@ -117,3 +117,49 @@ fn req_cli_001_exit_codes_and_bundle_commands() {
     );
     std::fs::remove_dir_all(temp).unwrap();
 }
+
+#[test]
+fn req_cli_002_limits_preserve_verified_output_without_minimality_claim() {
+    let temp = std::env::temp_dir().join(format!("qlrs-cli-budget-{}", std::process::id()));
+    std::fs::create_dir_all(&temp).unwrap();
+    let trace = temp.join("trace.jsonl");
+    std::fs::write(
+        &trace,
+        qlrs_testkit::generate(20, 0, Some((qlrs_testkit::Defect::D03, 10)))
+            .unwrap()
+            .bytes,
+    )
+    .unwrap();
+    for (flag, value) in [
+        ("--max-calls", "0"),
+        ("--max-calls", "1"),
+        ("--time-limit-ms", "0"),
+    ] {
+        let bundle = temp.join(format!("{}-{value}", flag.trim_start_matches('-')));
+        let output = Command::new(env!("CARGO_BIN_EXE_qlrs"))
+            .arg("reduce")
+            .arg(&trace)
+            .arg("--output")
+            .arg(&bundle)
+            .args([flag, value])
+            .output()
+            .unwrap();
+        assert!(
+            output.status.success(),
+            "{}",
+            String::from_utf8_lossy(&output.stderr)
+        );
+        let manifest: qlrs_bundle::Manifest = qlrs_io::decode(&output.stdout).unwrap();
+        assert!(!manifest.closure_1_minimal);
+        assert!(manifest.stop_reason.is_some());
+        assert!(
+            Command::new(env!("CARGO_BIN_EXE_qlrs"))
+                .args(["bundle", "verify"])
+                .arg(&bundle)
+                .status()
+                .unwrap()
+                .success()
+        );
+    }
+    std::fs::remove_dir_all(temp).unwrap();
+}

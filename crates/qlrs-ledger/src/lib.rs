@@ -14,6 +14,8 @@ pub struct ExpectedState {
     pub cash: i128,
     /// Positions indexed by dense instrument index, at each declared quantity scale.
     pub positions: Vec<i128>,
+    /// Ignore original events before this synthetic boundary.
+    pub cut_seq: Option<u64>,
 }
 /// Replay failure, with no heap allocation in the loop.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -28,6 +30,93 @@ pub struct ReplayError {
 /// Columnar preparation and independent cash/position replay.
 pub struct Ledger;
 impl Ledger {
+    /// Bind order metadata carried by a checkpoint before preparing fill deltas.
+    pub fn prepare_with_checkpoint(
+        store: &mut TraceStore,
+        checkpoint: Option<&SyntheticCheckpoint>,
+    ) -> Result<(), String> {
+        if let Some(cp) = checkpoint {
+            let mut names = std::collections::BTreeSet::new();
+            for order in &cp.orders {
+                if !names.insert(&order.client_order_id) {
+                    return Err("duplicate checkpoint order".into());
+                }
+                let instrument = store
+                    .header
+                    .instruments
+                    .iter()
+                    .position(|i| i.id == order.instrument_id)
+                    .ok_or("unknown checkpoint order instrument")?;
+                let precision = store
+                    .header
+                    .instruments
+                    .get(instrument)
+                    .ok_or("invalid instrument")?
+                    .qty_precision;
+                let quantity = Fixed::parse(&order.quantity, precision)
+                    .and_then(|q| q.rescale(precision, Rounding::Exact))
+                    .map_err(|e| e.to_string())?;
+                let filled = Fixed::parse(&order.filled_quantity, precision)
+                    .and_then(|q| q.rescale(precision, Rounding::Exact))
+                    .map_err(|e| e.to_string())?;
+                if quantity.raw() <= 0
+                    || filled.raw() < 0
+                    || order.status == qlrs_schema::OrderState::Missing
+                {
+                    return Err("invalid checkpoint order state".into());
+                }
+                if let Some(index) = store.order_index(&order.client_order_id) {
+                    let existing = store
+                        .orders
+                        .instrument
+                        .get(index)
+                        .copied()
+                        .ok_or("invalid order index")?;
+                    if existing == qlrs_schema::NONE {
+                        *store
+                            .orders
+                            .instrument
+                            .get_mut(index)
+                            .ok_or("invalid order index")? =
+                            u32::try_from(instrument).map_err(|_| "too many instruments")?;
+                        *store
+                            .orders
+                            .side
+                            .get_mut(index)
+                            .ok_or("invalid order index")? = order.side;
+                        *store
+                            .orders
+                            .qty_raw
+                            .get_mut(index)
+                            .ok_or("invalid order index")? = quantity.raw();
+                        *store
+                            .orders
+                            .qty_scale
+                            .get_mut(index)
+                            .ok_or("invalid order index")? = precision;
+                        store.prepared = false;
+                    } else {
+                        let original = Fixed::new(
+                            *store.orders.qty_raw.get(index).ok_or("invalid order")?,
+                            *store.orders.qty_scale.get(index).ok_or("invalid order")?,
+                        )
+                        .and_then(|q| q.rescale(precision, Rounding::Exact))
+                        .map_err(|e| e.to_string())?;
+                        if existing as usize != instrument
+                            || store.orders.side.get(index) != Some(&order.side)
+                            || original != quantity
+                        {
+                            return Err(
+                                "checkpoint order metadata differs from observed order".into()
+                            );
+                        }
+                    }
+                }
+            }
+        }
+        Self::prepare(store);
+        Ok(())
+    }
     /// Compute checked deltas once. Idempotent; does not use observed balances.
     pub fn prepare(store: &mut TraceStore) {
         if store.prepared {
@@ -169,6 +258,7 @@ impl Ledger {
         let mut state = ExpectedState {
             cash: store.starting_cash,
             positions: vec![0; store.header.instruments.len()],
+            cut_seq: checkpoint.map(|cp| cp.cut_seq),
         };
         if let Some(cp) = checkpoint {
             if cp.provenance != "synthetic"
@@ -244,14 +334,39 @@ impl Ledger {
         alive: &AliveMask,
         state: &mut ExpectedState,
     ) -> Result<(), ReplayError> {
-        for event in 0..store.len() {
+        let (first, last) = alive.bounds();
+        let first = match (first, state.cut_seq) {
+            (Some(a), Some(b)) => Some(a.max(b)),
+            (a, b) => a.or(b),
+        };
+        // Keep the full-range bound tied directly to seq.len(): LLVM can then
+        // remove its per-event sequence bounds check. A dynamic range loses
+        // that proof even when it happens to cover the complete trace.
+        if first.is_none() && last.is_none() {
+            for event in 0..store.len() {
+                if store
+                    .spine
+                    .unit
+                    .get(event)
+                    .is_some_and(|unit| alive.contains(*unit as usize))
+                {
+                    state.apply_current(store, event)?;
+                }
+            }
+            return Ok(());
+        }
+        let start = first.map_or(0, |cut| store.spine.seq.partition_point(|seq| *seq < cut));
+        let end = last.map_or(store.len(), |last| {
+            store.spine.seq.partition_point(|seq| *seq <= last)
+        });
+        for event in start..end {
             if store
                 .spine
                 .unit
                 .get(event)
-                .is_some_and(|id| alive.contains(*id as usize))
+                .is_some_and(|unit| alive.contains(*unit as usize))
             {
-                state.apply(store, event)?;
+                state.apply_current(store, event)?;
             }
         }
         Ok(())
@@ -260,6 +375,16 @@ impl Ledger {
 impl ExpectedState {
     /// Apply a single original event, checking arithmetic and model preconditions.
     pub fn apply(&mut self, store: &TraceStore, event: usize) -> Result<(), ReplayError> {
+        let seq = store.spine.seq.get(event).copied().unwrap_or(0);
+        if self.cut_seq.is_some_and(|cut| seq < cut) {
+            return Ok(());
+        }
+        self.apply_current(store, event)
+    }
+    // Bounds are resolved once by replay_into; the common full replay pays no
+    // per-event checkpoint/range test. Public single-event apply checks the cut.
+    #[inline]
+    fn apply_current(&mut self, store: &TraceStore, event: usize) -> Result<(), ReplayError> {
         let seq = store.spine.seq.get(event).copied().unwrap_or(0);
         let fail = |status, reason| ReplayError {
             seq,

@@ -284,3 +284,6 @@ pub fn generate(
         target_seq,
     })
 }
+
+mod rich;
+pub use rich::{GeneratorConfig, generate_rich};

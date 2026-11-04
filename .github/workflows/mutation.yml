@@ -8,20 +8,21 @@ permissions:
 jobs:
   mutate:
     runs-on: ubuntu-24.04
-    timeout-minutes: 60
+    timeout-minutes: 120
     env:
       PROPTEST_RNG_SEED: 42
       RUST_TEST_THREADS: 2
       CARGO_BUILD_JOBS: 1
+      RAYON_NUM_THREADS: 1
     steps:
       - uses: actions/checkout@v4
       - run: rustup toolchain install 1.99.1 --profile minimal
       - run: cargo install cargo-mutants --version 27.1.0 --locked
-      - name: Full numeric and checker campaign with all workspace tests
+      - name: Full numeric, checker, fingerprint and reducer campaign with all workspace tests
         shell: bash
         run: |
           set +e
-          cargo mutants -p qlrs-num -p qlrs-check --test-workspace true --jobs 3 --no-shuffle --cargo-arg=--locked
+          cargo mutants -p qlrs-num -p qlrs-check -p qlrs-reduce --test-workspace true --jobs 4 --timeout 60 --no-shuffle --cargo-arg=--locked
           result=$?
           set -e
           test "$result" -eq 0 || test "$result" -eq 2

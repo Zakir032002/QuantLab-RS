@@ -45,13 +45,18 @@ jobs:
       - run: sudo apt-get update && sudo apt-get install -y valgrind
       - run: cargo install gungraun-runner --version 0.20.0 --locked
       - run: cargo run -p qlrs-testkit --example scale_gate --release --locked
+      - name: All D01-D11 on million-event interleaved, long-lived and sparse traces
+        shell: bash
+        run: cargo run -p qlrs-testkit --example rich_gate --release --locked -- 250000 128 2000 > rich-gate.txt
       - run: cargo bench -p qlrs-bench --bench instructions --locked > instructions.txt
       - run: python3 ci/instruction-ratchet.py instructions.txt
       - uses: actions/upload-artifact@v4
         if: always()
         with:
           name: linux-instruction-results
-          path: instructions.txt
+          path: |
+            instructions.txt
+            rich-gate.txt
   macos-benchmarks:
     runs-on: macos-15
     env:

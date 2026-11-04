@@ -101,18 +101,23 @@ claim is starting cash or synthetic expected state. The local residual is
 never become independent global ledger state; they are used only as the two
 observations in this local equation. Final independent cash is a derived summary.
 
-I2 compares each instrument's claim to initial/checkpoint position plus signed
-fills. A flat position after closing is valid. I3 uses the public transition
-table for missing/submitted/accepted/partial/filled/canceled/rejected states,
-checks total quantity and enforces trade-ID uniqueness per instrument. Stable
-subcodes include unknown-order, fill-before-accept, overfill,
-event-after-terminal, duplicate-trade-id and illegal-transition.
+I2 is local to consecutive observed position claims for the same instrument.
+Its residual is `(observed_now - observed_previous) - sum(signed fills in that
+window)`. Starting/checkpoint position supplies the predecessor before any
+observed claim. Each observed claim becomes only the next local boundary;
+independent global positions remain separate. A carried-forward offset therefore
+produces one local contradiction, not repeated false accusations at later claims.
+A flat position after closing is valid. I3 uses the transition table and checks
+filled quantity plus per-instrument trade uniqueness, seeded by checkpoint order
+status, filled quantity and relevant prior trade IDs.
 
-Precedence is input error, UNSUPPORTED, VIOLATION, INCONCLUSIVE, CONSISTENT.
-Unsupported traces suppress all financial accusations by default. `--partial`
-permits supported-prefix violations while keeping overall UNSUPPORTED. Complete
-earlier contradictions can coexist with a later INCONCLUSIVE limitation.
-Missing cash/position observations for retained fills are INCONCLUSIVE.
+A retained fill needs a strictly later account claim AND a strictly later
+same-instrument position claim. Earlier observations do not satisfy this rule.
+Overall precedence is input error, UNSUPPORTED, missing-later-evidence
+INCONCLUSIVE, VIOLATION, other INCONCLUSIVE, CONSISTENT. Complete earlier
+contradictions remain diagnostic findings when tail evidence is missing.
+`--partial` permits supported-prefix findings while keeping UNSUPPORTED.
+This precedence change is explicitly requested in the follow-up (ADR-0008).
 
 ## Fingerprint encoding: qlrs-fp1
 
@@ -142,30 +147,65 @@ residual is therefore (10^m - 1) times expected; the tag explicitly says
 
 ## Reduction and bundle verification
 
-Lifecycle units contain all records for one client_order_id; each claim is its
-own unit. Header and instruments are pinned. I1 pins window boundaries and
-lifecycle units inside its window. I3 pins the offending order; I2 pins its
-claim. Additional post-fill cash/position claims are pinned when needed to keep
-evidence complete rather than INCONCLUSIVE. CSR edges connect conservative buy
-prerequisites to sells. A removal closes transitively over dependents.
+Lifecycle units group events for one client_order_id within the observation
+window; each claim is a separate unit. The observed prefix/suffix can be clipped
+without fabricating order events. A checkpoint cuts at the target I1/I2 window's
+preceding same-scope claim, or the latest preceding claim for I3. Its expected
+cash/positions come only from the independent ledger. Its referenced order
+metadata, status and filled quantities permit continuing long-lived orders.
+Relevant prior trade IDs preserve cross-boundary uniqueness. Header/instruments
+and target anchors remain pinned, as do all fills in the local I1/I2 window.
 
-Stage A slices to pins and prerequisites; Stage B tries deterministic ddmin
-subsets/complements in parallel; Stage C checks every remaining removable
-single closure until none succeeds. Lowest-index success wins. Candidate masks
-are hashed as u64 unit count followed by little-endian u64 words. A foldhash map
-caches outcomes. Every call, including hits and the final full replay, is logged.
+Observed opening cash/position values are separate `cash_window` and
+`position_windows` context, each with its original sequence and independently
+computed pending movement since that observation. They do not replace independent
+state. The opening claim at the cut is not audited again. This context preserves
+carried errors without inventing new violations. Context fields absent from old
+checkpoints retain their legacy initial-state meaning.
 
-Sparse I1 candidates from originally lifecycle-valid traces use a complete
-precomputed evaluator: selected events come from a u32 CSR unit index, cash
-and position prefix sums use checked deltas, and every retained claim residual
-must match an original instance. Whole-unit deletion cannot create a lifecycle
-breach in an originally legal source. Dense candidates and sources with I3
-findings use full checking. Final fast and full admission must agree, and a
-full witness replay always runs.
-Prefix snapshots occur every 4096 original events. A checkpoint replaces only
-a removed prefix and is computed from original expected state, not claims.
-Predicate errors remain fallible (`Result<Outcome, String>`); internal failures
-cannot silently become cache misses. Part 2 must preserve this error distinction.
+The observation ends at a complete claim frontier after the target, so unrelated
+future fills do not force entire long-lived lifecycles back into the witness.
+Evidence support pins the required later claims and their fill windows. CSR
+inventory dependencies consume checkpoint positions first and only reference
+post-cut buys for uncovered sells. Removing units closes over dependents.
+
+Stage A slices to pins/prerequisites. Stage B evaluates deterministic bounded
+batches of ddmin subsets/complements. Among verified successes, the smallest
+observed-event count wins; input order resolves ties. Stage C checks each
+remaining removable single closure. Results are closure-1-minimal relative to
+pins/closures only after that pass completes without exhaustion.
+
+Candidate hashing commits a u64 unit count, then each optional inclusive sequence
+bound as a presence byte/u64 little-endian pair, then little-endian mask words.
+The cache stores both admission and the exact verified finding. A u32 CSR event
+index supplies sorted retained events to the complete checker for I1/I2/I3,
+preconditions and evidence completeness. Dense/sparse differential tests and an
+independent fingerprint-window counter protect equivalence. Incremental global
+and per-order kind counts replace repeated source-history scans. All accepted
+candidates have already passed complete replay; final bundle verification also
+reparses/replays the written witness.
+
+Default cooperative limits are 30 seconds and 10000 candidate calls, including
+cache hits. Mandatory input validation is separate; setup and already-started
+replay finish safely. `--time-limit-ms` and `--max-calls` override defaults.
+Exhaustion returns the best verified witness with `closure_1_minimal:false` and
+`stop_reason`. A zero budget can return the verified original; if no lifecycle-
+valid target witness is known, an error is returned rather than inventing one.
+Completed searches/call-limited results are deterministic across thread counts;
+wall-time-limited cutoffs can differ with scheduling.
+
+Each log record contains the candidate commitment, removed-unit COUNT, result,
+cache hit and full-replay flag. Old removed-ID arrays remain readable. Logs no
+longer grow proportionally to removed history per candidate. The input-validation
+fallback has one initial record and zero candidate calls; other records correspond
+to actual budgeted predicate calls. Errors remain fallible, not cache misses.
+
+The extended gate covers D01-D11 on interleaved, long-lived and sparse multi-
+instrument traces with carried-forward errors. For each of the three profiles,
+250000 orders produce over a million events. Fixed limits are 128 observed
+witness events, 2000 ms reduction time and 1024 candidate calls; exact target
+replay, byte-identical observations, labelled context and a complete minimality
+pass are mandatory. The original six-event D01/D03/D07 gate remains unchanged.
 
 Bundles use `qlrs-bundle/v0` with the files in the supplied contract and an
 additional `manifest.blake3` detached commitment. Paths are allowlisted, unique,
@@ -207,3 +247,39 @@ positions need no invented buy unit. Full financial replay remains authoritative
 - REQ-IO-007: Numeric limitations do not fabricate domain failures from placeholder values.
 
 - REQ-LEDGER-002: Independent replay ignores observed claims and rejects unprepared or unresolved fill metadata.
+
+- REQ-CHECK-011: every fill needs later cash and same asset position.
+
+- REQ-CHECK-012: i2 uses local claim windows for carried errors.
+
+- REQ-CHECK-013: sparse indices must be unique and in sequence order.
+
+- REQ-CHECKPOINT-001: earlier bad claim is an opening boundary.
+
+- REQ-CHECKPOINT-002: open and terminal orders and prior trades survive cut.
+
+- REQ-CHECKPOINT-003: invalid context never becomes a financial accusation.
+
+- REQ-CLI-002: limits preserve verified output without minimality claim.
+
+- REQ-FP-003: all fields have distinct canonical encodings.
+
+- REQ-FP-004: utf8 lengths sign and zero multiset entries.
+
+- REQ-GATE-001: all eleven defects on rich profiles.
+
+- REQ-GENERATOR-001: interleaving sparse claims long lived and carried offsets.
+
+- REQ-GENERATOR-002: rich statuses across seeds.
+
+- REQ-GENERATOR-003: each instrument has independent buy sell cycles.
+
+- REQ-GRAPH-002: checkpoint inventory replaces historical buy dependencies.
+
+- REQ-REDUCE-005: limits return best verified uncertified bundles.
+
+- REQ-REDUCE-006: sparse dense and incremental patterns match on all defects.
+
+- REQ-REDUCE-007: other lifecycle breaches are not admitted or returned on limits.
+
+- REQ-REDUCE-008: short logs read legacy removed unit lists.

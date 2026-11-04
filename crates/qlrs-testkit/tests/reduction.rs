@@ -8,8 +8,14 @@ use qlrs_reduce::{Predicate, ReductionPredicate, UnitGraph};
 use qlrs_schema::AliveMask;
 use qlrs_testkit::{Defect, generate};
 fn prepared(bytes: Vec<u8>) -> qlrs_io::ParsedTrace {
+    prepared_with_checkpoint(bytes, None)
+}
+fn prepared_with_checkpoint(
+    bytes: Vec<u8>,
+    checkpoint: Option<&qlrs_schema::SyntheticCheckpoint>,
+) -> qlrs_io::ParsedTrace {
     let mut input = qlrs_io::ParsedTrace::parse(bytes).unwrap();
-    Ledger::prepare(&mut input.store);
+    Ledger::prepare_with_checkpoint(&mut input.store, checkpoint).unwrap();
     input
 }
 #[test]
@@ -38,7 +44,7 @@ fn req_reduce_001_three_defects_exact_replay_and_idempotence() {
         assert!(original.keys().any(|key| key == target));
         let mut bytes = Vec::new();
         input.write_kept(&reduced.alive, &mut bytes).unwrap();
-        let output = prepared(bytes.clone());
+        let output = prepared_with_checkpoint(bytes.clone(), Some(cp));
         let report = Checker::check(
             &output.store,
             &AliveMask::all(output.store.units.len()),
@@ -146,7 +152,7 @@ fn req_bundle_001_deterministic_roundtrip_and_every_file_tamper() {
 }
 #[test]
 fn req_reduce_004_sparse_fast_predicate_matches_full_replay() {
-    use qlrs_schema::{CheckpointPosition, Status, SyntheticCheckpoint};
+    use qlrs_schema::Status;
     let fixture = generate(40, 42, Some((Defect::D03, 25))).unwrap();
     let input = prepared(fixture.bytes);
     let digest = qlrs_io::digest(&input.source);
@@ -176,55 +182,16 @@ fn req_reduce_004_sparse_fast_predicate_matches_full_replay() {
                 mask.set(unit, !mask.contains(unit));
             }
         }
-        let reference = if let Some(first) = store
-            .spine
-            .unit
-            .iter()
-            .position(|u| mask.contains(*u as usize))
-        {
-            let mut state = Ledger::initial(store, None).unwrap();
-            for event in 0..first {
-                state.apply(store, event).unwrap();
-            }
-            let checkpoint = if first == 0 {
-                None
-            } else {
-                Some(SyntheticCheckpoint {
-                    provenance: "synthetic".into(),
-                    account_id: store.account().into(),
-                    currency: store.header.model.base_currency.clone(),
-                    cash: qlrs_num::Fixed::new(state.cash, store.cash_scale)
-                        .unwrap()
-                        .to_string(),
-                    positions: store
-                        .header
-                        .instruments
-                        .iter()
-                        .zip(&state.positions)
-                        .map(|(i, raw)| CheckpointPosition {
-                            instrument_id: i.id.clone(),
-                            net_qty: qlrs_num::Fixed::new(*raw, i.qty_precision)
-                                .unwrap()
-                                .to_string(),
-                        })
-                        .collect(),
-                    cut_seq: *store.spine.seq.get(first).unwrap(),
-                    source_digest: digest.clone(),
-                    description: format!("computed by qlrs ledger from original trace {digest}"),
-                })
-            };
-            let report = Checker::check(store, &mask, checkpoint.as_ref(), true);
-            report.keys().any(|k| *k == key)
-                && report
-                    .findings
-                    .iter()
-                    .all(|f| !matches!(f.status, Status::Unsupported | Status::Inconclusive))
-                && report
-                    .keys()
-                    .all(|k| original.keys().any(|existing| existing == k))
-        } else {
-            false
-        };
+        let mask = predicate.candidate_mask(&mask);
+        let checkpoint = predicate.candidate_checkpoint(&mask).unwrap();
+        let report = Checker::check(store, &mask, checkpoint.as_ref(), true);
+        let reference = report.keys().any(|existing| *existing == key)
+            && report.findings.iter().all(|finding| {
+                !matches!(finding.status, Status::Unsupported | Status::Inconclusive)
+            })
+            && report
+                .keys()
+                .all(|existing| original.keys().any(|key| key == existing));
         assert_eq!(
             predicate.test(&mask).unwrap().accepted,
             reference,

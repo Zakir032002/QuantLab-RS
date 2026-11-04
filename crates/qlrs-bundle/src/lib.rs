@@ -52,12 +52,30 @@ pub struct Manifest {
     pub instance_key: InstanceKey,
     #[doc = "closure 1 minimal."]
     pub closure_1_minimal: bool,
+    /// Actual candidate calls; absent in older bundles.
+    #[serde(default, skip_serializing_if = "zero_calls")]
+    pub predicate_calls: u64,
+    /// Exhausted search budget, when minimality has not been certified.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub stop_reason: Option<qlrs_reduce::LimitReason>,
     #[doc = "minimality guarantee."]
     pub minimality_guarantee: String,
     #[doc = "retained events."]
     pub retained_events: usize,
     #[doc = "files."]
     pub files: Vec<FileEntry>,
+}
+// serde skip_serializing_if requires a borrowed field.
+#[allow(clippy::trivially_copy_pass_by_ref)]
+fn zero_calls(calls: &u64) -> bool {
+    *calls == 0
+}
+fn minimality_text(certified: bool) -> &'static str {
+    if certified {
+        "closure-1-minimal; not a global minimum"
+    } else {
+        "best verified witness; minimality not certified"
+    }
 }
 fn put(dir: &Path, name: &str, bytes: &[u8]) -> Result<FileEntry, String> {
     fs::write(dir.join(name), bytes).map_err(|e| e.to_string())?;
@@ -104,8 +122,9 @@ pub fn write(
         ""
     };
     let reproduce = format!(
-        "# Replay this evidence\n\nFrom this bundle directory, using qlrs {}:\n\n```sh\nqlrs verify reduced_trace.jsonl{checkpoint}\nqlrs bundle verify .\n```\n\nThe first command must return VIOLATION (exit 2); the second must exit 0.\nThe synthetic checkpoint, when present, is independently computed expected\nstate replacing removed history. It is not an observed engine claim.\nThis is a Mode T output witness, not an engine-input reproduction.\nMinimality is closure-1-minimal under the documented pinned unit rules;\nit is not a global minimum. Fingerprint relations are hints, not diagnoses.\n",
-        env!("CARGO_PKG_VERSION")
+        "# Replay this evidence\n\nFrom this bundle directory, using qlrs {}:\n\n```sh\nqlrs verify reduced_trace.jsonl{checkpoint}\nqlrs bundle verify .\n```\n\nThe first command must return VIOLATION (exit 2); the second must exit 0.\nThe synthetic checkpoint, when present, is independently computed expected\nstate replacing removed history. It is not an observed engine claim.\nThis is a Mode T output witness, not an engine-input reproduction.\nMinimality: {}. Fingerprint relations are hints, not diagnoses.\n",
+        env!("CARGO_PKG_VERSION"),
+        minimality_text(reduction.closure_1_minimal)
     );
     files.push(put(dir, "REPRODUCE.md", reproduce.as_bytes())?);
     files.sort_by(|a, b| a.path.cmp(&b.path));
@@ -130,7 +149,9 @@ pub fn write(
             .clone()
             .ok_or("missing target key")?,
         closure_1_minimal: reduction.closure_1_minimal,
-        minimality_guarantee: "closure-1-minimal; not a global minimum".into(),
+        predicate_calls: reduction.predicate_calls,
+        stop_reason: reduction.stop_reason,
+        minimality_guarantee: minimality_text(reduction.closure_1_minimal).into(),
         retained_events: reduction.retained_events,
         files,
     };
@@ -160,7 +181,8 @@ pub fn verify(dir: impl AsRef<Path>) -> Result<Manifest, String> {
     }
     if manifest.schema != "qlrs-bundle/v0"
         || manifest.verdict != Status::Violation
-        || !manifest.closure_1_minimal
+        || manifest.minimality_guarantee != minimality_text(manifest.closure_1_minimal)
+        || manifest.closure_1_minimal == manifest.stop_reason.is_some()
         || manifest.original_trace.blake3.len() != 64
     {
         return Err("unsupported or invalid bundle manifest".into());
@@ -218,7 +240,7 @@ pub fn verify(dir: impl AsRef<Path>) -> Result<Manifest, String> {
     }
     let mut trace =
         ParsedTrace::parse(regular_file(dir, "reduced_trace.jsonl")?).map_err(|e| e.to_string())?;
-    Checker::prepare(&mut trace.store);
+    Checker::prepare_with_checkpoint(&mut trace.store, checkpoint.as_ref())?;
     if trace.store.header.model != manifest.model_profile
         || trace.store.len() != manifest.retained_events
     {

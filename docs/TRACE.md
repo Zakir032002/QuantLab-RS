@@ -1,6 +1,6 @@
 # Requirement traceability
 
-Every requirement maps to an executable test. The routine CI checks this mapping.
+Every requirement maps to an executable test. CI checks the mapping.
 
 | Requirement | Test | Source |
 |---|---|---|
@@ -15,10 +15,24 @@ Every requirement maps to an executable test. The routine CI checks this mapping
 | REQ-CHECK-008 | `req_check_008_lifecycle_subcodes_and_supported_terminal_states` | [invariants.rs](../crates/qlrs-testkit/tests/invariants.rs) |
 | REQ-CHECK-009 | `req_check_009_unknown_fill_never_invents_a_cash_delta` | [invariants.rs](../crates/qlrs-testkit/tests/invariants.rs) |
 | REQ-CHECK-010 | `req_check_010_trade_uniqueness_needs_known_instrument_scope` | [invariants.rs](../crates/qlrs-testkit/tests/invariants.rs) |
+| REQ-CHECK-011 | `req_check_011_every_fill_needs_later_cash_and_same_asset_position` | [corrections.rs](../crates/qlrs-testkit/tests/corrections.rs) |
+| REQ-CHECK-012 | `req_check_012_i2_uses_local_claim_windows_for_carried_errors` | [corrections.rs](../crates/qlrs-testkit/tests/corrections.rs) |
+| REQ-CHECK-013 | `req_check_013_sparse_indices_must_be_unique_and_in_sequence_order` | [corrections.rs](../crates/qlrs-testkit/tests/corrections.rs) |
+| REQ-CHECKPOINT-001 | `req_checkpoint_001_earlier_bad_claim_is_an_opening_boundary` | [corrections.rs](../crates/qlrs-testkit/tests/corrections.rs) |
+| REQ-CHECKPOINT-002 | `req_checkpoint_002_open_and_terminal_orders_and_prior_trades_survive_cut` | [corrections.rs](../crates/qlrs-testkit/tests/corrections.rs) |
+| REQ-CHECKPOINT-003 | `req_checkpoint_003_invalid_context_never_becomes_a_financial_accusation` | [corrections.rs](../crates/qlrs-testkit/tests/corrections.rs) |
 | REQ-CLI-001 | `req_cli_001_exit_codes_and_bundle_commands` | [exit_codes.rs](../crates/qlrs-cli/tests/exit_codes.rs) |
-| REQ-FP-001 | `req_fp_001_canonical_vector_and_order_independence` | [lib.rs](../crates/qlrs-check/src/lib.rs) |
+| REQ-CLI-002 | `req_cli_002_limits_preserve_verified_output_without_minimality_claim` | [exit_codes.rs](../crates/qlrs-cli/tests/exit_codes.rs) |
+| REQ-FP-001 | `req_fp_001_canonical_vector_and_order_independence` | [fingerprint.rs](../crates/qlrs-check/src/fingerprint.rs) |
 | REQ-FP-002 | `req_fp_002_at_seq_filters_status_and_anchor` | [lib.rs](../crates/qlrs-check/src/lib.rs) |
+| REQ-FP-003 | `req_fp_003_all_fields_have_distinct_canonical_encodings` | [fingerprint.rs](../crates/qlrs-check/src/fingerprint.rs) |
+| REQ-FP-004 | `req_fp_004_utf8_lengths_sign_and_zero_multiset_entries` | [fingerprint.rs](../crates/qlrs-check/src/fingerprint.rs) |
+| REQ-GATE-001 | `req_gate_001_all_eleven_defects_on_rich_profiles` | [corrections.rs](../crates/qlrs-testkit/tests/corrections.rs) |
+| REQ-GENERATOR-001 | `req_generator_001_interleaving_sparse_claims_long_lived_and_carried_offsets` | [corrections.rs](../crates/qlrs-testkit/tests/corrections.rs) |
+| REQ-GENERATOR-002 | `req_generator_002_rich_statuses_across_seeds` | [corrections.rs](../crates/qlrs-testkit/tests/corrections.rs) |
+| REQ-GENERATOR-003 | `req_generator_003_each_instrument_has_independent_buy_sell_cycles` | [corrections.rs](../crates/qlrs-testkit/tests/corrections.rs) |
 | REQ-GRAPH-001 | `req_graph_001_sell_closures_consume_earlier_buy_inventory` | [reduction.rs](../crates/qlrs-testkit/tests/reduction.rs) |
+| REQ-GRAPH-002 | `req_graph_002_checkpoint_inventory_replaces_historical_buy_dependencies` | [corrections.rs](../crates/qlrs-testkit/tests/corrections.rs) |
 | REQ-IO-001 | `req_io_001_strict_unknown_fields_decimal_types_and_sequences` | [invariants.rs](../crates/qlrs-testkit/tests/invariants.rs) |
 | REQ-IO-002 | `req_io_002_roundtrip_verbatim` | [invariants.rs](../crates/qlrs-testkit/tests/invariants.rs) |
 | REQ-IO-003 | `req_io_003_verbatim_noncanonical_decimal_evidence` | [invariants.rs](../crates/qlrs-testkit/tests/invariants.rs) |
@@ -46,3 +60,7 @@ Every requirement maps to an executable test. The routine CI checks this mapping
 | REQ-REDUCE-002 | `req_reduce_002_actual_closure_minimality_certificate` | [reduction.rs](../crates/qlrs-testkit/tests/reduction.rs) |
 | REQ-REDUCE-003 | `req_reduce_003_property_preserves_instance_and_source` | [reduction.rs](../crates/qlrs-testkit/tests/reduction.rs) |
 | REQ-REDUCE-004 | `req_reduce_004_sparse_fast_predicate_matches_full_replay` | [reduction.rs](../crates/qlrs-testkit/tests/reduction.rs) |
+| REQ-REDUCE-005 | `req_reduce_005_limits_return_best_verified_uncertified_bundles` | [corrections.rs](../crates/qlrs-testkit/tests/corrections.rs) |
+| REQ-REDUCE-006 | `req_reduce_006_sparse_dense_and_incremental_patterns_match_on_all_defects` | [corrections.rs](../crates/qlrs-testkit/tests/corrections.rs) |
+| REQ-REDUCE-007 | `req_reduce_007_other_lifecycle_breaches_are_not_admitted_or_returned_on_limits` | [corrections.rs](../crates/qlrs-testkit/tests/corrections.rs) |
+| REQ-REDUCE-008 | `req_reduce_008_short_logs_read_legacy_removed_unit_lists` | [corrections.rs](../crates/qlrs-testkit/tests/corrections.rs) |

@@ -152,6 +152,18 @@ pub struct Interner {
     hasher: foldhash::fast::RandomState,
 }
 impl Interner {
+    /// Find an existing symbol without inserting or allocating.
+    #[must_use]
+    pub fn lookup(&self, text: &str) -> Option<Id> {
+        let mut cursor = self.heads.get(&self.hasher.hash_one(text)).copied()?;
+        while cursor != NONE {
+            if self.get(cursor) == Some(text) {
+                return Some(cursor);
+            }
+            cursor = *self.next.get(cursor as usize)?;
+        }
+        None
+    }
     /// Intern without allocating an owned copy of every hash-map key.
     pub fn intern(&mut self, text: &str) -> Result<Id, String> {
         let hash = self.hasher.hash_one(text);
@@ -224,7 +236,8 @@ pub enum Kind {
     Unsupported = 7,
 }
 /// Direction of an order.
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "UPPERCASE")]
 pub enum Side {
     #[doc = "Buy state or tag."]
     Buy,
@@ -232,7 +245,8 @@ pub enum Side {
     Sell,
 }
 /// Lifecycle states; transitions are table-driven by the checker.
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "SCREAMING_SNAKE_CASE")]
 #[non_exhaustive]
 pub enum OrderState {
     #[doc = "Missing state or tag."]
@@ -374,6 +388,14 @@ pub struct TraceStore {
     pub prepared: bool,
 }
 impl TraceStore {
+    /// Resolve an order symbol. Builder order IDs increase in intern order.
+    #[must_use]
+    pub fn order_index(&self, name: &str) -> Option<usize> {
+        self.orders
+            .id
+            .binary_search(&self.strings.lookup(name)?)
+            .ok()
+    }
     /// Create empty typed columns. Validation belongs to the strict I/O builder.
     #[must_use]
     pub fn new(header: Header) -> Self {
@@ -524,14 +546,60 @@ impl TraceStore {
 pub struct AliveMask {
     words: Vec<u64>,
     len: usize,
+    first_seq: Option<u64>,
+    last_seq: Option<u64>,
 }
 impl AliveMask {
+    /// Restrict observed events to this inclusive sequence window.
+    #[must_use]
+    pub fn with_range(mut self, first: Option<u64>, last: Option<u64>) -> Self {
+        self.first_seq = first;
+        self.last_seq = last;
+        self
+    }
+    /// Inclusive original-sequence bounds for clipped lifecycle segments.
+    #[must_use]
+    pub const fn bounds(&self) -> (Option<u64>, Option<u64>) {
+        (self.first_seq, self.last_seq)
+    }
+    /// A unit may be alive while its removed prefix/suffix events are not.
+    #[must_use]
+    pub fn contains_event(&self, store: &TraceStore, event: usize) -> bool {
+        store.spine.seq.get(event).is_some_and(|seq| {
+            self.first_seq.is_none_or(|first| *seq >= first)
+                && self.last_seq.is_none_or(|last| *seq <= last)
+                && store
+                    .spine
+                    .unit
+                    .get(event)
+                    .is_some_and(|unit| self.contains(*unit as usize))
+        })
+    }
+    /// Intersect unit bits; retain this mask's observation bounds.
+    #[must_use]
+    pub fn intersection(&self, other: &Self) -> Self {
+        let mut result = self.clone();
+        for (index, word) in result.words.iter_mut().enumerate() {
+            *word &= other.words.get(index).copied().unwrap_or(0);
+        }
+        result
+    }
+    /// Number of live units, without constructing an index list.
+    #[must_use]
+    pub fn count(&self) -> usize {
+        self.words
+            .iter()
+            .map(|word| word.count_ones() as usize)
+            .sum()
+    }
     /// Empty alive mask for this many units.
     #[must_use]
     pub fn empty(len: usize) -> Self {
         Self {
             words: vec![0; len.div_ceil(64)],
             len,
+            first_seq: None,
+            last_seq: None,
         }
     }
     /// Keep all units.
@@ -619,6 +687,69 @@ pub struct SyntheticCheckpoint {
     pub source_digest: String,
     #[doc = "description column or schema field."]
     pub description: String,
+    /// Referenced lifecycle states, including terminal states needed by I3.
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub orders: Vec<CheckpointOrder>,
+    /// Previously seen trade IDs relevant to retained fills.
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub trades: Vec<CheckpointTrade>,
+    /// Observed opening cash claim plus independent movement since that claim.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub cash_window: Option<CheckpointCashWindow>,
+    /// Per-instrument observed opening claims and independent pending movement.
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub position_windows: Vec<CheckpointPositionWindow>,
+}
+
+/// Lifecycle state replacing removed order history; all amounts are exact.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct CheckpointOrder {
+    /// Original order identity.
+    pub client_order_id: String,
+    /// Instrument declared in the original order.
+    pub instrument_id: String,
+    /// Original side.
+    pub side: Side,
+    /// Original submitted quantity.
+    pub quantity: String,
+    /// State immediately before the checkpoint boundary.
+    pub status: OrderState,
+    /// Filled quantity immediately before the boundary.
+    pub filled_quantity: String,
+}
+/// A prior trade identity required to check cross-boundary uniqueness.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct CheckpointTrade {
+    /// Instrument scope of uniqueness.
+    pub instrument_id: String,
+    /// Original trade identity.
+    pub trade_id: String,
+}
+/// Opening cash evidence is a boundary, not a fresh assertion to audit.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct CheckpointCashWindow {
+    /// Original opening claim sequence, or the header balance.
+    pub seq: Option<u64>,
+    /// Unmodified observed value (header starting balance when seq is absent).
+    pub observed: String,
+    /// Independently computed movement after the claim and before the cut.
+    pub delta: String,
+}
+/// Per-instrument opening position evidence for a local I2 window.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct CheckpointPositionWindow {
+    /// Instrument identity.
+    pub instrument_id: String,
+    /// Original opening claim sequence, or zero starting position.
+    pub seq: Option<u64>,
+    /// Unmodified observed quantity.
+    pub observed: String,
+    /// Independent signed quantity movement since the opening claim.
+    pub delta: String,
 }
 /// One checkpoint position, encoded as an exact decimal string.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
