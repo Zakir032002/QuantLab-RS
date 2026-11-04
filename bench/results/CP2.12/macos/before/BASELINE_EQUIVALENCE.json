@@ -1,0 +1,6 @@
+{
+  "recorded_source": "5e1faada83bee617363e31e4059f705910ad0b1e",
+  "part2_baseline_source": "281fa154ac3e2cae4a3f2155d025b91c57b30e97",
+  "all_recorded_rust_manifest_and_lock_hashes_match": true,
+  "note": "Retained Part 1 Intel runner samples. Same declared hardware class, not proof of the same physical host."
+}

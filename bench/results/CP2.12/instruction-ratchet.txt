@@ -1,0 +1,1 @@
+instruction count ratchet: PASS {'decimal_parse': 1297, 'mul_rescale': 125, 'replay_1000': 33519}

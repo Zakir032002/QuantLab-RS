@@ -1,0 +1,13 @@
+{
+  "workflow_url": "https://github.com/Zakir032002/QuantLab-RS/actions/runs/41922579565",
+  "job_url": "https://github.com/Zakir032002/QuantLab-RS/actions/runs/41922579565/job/126898572261",
+  "observed_at": "2026-11-04T22:15:54.928128+00:00",
+  "source_commit": "a877c7bcf0435566073b4bc22a0a4094feaedfe6",
+  "public_record_sha256": "a8fa3a769c330f6647c6ea03493104f08ba502f2b92648ae541c54d323e1f5e1",
+  "chunks": 7,
+  "files": 36,
+  "all_manifest_hashes_verified": true,
+  "source_hashes_match_pushed_commit": true,
+  "input_hashes_match_part1_linux": true,
+  "production_source_commit": "a877c7bcf0435566073b4bc22a0a4094feaedfe6"
+}

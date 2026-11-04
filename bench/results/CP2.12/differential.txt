@@ -1,0 +1,10 @@
+   Compiling qlrs-testkit v0.1.0 (/workspace/QuantLab-RS/crates/qlrs-testkit)
+    Finished `test` profile [optimized + debuginfo] target(s) in 2.44s
+     Running tests/differential_part2.rs (target/debug/deps/differential_part2-7b6b7605dc015444)
+
+running 1 test
+differential: 10000 cases per invariant per shape, 9 shapes, no mismatches
+test req_reduce_013_algebra_matches_full_checker_on_closed_subsets_per_shape ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 4.98s
+

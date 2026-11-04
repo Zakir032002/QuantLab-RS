@@ -1,0 +1,43 @@
+   Compiling qlrs-reduce v0.1.0 (/workspace/QuantLab-RS/crates/qlrs-reduce)
+   Compiling qlrs-bundle v0.1.0 (/workspace/QuantLab-RS/crates/qlrs-bundle)
+   Compiling qlrs-testkit v0.1.0 (/workspace/QuantLab-RS/crates/qlrs-testkit)
+   Compiling qlrs-bench v0.1.0 (/workspace/QuantLab-RS/crates/qlrs-bench)
+    Finished `bench` profile [optimized + debuginfo] target(s) in 30.04s
+     Running benches/throughput.rs (target/release/deps/throughput-4247006ef8f5ff01)
+Gnuplot not found, using plotters backend
+Benchmarking pipeline/check_100k
+Benchmarking pipeline/check_100k: Warming up for 3.0000 s
+Benchmarking pipeline/check_100k: Collecting 50 samples in estimated 5.6707 s (2550 iterations)
+Benchmarking pipeline/check_100k: Analyzing
+pipeline/check_100k     time:   [2.2416 ms 2.2931 ms 2.3481 ms]
+                        thrpt:  [42.588 Melem/s 43.609 Melem/s 44.611 Melem/s]
+                 change:
+                        time:   [−4.1232% −1.1887% +2.0994%] (p = 0.47 > 0.05)
+                        thrpt:  [−2.0562% +1.2030% +4.3005%]
+                        No change in performance detected.
+Found 4 outliers among 50 measurements (8.00%)
+  2 (4.00%) high mild
+  2 (4.00%) high severe
+
+Benchmarking reduce_100k
+Benchmarking reduce_100k: Warming up for 3.0000 s
+
+Warning: Unable to complete 50 samples in 5.0s. You may wish to increase target time to 6.2s, enable flat sampling, or reduce sample count to 30.
+Benchmarking reduce_100k: Collecting 50 samples in estimated 6.1622 s (1275 iterations)
+Benchmarking reduce_100k: Analyzing
+reduce_100k             time:   [4.6994 ms 4.7878 ms 4.8822 ms]
+                        change: [−2.7039% −0.2623% +2.2973%] (p = 0.85 > 0.05)
+                        No change in performance detected.
+Found 7 outliers among 50 measurements (14.00%)
+  1 (2.00%) low mild
+  4 (8.00%) high mild
+  2 (4.00%) high severe
+
+Benchmarking prefix_residual
+Benchmarking prefix_residual: Warming up for 3.0000 s
+Benchmarking prefix_residual: Collecting 50 samples in estimated 5.0000 s (664M iterations)
+Benchmarking prefix_residual: Analyzing
+prefix_residual         time:   [7.0860 ns 7.1536 ns 7.2251 ns]
+                        change: [−8.4955% −4.3776% −1.6149%] (p = 0.01 < 0.05)
+                        Performance has improved.
+

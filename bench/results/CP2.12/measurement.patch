@@ -1,0 +1,161 @@
+diff --git a/crates/qlrs-bench/benches/throughput.rs b/crates/qlrs-bench/benches/throughput.rs
+index a9a5d1f..e98856d 100644
+--- a/crates/qlrs-bench/benches/throughput.rs
++++ b/crates/qlrs-bench/benches/throughput.rs
+@@ -91,5 +91,42 @@ fn pipeline(c: &mut Criterion) {
+         });
+     });
+ }
+-criterion_group!(benches, numeric, pipeline);
++fn algebra(c: &mut Criterion) {
++    use qlrs_reduce::FastPredicate;
++    let fixture =
++        qlrs_testkit::generate_shape("S9", 3, 1000, Some(qlrs_testkit::Defect::D06)).unwrap();
++    let mut trace = qlrs_io::ParsedTrace::parse(fixture.bytes).unwrap();
++    qlrs_ledger::Ledger::prepare(&mut trace.store);
++    let original = qlrs_check::Checker::check(
++        &trace.store,
++        &AliveMask::all(trace.store.units.len()),
++        None,
++        true,
++    );
++    let key = original
++        .at_seq(fixture.target_seq.unwrap())
++        .unwrap()
++        .instance_key
++        .clone()
++        .unwrap();
++    let predicate = qlrs_reduce::ReductionPredicate::new(
++        &trace.store,
++        key.clone(),
++        &original,
++        None,
++        &qlrs_io::digest(&trace.source),
++    )
++    .unwrap();
++    let mask = predicate.candidate_mask(&AliveMask::all(trace.store.units.len()));
++    let table = qlrs_reduce::ContributionTable::new(&trace.store, &mask, &key).unwrap();
++    let end = table.units.len();
++    assert_eq!(
++        table.prefix_residual(end),
++        Some(key.residual_raw.parse().unwrap())
++    );
++    c.bench_function("prefix_residual", |b| {
++        b.iter(|| black_box(black_box(&table).prefix_residual(black_box(end))));
++    });
++}
++criterion_group!(benches, numeric, pipeline, algebra);
+ criterion_main!(benches);
+diff --git a/crates/qlrs-bundle/build.rs b/crates/qlrs-bundle/build.rs
+index 7f1615f..25b8e4a 100644
+--- a/crates/qlrs-bundle/build.rs
++++ b/crates/qlrs-bundle/build.rs
+@@ -19,6 +19,19 @@ fn main() {
+         .unwrap_or_else(|| "uncommitted".into());
+     println!("cargo:rustc-env=QLRS_RUSTC_VERSION={}", version.trim());
+     println!("cargo:rustc-env=QLRS_GIT_COMMIT={}", git.trim());
+-    println!("cargo:rerun-if-changed=../../.git/HEAD");
+-    println!("cargo:rerun-if-changed=../../.git/refs");
++    println!("cargo:rerun-if-changed=build.rs");
++    // Source archives and mutation copies have no Git metadata. Watching a
++    // nonexistent path makes Cargo rebuild the bundle and its dependents on
++    // every invocation. Resolve real paths for ordinary clones/worktrees.
++    for name in ["HEAD", "refs"] {
++        if let Ok(output) = Command::new("git")
++            .args(["rev-parse", "--git-path", name])
++            .output()
++            && output.status.success()
++            && let Ok(path) = String::from_utf8(output.stdout)
++            && std::path::Path::new(path.trim()).exists()
++        {
++            println!("cargo:rerun-if-changed={}", path.trim());
++        }
++    }
+ }
+diff --git a/crates/qlrs-reduce/src/lib.rs b/crates/qlrs-reduce/src/lib.rs
+index 37a74a3..c6dd2c5 100644
+--- a/crates/qlrs-reduce/src/lib.rs
++++ b/crates/qlrs-reduce/src/lib.rs
+@@ -670,10 +670,20 @@ impl<'a> ReductionPredicate<'a> {
+                 .filter(|key| key.invariant_id == Invariant::I3)
+                 .all(|key| *key == self.target)
+     }
++    fn validate_candidates(&self, masks: &[AliveMask]) -> Result<(), String> {
++        if masks
++            .iter()
++            .any(|mask| mask.bounds() != self.initial.bounds())
++        {
++            return Err("candidate changes the fixed observation window".into());
++        }
++        Ok(())
++    }
+     fn batch(&mut self, masks: &[AliveMask]) -> Result<Vec<bool>, String> {
+         self.batch_mode(masks, false)
+     }
+     fn batch_mode(&mut self, masks: &[AliveMask], speculative: bool) -> Result<Vec<bool>, String> {
++        self.validate_candidates(masks)?;
+         let canonical: Vec<_> = masks.iter().map(|mask| self.canonical(mask)).collect();
+         let hashes: Vec<_> = canonical
+             .iter()
+@@ -781,6 +791,7 @@ struct CandidateResult {
+ impl Predicate for ReductionPredicate<'_> {
+     fn test(&mut self, alive: &AliveMask) -> Result<Outcome, String> {
+         let mask = self.candidate_mask(alive);
++        self.validate_candidates(std::slice::from_ref(&mask))?;
+         let units = self.canonical(&mask);
+         let hash = contextual_hash(self.hash_state.update(&units), self.hash_context);
+         let cached = self.cached(&mask).is_some();
+@@ -1997,4 +2008,20 @@ mod helper_tests {
+             }
+         }
+     }
++    #[test]
++    fn req_reduce_023_cache_rejects_changed_observation_bounds() {
++        let store = fixture();
++        let original = Checker::check(&store, &AliveMask::all(store.units.len()), None, true);
++        let key = original.at_seq(6).unwrap().instance_key.clone().unwrap();
++        let mut predicate =
++            ReductionPredicate::new(&store, key, &original, None, &"0".repeat(64)).unwrap();
++        let full = predicate.initial.clone();
++        assert!(predicate.test(&full).unwrap().accepted);
++        let clipped = full.clone().with_range(Some(5), Some(6));
++        // Same unit bits, but the order's submit/accept are outside this range.
++        assert!(predicate.test(&clipped).is_err());
++        let cached = predicate.test(&full).unwrap();
++        assert!(cached.accepted);
++        assert!(cached.cache_hit);
++    }
+ }
+diff --git a/crates/qlrs-testkit/tests/part2.rs b/crates/qlrs-testkit/tests/part2.rs
+index 4a4ade7..385abf5 100644
+--- a/crates/qlrs-testkit/tests/part2.rs
++++ b/crates/qlrs-testkit/tests/part2.rs
+@@ -536,3 +536,28 @@ fn req_reduce_021_small_window_quality_matches_exhaustive_ground_truth() {
+         reduced.retained_events
+     );
+ }
++
++#[test]
++fn req_gate_003_sparse_required_evidence_can_exceed_thirty_two_events() {
++    let fixture = qlrs_testkit::generate_shape("S4", 45, 4000, Some(Defect::D03)).unwrap();
++    let trace = prepared(fixture.bytes);
++    let result = qlrs_reduce::reduce_with_limits(
++        &trace.store,
++        &qlrs_io::digest(&trace.source),
++        None,
++        fixture.target_seq,
++        qlrs_reduce::ReductionLimits {
++            max_calls: 200,
++            time_limit: std::time::Duration::from_secs(5),
++        },
++    )
++    .unwrap();
++    assert!(result.closure_1_minimal);
++    assert!(result.retained_events > 32);
++    assert!(result.predicate_calls <= 200);
++    assert!(result.certificate.candidates_tested > 0);
++    let key = result.target.instance_key.as_ref().unwrap();
++    let replay =
++        Checker::check_witness(&trace.store, &result.alive, result.checkpoint.as_ref(), key);
++    assert!(replay.keys().any(|actual| actual == key));
++}

@@ -1,0 +1,103 @@
+   Compiling proc-macro2 v1.0.107
+   Compiling quote v1.0.47
+   Compiling unicode-ident v1.0.27
+   Compiling serde_core v1.0.229
+   Compiling serde v1.0.229
+   Compiling shlex v2.0.1
+   Compiling zmij v1.0.23
+   Compiling find-msvc-tools v0.1.15
+   Compiling cc v1.11.0
+   Compiling syn v3.0.9
+   Compiling crossbeam-utils v0.8.23
+   Compiling serde_json v1.0.154
+   Compiling syn v2.0.119
+   Compiling cfg-if v1.0.5
+   Compiling crossbeam-epoch v0.9.21
+   Compiling crossbeam-deque v0.8.8
+   Compiling rayon-core v1.13.0
+   Compiling either v1.19.0
+   Compiling blake3 v1.8.7
+   Compiling qlrs-num v0.1.0 (/tmp/qlrs-v0-source/crates/qlrs-num)
+   Compiling foldhash v0.2.0
+   Compiling serde_derive v1.0.229
+   Compiling constant_time_eq v0.4.2
+   Compiling cpufeatures v0.3.1
+   Compiling memchr v2.8.3
+   Compiling arrayvec v0.7.8
+   Compiling itoa v1.0.18
+   Compiling rayon v1.12.0
+   Compiling qlrs-schema v0.1.0 (/tmp/qlrs-v0-source/crates/qlrs-schema)
+   Compiling zerocopy v0.8.63
+   Compiling qlrs-ledger v0.1.0 (/tmp/qlrs-v0-source/crates/qlrs-ledger)
+   Compiling zerocopy-derive v0.8.63
+   Compiling semver v1.0.28
+   Compiling autocfg v1.5.1
+   Compiling rustversion v1.0.23
+   Compiling num-traits v0.2.19
+   Compiling rustc_version v0.4.1
+   Compiling qlrs-check v0.1.0 (/tmp/qlrs-v0-source/crates/qlrs-check)
+   Compiling derive_more-impl v2.1.1
+   Compiling qlrs-bundle v0.1.0 (/tmp/qlrs-v0-source/crates/qlrs-bundle)
+   Compiling libc v0.2.191
+   Compiling qlrs-reduce v0.1.0 (/tmp/qlrs-v0-source/crates/qlrs-reduce)
+   Compiling gungraun-macros v0.10.0
+   Compiling qlrs-io v0.1.0 (/tmp/qlrs-v0-source/crates/qlrs-io)
+   Compiling half v2.7.1
+   Compiling alloca v0.4.0
+   Compiling proc-macro-error-attr3 v3.1.1
+   Compiling gungraun-common v0.1.0
+   Compiling regex-syntax v0.8.11
+   Compiling clap_lex v1.1.1
+   Compiling anstyle v1.0.14
+   Compiling plotters-backend v0.3.7
+   Compiling ciborium-io v0.2.2
+   Compiling bincode-next v3.1.1
+   Compiling regex-automata v0.4.18
+   Compiling ciborium-ll v0.2.2
+   Compiling plotters-svg v0.3.7
+   Compiling clap_builder v4.6.7
+   Compiling proc-macro-error3 v3.1.1
+   Compiling rapidhash v4.5.1
+   Compiling derive_more v2.1.1
+   Compiling either-or-both v0.3.1
+   Compiling itertools v0.13.0
+   Compiling unty-next v0.1.2
+   Compiling gungraun v0.20.0
+   Compiling pastey v0.2.3
+   Compiling same-file v1.0.6
+   Compiling cast v0.3.0
+   Compiling walkdir v2.5.0
+   Compiling criterion-plot v0.8.2
+   Compiling page_size v0.6.0
+   Compiling gungraun-runner v0.20.0
+   Compiling clap v4.6.7
+   Compiling plotters v0.3.7
+   Compiling qlrs-testkit v0.1.0 (/tmp/qlrs-v0-source/crates/qlrs-testkit)
+   Compiling regex v1.13.1
+   Compiling ciborium v0.2.2
+   Compiling tinytemplate v1.2.1
+   Compiling anes v0.1.6
+   Compiling oorandom v11.1.5
+   Compiling criterion v0.8.2
+   Compiling qlrs-bench v0.1.0 (/tmp/qlrs-v0-source/crates/qlrs-bench)
+    Finished `bench` profile [optimized + debuginfo] target(s) in 1m 02s
+     Running benches/throughput.rs (/tmp/qlrs-v0-target/release/deps/throughput-a074aec094635639)
+Gnuplot not found, using plotters backend
+Benchmarking pipeline/check_100k
+Benchmarking pipeline/check_100k: Warming up for 3.0000 s
+Benchmarking pipeline/check_100k: Collecting 50 samples in estimated 7.5264 s (2550 iterations)
+Benchmarking pipeline/check_100k: Analyzing
+pipeline/check_100k     time:   [3.0510 ms 3.0977 ms 3.1440 ms]
+                        thrpt:  [31.806 Melem/s 32.282 Melem/s 32.776 Melem/s]
+Found 3 outliers among 50 measurements (6.00%)
+  1 (2.00%) low mild
+  2 (4.00%) high mild
+
+Benchmarking reduce_100k
+Benchmarking reduce_100k: Warming up for 3.0000 s
+
+Warning: Unable to complete 50 samples in 5.0s. You may wish to increase target time to 7.7s, enable flat sampling, or reduce sample count to 20.
+Benchmarking reduce_100k: Collecting 50 samples in estimated 7.7422 s (1275 iterations)
+Benchmarking reduce_100k: Analyzing
+reduce_100k             time:   [5.8317 ms 5.9678 ms 6.1528 ms]
+

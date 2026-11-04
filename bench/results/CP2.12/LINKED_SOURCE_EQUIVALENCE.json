@@ -1,0 +1,30 @@
+{
+  "base_commit": "a877c7b",
+  "patch": "measurement.patch",
+  "current_runtime_and_benchmark_sources_match_measured_snapshot": true,
+  "checks": {
+    "crates/qlrs-bundle/build.rs": true,
+    "crates/qlrs-bundle/src/lib.rs": true,
+    "crates/qlrs-reduce/src/certificate.rs": true,
+    "crates/qlrs-reduce/src/log.rs": true,
+    "crates/qlrs-reduce/src/cache.rs": true,
+    "crates/qlrs-reduce/src/lib.rs": true,
+    "crates/qlrs-reduce/src/algebra.rs": true,
+    "crates/qlrs-bench/benches/throughput.rs": true,
+    "crates/qlrs-bench/benches/instructions.rs": true,
+    "crates/qlrs-bench/src/lib.rs": true,
+    "crates/qlrs-check/src/fingerprint.rs": true,
+    "crates/qlrs-check/src/checkpoint.rs": true,
+    "crates/qlrs-check/src/lib.rs": true,
+    "crates/qlrs-check/src/lifecycle.rs": true,
+    "crates/qlrs-num/src/lib.rs": true,
+    "crates/qlrs-testkit/src/shapes.rs": true,
+    "crates/qlrs-testkit/src/rich.rs": true,
+    "crates/qlrs-testkit/src/lib.rs": true,
+    "crates/qlrs-cli/src/main.rs": true,
+    "crates/qlrs-io/src/lib.rs": true,
+    "crates/qlrs-schema/src/lib.rs": true,
+    "crates/qlrs-ledger/src/lib.rs": true
+  },
+  "note": "The trailing reducer test module changed after the snapshot to correct an invalid public-bounds test assumption; it is not compiled into benchmark executables."
+}

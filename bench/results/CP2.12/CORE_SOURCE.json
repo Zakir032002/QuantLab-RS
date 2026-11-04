@@ -1,0 +1,7 @@
+{
+  "base_production_commit": "a877c7b",
+  "runtime_patch": "measurement.patch",
+  "exact_snapshot": "source-sha256.txt",
+  "financial_model_and_fingerprint_encoding_unchanged": true,
+  "runtime_equivalence_proof": "LINKED_SOURCE_EQUIVALENCE.json"
+}

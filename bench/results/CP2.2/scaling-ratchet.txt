@@ -1,0 +1,6 @@
+R4 medians: 2206738 ns -> 26998455 ns; ratio 12.234554; limit 12
+Traceback (most recent call last):
+  File "/workspace/QuantLab-RS/ci/r4-scaling.py", line 13, in <module>
+    assert large['median_ns']<=12*small['median_ns'],'R4 scaling criterion missed (threshold unchanged)'
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: R4 scaling criterion missed (threshold unchanged)

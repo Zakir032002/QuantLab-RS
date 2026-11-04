@@ -1,0 +1,5 @@
+{"case":"R1a","actual_events":2000,"target_seq":1004,"kept_events":5,"candidate_calls":2,"full_slots":2,"certificate_candidates_tested":1,"wall_ns_8":314024}
+{"case":"R1b","actual_events":10000,"target_seq":5004,"kept_events":5,"candidate_calls":2,"full_slots":2,"certificate_candidates_tested":1,"wall_ns_8":628829}
+{"case":"R1c","actual_events":12053,"target_seq":12048,"kept_events":1,"candidate_calls":2,"full_slots":2,"certificate_candidates_tested":0,"wall_ns_8":931425}
+{"case":"R1d","actual_events":11261,"target_seq":5668,"kept_events":10,"candidate_calls":8,"full_slots":8,"certificate_candidates_tested":6,"wall_ns_8":2109332}
+{"case":"sparse-over-32","actual_events":10211,"target_seq":5212,"kept_events":104,"candidate_calls":28,"full_slots":28,"certificate_candidates_tested":26,"wall_ns_8":1460764}

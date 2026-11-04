@@ -1,0 +1,15 @@
+{
+  "source_commit": "a877c7bcf0435566073b4bc22a0a4094feaedfe6",
+  "captured_utc": "2026-11-04T22:01:59.345045+00:00",
+  "cpu_model": "AMD EPYC 9V74 80-Core Processor",
+  "logical_cpus": 5,
+  "os": "Linux-6.18.57-x86_64-with-glibc2.41",
+  "cpu_max": "400000 100000",
+  "gate_workers": [
+    1,
+    2,
+    8
+  ],
+  "timing_workers": 8,
+  "command": "cargo run --release --locked -p qlrs-testkit --example part2_gate"
+}

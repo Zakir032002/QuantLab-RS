@@ -1,0 +1,12 @@
+{
+  "observed_at": "2026-11-04T23:44:22.223065+00:00",
+  "checkpoint_source_commit": "766632a0d3dc8bc2a160cf9eba81a945e129db63",
+  "measured_linux_source": "a877c7b plus measurement.patch; trailing cfg(test) module differs as recorded in LINKED_SOURCE_EQUIVALENCE.json",
+  "gate_cells": 891,
+  "all_gate_cells_pass": true,
+  "all_small_windows_equal_exhaustive_minimum": true,
+  "nonvacuous_certificate_cases": 564,
+  "max_full_candidate_slots": 10,
+  "max_100k_wall_ns": 148109126,
+  "separate_R4_scaling": "MISSED / STOPPED; see CP2.2/scaling-ratchet.txt"
+}
