@@ -29,3 +29,14 @@ estimates. The previously measured M1 record remains separately available.
 The final source's M1 benchmark is not measured during this capacity outage.
 Observe the retry before claiming macOS success; stop and report if runner
 availability remains blocked after this retry.
+
+## Observed outcome
+
+All five retry jobs passed for 5e1faad, including Linux and Intel macOS quality,
+Miri, scale/instructions and Intel benchmarks:
+https://github.com/Zakir032002/QuantLab-RS/actions/runs/41898170782 .
+The CPU is Intel Core i7-8700B with four CPUs / 14 GiB RAM, macOS 15.7.9.
+Raw samples, actual compiler/machine data and a verified public transfer record
+are in `bench-results/2026-11-04-lookup-macos-x86_64/`. The checkout's Rust and
+manifest hashes match final production source e348f56. ARM cancellations remain
+recorded separately; they are not treated as successful tests.

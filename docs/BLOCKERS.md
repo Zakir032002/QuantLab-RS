@@ -1,8 +1,8 @@
 # Status and remaining limitations
 
-There is no local blocker to developing, running, checking or reducing the
-synthetic Part 1 workflow. Final Mac ARM verification has a runner-capacity
-block; the verified Intel macOS retry is pending. The initial empty-repository
+There is no local or cross-platform quality blocker to the synthetic Part 1
+workflow. The standard Intel macOS retry passed. ARM runner capacity prevents
+a new final-source M1 measurement; the earlier actual M1 record is retained. The initial empty-repository
 and docs.rs stop were superseded by the user's explicit instruction to create
 the project and continue with full authorization.
 
@@ -19,7 +19,9 @@ the project and continue with full authorization.
   GitHub cancelled both queued ARM Mac jobs because hosted runners were not
   acquired during an arm64 capacity shortage. ADR-0009 records the standard
   macos-15-intel retry; validation-results/order-lookup/mac-cancellation.json
-  retains the exact provider messages. Do not count cancellations as passes.
+  retains the exact provider messages. All five Intel-retry workflow jobs passed
+  for 5e1faad, whose Rust/manifest hashes match e348f56. Observed results are in
+  validation-results/order-lookup/hosted-ci.json; cancellations are not passes.
 - Whole-process memory includes retained original JSONL and exceeds the original
   100-byte/event goal. The latest shared-Linux and earlier M1 parse observations
   are below the 300 MB/s reference goal. Raw results and configuration

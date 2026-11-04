@@ -1,32 +1,33 @@
 {
-  "observed_at": "2026-11-04T19:25:50.082842+00:00",
-  "source_commit": "e348f562128c59c337590869544afd34aa91bfdf",
-  "workflow_url": "https://github.com/Zakir032002/QuantLab-RS/actions/runs/41893992136",
+  "observed_at": "2026-11-04T19:57:10.763131+00:00",
+  "source_commit": "5e1faada83bee617363e31e4059f705910ad0b1e",
+  "production_source_commit": "e348f562128c59c337590869544afd34aa91bfdf",
+  "workflow_url": "https://github.com/Zakir032002/QuantLab-RS/actions/runs/41898170782",
   "jobs": {
     "miri": {
       "status": "completed successfully",
       "concluded": true,
-      "url": "https://github.com/Zakir032002/QuantLab-RS/actions/runs/41893992136/job/126798480184"
+      "url": "https://github.com/Zakir032002/QuantLab-RS/actions/runs/41898170782/job/126813166688"
     },
     "scale-and-instructions": {
       "status": "completed successfully",
       "concluded": true,
-      "url": "https://github.com/Zakir032002/QuantLab-RS/actions/runs/41893992136/job/126798481180"
+      "url": "https://github.com/Zakir032002/QuantLab-RS/actions/runs/41898170782/job/126813166358"
     },
     "macos-benchmarks": {
-      "status": "cancelled",
+      "status": "completed successfully",
       "concluded": true,
-      "url": "https://github.com/Zakir032002/QuantLab-RS/actions/runs/41893992136/job/126798480436"
+      "url": "https://github.com/Zakir032002/QuantLab-RS/actions/runs/41898170782/job/126813166566"
     },
-    "quality (macos-15)": {
-      "status": "cancelled",
+    "quality (macos-15-intel)": {
+      "status": "completed successfully",
       "concluded": true,
-      "url": "https://github.com/Zakir032002/QuantLab-RS/actions/runs/41893992136/job/126798480588"
+      "url": "https://github.com/Zakir032002/QuantLab-RS/actions/runs/41898170782/job/126813166585"
     },
     "quality (ubuntu-24.04)": {
       "status": "completed successfully",
       "concluded": true,
-      "url": "https://github.com/Zakir032002/QuantLab-RS/actions/runs/41893992136/job/126798480902"
+      "url": "https://github.com/Zakir032002/QuantLab-RS/actions/runs/41898170782/job/126813166470"
     }
   }
 }

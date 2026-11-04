@@ -22,6 +22,12 @@ Hosted statuses in `hosted-ci.json` identify this exact source. The fresh Miri
 job checks numeric edges, rounding and allocator instrumentation.
 The final Linux/Mac performance records use this source and retain all samples.
 
+The initial ARM jobs were cancelled for runner capacity. The standard Intel
+retry at 5e1faad passed all five jobs, including both platform quality jobs;
+its Rust/manifest hashes match e348f56. Provider diagnostics and cancelled
+statuses remain in separate files. Current Mac benchmarks identify Intel
+hardware; earlier M1 measurements retain their original source provenance.
+
 The broad mutation record in the claim-boundaries directory belongs to frozen
 workspace source 111b1db. All six audited source files remain byte-identical;
 `broad-mutation-source-match.txt` in the latest Linux record verifies that fact.

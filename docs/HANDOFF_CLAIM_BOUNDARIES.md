@@ -36,11 +36,15 @@ call-limited searches retain deterministic ordering.
 
 The final routine suite and catalogue are in
 [latest validation](../validation-results/order-lookup/). High-volume numeric
-properties remain native. Final-source Linux quality, Miri and scale/instruction
-jobs passed. Both ARM Mac jobs were cancelled while queued because GitHub could
-not acquire runners. [Provider diagnostics](../validation-results/order-lookup/mac-cancellation.json)
-and [ADR-0009](adr/0009-macos-runner-capacity-fallback.md) record the verified Intel
-macOS fallback and retry. The retry is pending; cancelled jobs are not passes.
+properties remain native. All five hosted retry jobs passed: Linux quality,
+Intel macOS quality, Miri, scale/instructions and Intel Mac benchmarks.
+[Successful workflow](https://github.com/Zakir032002/QuantLab-RS/actions/runs/41898170782),
+[directly observed statuses](../validation-results/order-lookup/hosted-ci.json).
+The checkout is `5e1faad`, whose Rust/manifest hashes match production source
+`e348f56`. Earlier ARM Mac jobs were cancelled while queued because GitHub could
+not acquire runners; they are not counted as passes.
+[Provider diagnostics](../validation-results/order-lookup/mac-cancellation.json)
+and [ADR-0009](adr/0009-macos-runner-capacity-fallback.md) record the Intel fallback.
 
 The broader `111b1db` baseline previously completed Linux/Mac quality, Miri,
 scale/instruction and actual M1 measurements:
@@ -109,6 +113,23 @@ during the ARM capacity outage. The latest shared-Linux parse observation is
 also below the 300 MB/s reference goal.
 [Raw macOS samples, medians and machine/compiler records](../bench-results/2026-11-04-claim-boundaries-macos-arm64/),
 [verified transfer](../bench-results/2026-11-04-claim-boundaries-macos-arm64/TRANSFER.json).
+
+The final-source retry completed benchmarks on **Intel Core i7-8700B**, four
+CPUs / 14 GiB RAM, macOS 15.7.9, Rust 1.99.1. This is the standard Intel runner
+selected after the ARM capacity cancellation; these are not M1 estimates.
+
+| Intel macOS workload | Median | Median confidence interval |
+|---|---:|---:|
+| JSONL parse, 100k events | 162.311 ms | 147.442–197.634 ms |
+| Independent replay, 100k events | 317.095 µs | 272.312–338.033 µs |
+| Full check, 100k events | 8.966 ms | 8.529–9.354 ms |
+| D03 reduction, 100k events | 19.656 ms | 19.147–20.382 ms |
+
+All seven workloads retain 50 raw samples. The retry checkout is `5e1faad`;
+its Rust/manifest source and input hashes match final production source
+`e348f56` and the latest Linux record exactly.
+[Intel samples and machine/compiler records](../bench-results/2026-11-04-lookup-macos-x86_64/),
+[verified transfer](../bench-results/2026-11-04-lookup-macos-x86_64/TRANSFER.json).
 
 ## Mutation hardening
 

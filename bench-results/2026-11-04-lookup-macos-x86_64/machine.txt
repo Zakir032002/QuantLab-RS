@@ -1,0 +1,7 @@
+macOS-15.7.9-x86_64-i386-64bit-Mach-O
+ProductName:		macOS
+ProductVersion:		15.7.9
+BuildVersion:		24G830
+machdep.cpu.brand_string: Intel(R) Core(TM) i7-8700B CPU @ 3.20GHz
+hw.ncpu: 4
+hw.memsize: 15032385536
