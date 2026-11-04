@@ -1,17 +1,19 @@
 # Part 1 handoff
 
-The synthetic counterexample engine is implemented end to end. Local Linux
-acceptance checks and both synthetic gates pass. The strict Definition of Done
-also requires observed hosted CI results; Linux results alone do not certify
-macOS. Engineering performance goals are distinguished from functional gates.
+The synthetic counterexample engine is implemented end to end. Local acceptance
+checks and both synthetic gates pass. Hosted Linux/macOS quality, Miri, scale,
+instruction and macOS benchmark jobs all passed for evidence commit
+`7ff05069f19358e646687e41cf5d6b80afaaec6e`. The final raw-record/publisher follow-up
+preserves the tested Rust source hashes. Engineering goals remain separate from
+functional gates.
 
 ## 1. Delivered implementation
 
 The repository was initially empty. This is an integrated implementation, not
 nine fabricated historical green checkpoint tags. The source baseline is `47ed446a6f3a50338b30693680184c623bb916b4`
 (`cp1.7: implement the Part 1 synthetic counterexample engine`). The measured
-evidence/handoff is a follow-up cp1.8 commit; source hashes independently commit
-the code used in the runs.
+evidence/handoff follows in cp1.8 commit `7ff05069f19358e646687e41cf5d6b80afaaec6e`;
+source hashes independently commit the code used in both platforms' runs.
 
 | Checkpoint | Delivered behavior |
 |---|---|
@@ -34,12 +36,14 @@ test-count and thread determinism. The test-count floor is 42.
 
 ## 2. Not completed or outside scope
 
-Hosted macOS arm64 success is not inferred from Linux. Review the actual workflow
-result before calling the strict CI Definition of Done satisfied. Fresh-task
-restoration of the saved cloud snapshot has not been independently tested.
-Saving the draft does not publish it. macOS performance is not measured.
+Hosted success is observed directly in the [complete workflow](https://github.com/Zakir032002/QuantLab-RS/actions/runs/41836096568)
+and [saved job statuses](../validation-results/hosted-ci-current.json). Fresh-task
+restoration of the cloud snapshot has not been independently tested; saving the
+draft does not publish it.
 
-The whole-process memory engineering goal is unmet. Optimized I2/I3 algebraic
+The whole-process memory engineering goal is unmet. The hosted Mac parse
+measurement is also below the original 300 MB/s engineering goal with five
+workers on its three virtual CPUs; the complete measured configuration is below. Optimized I2/I3 algebraic
 admission remains future work; complete checking is the fallback. Real engine
 adapters, engine-input reproduction, multiple currencies, margin/shorts,
 non-market orders, corporate actions, UI, fuzz campaigns and PGO are later parts.
@@ -86,6 +90,32 @@ Original JSONL alone occupies approximately 178.6 MB per case. Retained source,
 line ranges, graphs and temporaries explain why the whole-process 100-byte/event
 goal is unmet. Raw memory/column counts appear in the scale log below.
 
+macOS measurements use a hosted **Apple M1 (Virtual)**, three CPUs, 7 GiB RAM,
+macOS 15.8.2 and the same Rust 1.99.1, source files and input digests as Linux.
+The recorded parse run uses five Rayon workers; replay is single-threaded.
+These are shared virtual-runner observations.
+
+| macOS workload | Median | Stored median confidence interval |
+|---|---:|---:|
+| Decimal parse | 104.818 ns | 94.640–111.839 ns |
+| i128 multiply/rescale | 6.211 ns | 5.703–6.464 ns |
+| Wide multiply/rescale | 656.373 ns | 644.288–710.496 ns |
+| Full check, 100k events | 1.874 ms | 1.713–2.010 ms |
+| JSONL parse, 100k events | 65.270 ms | 61.962–74.035 ms |
+| Independent replay, 100k events | 296.720 µs | 286.132–306.336 µs |
+| D03 reduction, 100k events | 5.193 ms | 4.907–5.429 ms |
+
+[Raw macOS estimates and all samples](../bench-results/2026-11-04-macos-arm64/criterion/),
+[machine](../bench-results/2026-11-04-macos-arm64/machine.txt),
+[compiler](../bench-results/2026-11-04-macos-arm64/rustc.txt),
+[commands](../bench-results/2026-11-04-macos-arm64/COMMANDS.md),
+[input digests](../bench-results/2026-11-04-macos-arm64/input-digests.txt),
+[original provenance](../bench-results/2026-11-04-macos-arm64/PROVENANCE.json),
+[verified public transfer](../bench-results/2026-11-04-macos-arm64/TRANSFER.json).
+Every raw numeric file matches the original artifact's manifest. Required
+CPU/OS/compiler fields are retained; hostname and build-path console are omitted
+from the public subset. The original complete artifact remains on its workflow.
+
 ## 4. Decisions and deviations
 
 - [ADR-0001](adr/0001-numeric-representation.md): checked i128/U256 math. Stable
@@ -112,6 +142,10 @@ is bounded interpreter coverage, not the entire high-volume property suite.
 Raw [edges](../validation-results/miri-numeric-edges.txt),
 [rounding](../validation-results/miri-combined-rounding.txt),
 [allocation](../validation-results/miri-allocation.txt).
+
+- [ADR-0007](adr/0007-cross-platform-benchmark-evidence.md): actual hosted macOS
+  benchmarks, complete raw numeric records, verified commitments and bounded
+  public metadata records.
 
 ## 5. Known risks and mutation coverage
 
@@ -203,6 +237,9 @@ snapshot. Fresh-task restoration has not been claimed.
 Implementation baseline: `47ed446a6f3a50338b30693680184c623bb916b4`.
 The implementation baseline is pushed to `Zakir032002/QuantLab-RS` on main.
 The final evidence commit follows that source baseline. Hosted results are
-recorded in [hosted-ci-status.json](../validation-results/hosted-ci-status.json)
-with observation time and the workflow URL. No completed checkpoint tags are
-claimed before the corresponding hosted CI acceptance evidence exists.
+recorded in [initial statuses](../validation-results/hosted-ci-status.json) and
+[complete evidence-commit statuses](../validation-results/hosted-ci-current.json)
+with observation times and workflow URLs. The integrated delivery does not invent
+separate historical checkpoint tags. The final record commit retains the exact
+Rust sources that passed those hosted jobs. Tag `cp1.8` identifies the integrated
+Part 1 delivery, including both platforms' raw measurements and disclosed limits.

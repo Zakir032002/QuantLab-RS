@@ -19,9 +19,11 @@ Bench/mutation source hashes also identify the exact tested implementation.
   reverted; this is negative-test evidence, not a remaining project failure.
 - `carrying-mul-probe.txt`: successful stable compiler API probe.
 - `instruction-ratchet.txt` and `mutation-ratchet.txt`: measured baseline gates.
-- `hosted-ci-status.json`: observed public workflow job status for the pushed
-  source baseline, with observation time and links. It is separate from local
-  results and is not a fresh-environment restoration claim.
+- `hosted-ci-status.json` and `hosted-ci-current.json`: directly observed green
+  jobs for the source baseline and complete evidence commit, with times/links.
+  These are separate from local results and do not claim fresh restoration.
+- `benchmark-packaging.txt`: bounded public-record roundtrip; raw samples retain
+  their full commitment and each record fits the public HTML limit.
 
 `numeric-foundation.txt`, machine.txt and rustc.txt preserve initial bootstrap
 evidence; use the final bench-results machine/compiler files for performance.

@@ -82,8 +82,10 @@ Read [the handoff](docs/HANDOFF_PART_01.md) for actual validation, performance
 measurements and limitations; [SPEC.md](docs/SPEC.md) for the boundary and numeric
 contract; and [ADRs](docs/adr/) for decisions and disclosed deviations. Raw Linux
 benchmark results, confidence intervals and machine information are committed in
-[bench-results](bench-results/2026-11-04-linux-x86_64/). macOS arm64 has a CI job;
-local Linux results do not establish that it passed.
+[Linux results](bench-results/2026-11-04-linux-x86_64/) and
+[macOS arm64 results](bench-results/2026-11-04-macos-arm64/). Hosted Linux/macOS
+quality, Miri and scale/instruction jobs passed for the recorded source: see the
+[complete run](https://github.com/Zakir032002/QuantLab-RS/actions/runs/41836096568).
 
 NautilusTrader/LEAN adapters, multi-currency, shorting/margin, other order types,
 corporate actions, web UI and engine re-run minimization are outside Part 1.

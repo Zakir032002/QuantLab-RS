@@ -1,0 +1,32 @@
+{
+  "observed_at": "2026-11-04T13:33:41.555815+00:00",
+  "source_commit": "7ff05069f19358e646687e41cf5d6b80afaaec6e",
+  "workflow_url": "https://github.com/Zakir032002/QuantLab-RS/actions/runs/41836096568",
+  "jobs": {
+    "miri": {
+      "status": "completed successfully",
+      "concluded": true,
+      "url": "https://github.com/Zakir032002/QuantLab-RS/actions/runs/41836096568/job/126595272543"
+    },
+    "scale-and-instructions": {
+      "status": "completed successfully",
+      "concluded": true,
+      "url": "https://github.com/Zakir032002/QuantLab-RS/actions/runs/41836096568/job/126595273104"
+    },
+    "macos-benchmarks": {
+      "status": "completed successfully",
+      "concluded": true,
+      "url": "https://github.com/Zakir032002/QuantLab-RS/actions/runs/41836096568/job/126595273221"
+    },
+    "quality (macos-15)": {
+      "status": "completed successfully",
+      "concluded": true,
+      "url": "https://github.com/Zakir032002/QuantLab-RS/actions/runs/41836096568/job/126595272912"
+    },
+    "quality (ubuntu-24.04)": {
+      "status": "completed successfully",
+      "concluded": true,
+      "url": "https://github.com/Zakir032002/QuantLab-RS/actions/runs/41836096568/job/126595273285"
+    }
+  }
+}

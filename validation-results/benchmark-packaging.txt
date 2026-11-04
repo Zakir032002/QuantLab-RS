@@ -1,0 +1,1 @@
+Bounded public benchmark record: PASS; all seven raw sample sets roundtrip, full commitment matches, each record below 4096 characters; build console excluded.

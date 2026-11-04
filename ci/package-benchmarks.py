@@ -15,8 +15,12 @@ output = Path(sys.argv[1])
 output.mkdir(parents=True, exist_ok=True)
 criterion = Path('target/criterion')
 names = {'benchmark.json', 'estimates.json', 'sample.json', 'tukey.json'}
-for source in criterion.rglob('new/*.json'):
-    if source.name in names:
+workloads = {'decimal_parse', 'mul_rescale_i128', 'mul_rescale_wide',
+             'pipeline/check_100k', 'pipeline/parse_100k',
+             'pipeline/replay_100k', 'reduce_100k'}
+for workload in sorted(workloads):
+    for name in sorted(names):
+        source = criterion / workload / 'new' / name
         destination = output / 'criterion' / source.relative_to(criterion)
         destination.parent.mkdir(parents=True, exist_ok=True)
         shutil.copyfile(source, destination)
@@ -26,7 +30,7 @@ def command(args):
     return subprocess.check_output(args, text=True)
 
 
-machine = command(['uname', '-a'])
+machine = platform.platform() + '\n'
 if platform.system() == 'Darwin':
     machine += command(['sw_vers'])
     machine += command(['sysctl', 'machdep.cpu.brand_string', 'hw.ncpu', 'hw.memsize'])
@@ -72,8 +76,13 @@ The exact workflow commands also build the existing generate/hash examples to
 commit the actual inputs; those commands run after the timed benchmarks.
 ''')
 
-files = sorted(p for p in output.rglob('*')
-               if p.is_file() and p.name not in {'raw-benchmarks.zip', 'MANIFEST.sha256'})
+# Public records contain only the requested numeric and provenance files.
+# The full build console remains in the ordinary Actions artifact.
+metadata = {'COMMANDS.md', 'MEDIANS.md', 'machine.txt', 'rustc.txt',
+            'git-commit.txt', 'source-sha256.txt', 'input-digests.txt'}
+files = sorted([output / name for name in metadata] + [
+    output / 'criterion' / workload / 'new' / name
+    for workload in workloads for name in names])
 (output / 'MANIFEST.sha256').write_text(''.join(
     hashlib.sha256(p.read_bytes()).hexdigest() + '  '
     + p.relative_to(output).as_posix() + '\n' for p in files))
@@ -84,10 +93,15 @@ with zipfile.ZipFile(archive, 'w', zipfile.ZIP_DEFLATED) as bundle:
         bundle.write(path, path.relative_to(output).as_posix())
 payload = archive.getvalue()
 (output / 'raw-benchmarks.zip').write_bytes(payload)
-record = hashlib.sha256(payload).hexdigest() + ':' + base64.b64encode(payload).decode()
-assert len(record) < 60000, 'record exceeds the public annotation budget'
+digest = hashlib.sha256(payload).hexdigest()
+encoded = base64.b64encode(payload).decode()
+chunks = [encoded[i:i + 3600] for i in range(0, len(encoded), 3600)]
+assert len(chunks) <= 10, 'record exceeds the public annotation budget'
 # Only the explicit benchmark files above enter the record: no environment,
 # credentials, home directories, caches or arbitrary workspace contents.
-# The same ZIP is an ordinary Actions artifact. The notice also makes raw
-# evidence reviewable on public repositories without an authenticated download.
-print('::notice title=QLRS_RAW_BENCHMARK_ARCHIVE_V1::' + record)
+# Public HTML truncates a single message at 4096 characters. Each bounded
+# record is independently numbered and the complete ZIP has one commitment.
+# The same ZIP remains available as an ordinary Actions artifact.
+for index, chunk in enumerate(chunks, 1):
+    print(f'::notice title=QLRS_RAW_BENCHMARK_ARCHIVE_V1_{index}_OF_{len(chunks)}::'
+          f'{digest}:{index}:{len(chunks)}:{chunk}')

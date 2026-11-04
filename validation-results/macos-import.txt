@@ -1,0 +1,3 @@
+macOS import: PASS; complete public ZIP commitment/CRC and every per-file hash verified; seven 50-sample sets; identical Rust source hashes; original numeric-file commitments checked during import.
+Original workflow: https://github.com/Zakir032002/QuantLab-RS/actions/runs/41836096568
+Verified export: https://github.com/Zakir032002/QuantLab-RS/actions/runs/41838404258

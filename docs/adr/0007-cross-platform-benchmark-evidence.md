@@ -17,12 +17,19 @@ same seven benchmarks on the hosted runner and publish the explicit raw record.
 Run the pinned Criterion workload on macos-15 with 50 samples. Retain compiler,
 CPU/OS, source commit/hashes, actual fixture digests, commands, console and every
 estimate/sample/benchmark/tukey JSON file. Upload an ordinary artifact and emit
-the identical compact ZIP as one public notice with its SHA-256 digest.
+the compact numeric/provenance ZIP as numbered public notices with its SHA-256
+digest. Public records contain the explicit raw JSON and required metadata;
+the build console stays in the ordinary artifact. Machine metadata omits hostnames.
 
 The packaging script accepts only those benchmark files and explicit machine
 commands. It never dumps environment variables, credentials, caches, home
 directories or arbitrary workspace files. Bound the notice below the platform
-annotation size limit. Validate the archive commitment before retaining files.
+annotation size limit. Public HTML truncated the first single-message preview
+at 4096 characters, so each numbered chunk is bounded to 3600 encoded characters.
+Recover the original artifact with read-only Actions permissions, validate its
+exact commitment and numeric/provenance inventory, and export only raw numbers
+and required CPU/OS/compiler/source information. The incomplete preview is never
+treated as a complete record. Validate the archive commitment before retaining files.
 The package smoke check round-trips all seven raw sample sets locally.
 
 ## Consequences
