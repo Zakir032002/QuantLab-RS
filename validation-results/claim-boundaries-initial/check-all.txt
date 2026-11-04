@@ -1,0 +1,176 @@
+   Compiling qlrs-bundle v0.1.0 (/workspace/QuantLab-RS/crates/qlrs-bundle)
+    Checking qlrs-testkit v0.1.0 (/workspace/QuantLab-RS/crates/qlrs-testkit)
+    Checking qlrs-cli v0.1.0 (/workspace/QuantLab-RS/crates/qlrs-cli)
+    Checking qlrs-bench v0.1.0 (/workspace/QuantLab-RS/crates/qlrs-bench)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 1.60s
+   Compiling qlrs-bundle v0.1.0 (/workspace/QuantLab-RS/crates/qlrs-bundle)
+   Compiling qlrs-testkit v0.1.0 (/workspace/QuantLab-RS/crates/qlrs-testkit)
+   Compiling qlrs-cli v0.1.0 (/workspace/QuantLab-RS/crates/qlrs-cli)
+   Compiling qlrs-bench v0.1.0 (/workspace/QuantLab-RS/crates/qlrs-bench)
+    Finished `test` profile [optimized + debuginfo] target(s) in 5.25s
+────────────
+ Nextest run ID 2284f05f-148e-4638-ab73-1a6a03824c4d with nextest profile: default
+    Starting 60 tests across 16 binaries
+        PASS [   0.006s] ( 1/60) qlrs-check tests::req_fp_002_at_seq_filters_status_and_anchor
+        PASS [   0.008s] ( 2/60) qlrs-check fingerprint::tests::req_fp_001_canonical_vector_and_order_independence
+        PASS [   0.016s] ( 3/60) qlrs-check fingerprint::tests::req_fp_004_utf8_lengths_sign_and_zero_multiset_entries
+        PASS [   0.017s] ( 4/60) qlrs-check fingerprint::tests::req_fp_003_all_fields_have_distinct_canonical_encodings
+        PASS [   0.009s] ( 5/60) qlrs-num tests::req_num_001_decimal_grammar_and_per_value_scale
+        PASS [   0.015s] ( 6/60) qlrs-num tests::req_num_002_signed_limits_and_checked_overflow
+        PASS [   0.011s] ( 7/60) qlrs-num tests::req_num_003_all_rounding_modes_signed_ties
+        PASS [   0.038s] ( 8/60) qlrs-num tests::req_num_002_checked_operations_and_parser_never_panic
+        PASS [   0.006s] ( 9/60) qlrs-num tests::req_num_004_wide_intermediate_can_fit_final_value
+        PASS [   0.053s] (10/60) qlrs-cli::exit_codes req_cli_002_limits_preserve_verified_output_without_minimality_claim
+        PASS [   0.006s] (11/60) qlrs-num tests::req_num_005_compare_by_upscaling_without_overflow
+        PASS [   0.075s] (12/60) qlrs-cli::exit_codes req_cli_001_exit_codes_and_bundle_commands
+        PASS [   0.065s] (13/60) qlrs-num tests::req_num_006_roundtrip_100k_values
+        PASS [   0.007s] (14/60) qlrs-num::properties req_num_010_checked_mul_exact_product_scale
+        PASS [   0.006s] (15/60) qlrs-num::properties req_num_011_notional_fee_round_once
+        PASS [   0.211s] (16/60) qlrs-num::properties req_num_009_parser_no_panics
+        PASS [   0.006s] (17/60) qlrs-num::properties req_num_013_error_reason_codes
+        PASS [   0.006s] (18/60) qlrs-testkit::allocations req_ledger_001_zero_allocations_in_replay_loop
+        PASS [   0.243s] (19/60) qlrs-num::properties req_num_008_parse_format_roundtrip
+        PASS [   0.006s] (20/60) qlrs-testkit::corrections req_check_011_every_fill_needs_later_cash_and_same_asset_position
+        PASS [   0.007s] (21/60) qlrs-testkit::corrections req_check_012_i2_uses_local_claim_windows_for_carried_errors
+        PASS [   0.005s] (22/60) qlrs-testkit::corrections req_check_013_sparse_indices_must_be_unique_and_in_sequence_order
+        PASS [   0.020s] (23/60) qlrs-testkit::corrections req_checkpoint_001_earlier_bad_claim_is_an_opening_boundary
+        PASS [   0.040s] (24/60) qlrs-testkit::corrections req_checkpoint_002_open_and_terminal_orders_and_prior_trades_survive_cut
+        PASS [   0.077s] (25/60) qlrs-testkit::corrections req_checkpoint_003_invalid_context_never_becomes_a_financial_accusation
+        PASS [   0.035s] (26/60) qlrs-testkit::corrections req_generator_001_interleaving_sparse_claims_long_lived_and_carried_offsets
+        PASS [   0.172s] (27/60) qlrs-testkit::corrections req_gate_001_all_eleven_defects_on_rich_profiles
+        PASS [   0.259s] (28/60) qlrs-testkit::corrections req_generator_003_each_instrument_has_independent_buy_sell_cycles
+        PASS [   0.050s] (29/60) qlrs-testkit::corrections req_graph_002_checkpoint_inventory_replaces_historical_buy_dependencies
+        PASS [   0.093s] (30/60) qlrs-testkit::corrections req_reduce_005_limits_return_best_verified_uncertified_bundles
+        PASS [   0.124s] (31/60) qlrs-testkit::corrections req_reduce_006_sparse_dense_and_incremental_patterns_match_on_all_defects
+        PASS [   0.052s] (32/60) qlrs-testkit::corrections req_reduce_007_other_lifecycle_breaches_are_not_admitted_or_returned_on_limits
+        PASS [   0.020s] (33/60) qlrs-testkit::corrections req_reduce_008_short_logs_read_legacy_removed_unit_lists
+        PASS [   0.020s] (34/60) qlrs-testkit::invariants req_check_001_catalogue_statuses_and_invariants
+        PASS [   0.540s] (35/60) qlrs-testkit::invariants req_check_002_clean_generated_consistent
+        PASS [   1.731s] (36/60) qlrs-num::properties req_num_007_mul_rescale_matches_bigint
+        PASS [   0.007s] (37/60) qlrs-testkit::invariants req_check_004_residual_relations_are_hints
+        PASS [   0.021s] (38/60) qlrs-testkit::invariants req_check_005_clean_corpus_and_flat_position
+        PASS [   0.021s] (39/60) qlrs-testkit::invariants req_check_006_unknown_event_is_unsupported_not_input_error
+        PASS [   0.012s] (40/60) qlrs-testkit::invariants req_check_007_partial_and_status_precedence
+        PASS [   0.041s] (41/60) qlrs-testkit::invariants req_check_008_lifecycle_subcodes_and_supported_terminal_states
+        PASS [   0.005s] (42/60) qlrs-testkit::invariants req_check_009_unknown_fill_never_invents_a_cash_delta
+        PASS [   0.004s] (43/60) qlrs-testkit::invariants req_check_010_trade_uniqueness_needs_known_instrument_scope
+        PASS [   0.004s] (44/60) qlrs-testkit::invariants req_io_001_strict_unknown_fields_decimal_types_and_sequences
+        PASS [   0.004s] (45/60) qlrs-testkit::invariants req_io_002_roundtrip_verbatim
+        PASS [   0.007s] (46/60) qlrs-testkit::invariants req_io_003_verbatim_noncanonical_decimal_evidence
+        PASS [   0.014s] (47/60) qlrs-testkit::invariants req_io_004_malformed_overflow_still_input_error
+        PASS [   0.016s] (48/60) qlrs-testkit::invariants req_io_005_cash_only_header_needs_no_instruments
+        PASS [   0.032s] (49/60) qlrs-testkit::invariants req_io_006_escaped_strings_use_owned_cold_path_and_roundtrip
+        PASS [   0.022s] (50/60) qlrs-testkit::invariants req_io_007_overflow_is_not_a_zero_quantity_or_precision_accusation
+        PASS [   0.038s] (51/60) qlrs-testkit::invariants req_ledger_002_replay_is_independent_of_observed_claims
+        PASS [   0.058s] (52/60) qlrs-testkit::reduction req_bundle_001_deterministic_roundtrip_and_every_file_tamper
+        PASS [   0.025s] (53/60) qlrs-testkit::reduction req_graph_001_sell_closures_consume_earlier_buy_inventory
+        PASS [   1.692s] (54/60) qlrs-testkit::corrections req_generator_002_rich_statuses_across_seeds
+        PASS [   0.016s] (55/60) qlrs-testkit::reduction req_reduce_002_actual_closure_minimality_certificate
+        PASS [   0.064s] (56/60) qlrs-testkit::reduction req_reduce_001_three_defects_exact_replay_and_idempotence
+        PASS [   0.041s] (57/60) qlrs-testkit::reduction req_reduce_004_sparse_fast_predicate_matches_full_replay
+        PASS [   0.096s] (58/60) qlrs-testkit::reduction req_reduce_003_property_preserves_instance_and_source
+        PASS [   2.969s] (59/60) qlrs-num::properties req_num_012_product_plus_fee_bigint_oracle
+        PASS [   7.911s] (60/60) qlrs-testkit::invariants req_check_003_all_defects_1000_injection_points
+────────────
+     Summary [   9.602s] 60 tests run: 60 passed, 0 skipped
+    Finished `test` profile [optimized + debuginfo] target(s) in 0.22s
+   Doc-tests qlrs_bench
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+   Doc-tests qlrs_bundle
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+   Doc-tests qlrs_check
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+   Doc-tests qlrs_io
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+   Doc-tests qlrs_ledger
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+   Doc-tests qlrs_num
+
+running 1 test
+test crates/qlrs-num/src/lib.rs - (line 6) ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+all doctests ran in 0.73s; merged doctests compilation took 0.71s
+   Doc-tests qlrs_reduce
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+   Doc-tests qlrs_schema
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+   Doc-tests qlrs_testkit
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+warning[license-not-encountered]: license was not encountered
+  ┌─ /workspace/QuantLab-RS/deny.toml:9:32
+  │
+9 │ allow = ["MIT", "Apache-2.0", "BSD-2-Clause", "BSD-3-Clause", "ISC", "Unicode-3.0", "Zlib", "BSL-1.0"]
+  │                                ━━━━━━━━━━━━ unmatched license allowance
+
+warning[license-not-encountered]: license was not encountered
+  ┌─ /workspace/QuantLab-RS/deny.toml:9:48
+  │
+9 │ allow = ["MIT", "Apache-2.0", "BSD-2-Clause", "BSD-3-Clause", "ISC", "Unicode-3.0", "Zlib", "BSL-1.0"]
+  │                                                ━━━━━━━━━━━━ unmatched license allowance
+
+warning[license-not-encountered]: license was not encountered
+  ┌─ /workspace/QuantLab-RS/deny.toml:9:94
+  │
+9 │ allow = ["MIT", "Apache-2.0", "BSD-2-Clause", "BSD-3-Clause", "ISC", "Unicode-3.0", "Zlib", "BSL-1.0"]
+  │                                                                                              ━━━━━━━ unmatched license allowance
+
+warning[license-not-encountered]: license was not encountered
+  ┌─ /workspace/QuantLab-RS/deny.toml:9:64
+  │
+9 │ allow = ["MIT", "Apache-2.0", "BSD-2-Clause", "BSD-3-Clause", "ISC", "Unicode-3.0", "Zlib", "BSL-1.0"]
+  │                                                                ━━━ unmatched license allowance
+
+advisories ok, bans ok, licenses ok, sources ok
+    Fetching advisory database from `https://github.com/RustSec/advisory-db.git`
+      Loaded 1403 security advisories (from /workspace/.qlrs-tools/cargo/advisory-db)
+    Updating crates.io index
+    Scanning Cargo.lock for vulnerabilities (150 crate dependencies)
+dependency direction: PASS
+money type and safety ban: PASS
+golden manifest: PASS
+independent worked-example golden: PASS
+traceability: PASS (59 requirements)
+    Finished `test` profile [optimized + debuginfo] target(s) in 0.78s
+test count ratchet: PASS (60 >= 60)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.17s
+   Compiling qlrs-ledger v0.1.0 (/workspace/QuantLab-RS/crates/qlrs-ledger)
+   Compiling qlrs-check v0.1.0 (/workspace/QuantLab-RS/crates/qlrs-check)
+   Compiling qlrs-reduce v0.1.0 (/workspace/QuantLab-RS/crates/qlrs-reduce)
+   Compiling qlrs-bundle v0.1.0 (/workspace/QuantLab-RS/crates/qlrs-bundle)
+   Compiling qlrs-testkit v0.1.0 (/workspace/QuantLab-RS/crates/qlrs-testkit)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 2.70s
+one/eight-thread reports and complete bundles: classic, all D01-D11 rich cases, and call-limited output PASS

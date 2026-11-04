@@ -4,11 +4,55 @@
     "qlrs-num",
     "qlrs-check"
   ],
+  "additional_packages": [
+    "qlrs-reduce"
+  ],
   "test_scope": "workspace",
-  "caught": 270,
-  "viable": 315,
-  "missed": 45,
-  "unviable": 32,
+  "source_commit": "111b1dbf62cd1b4f28fa10321adc1dc4bcf4f3da",
+  "caught": 347,
+  "viable": 387,
+  "missed": 40,
+  "unviable": 33,
   "timeout": 0,
-  "total": 347
+  "total": 420,
+  "scopes": {
+    "reducer": {
+      "caught": 78,
+      "viable": 117,
+      "missed": 39,
+      "unviable": 24,
+      "timeout": 0,
+      "total": 141
+    },
+    "fingerprints": {
+      "caught": 11,
+      "viable": 11,
+      "missed": 0,
+      "unviable": 0,
+      "timeout": 0,
+      "total": 11
+    }
+  },
+  "campaign": {
+    "caught": 425,
+    "viable": 504,
+    "missed": 79,
+    "unviable": 57,
+    "timeout": 0,
+    "total": 561
+  },
+  "archived_legacy": {
+    "tool": "cargo-mutants 27.1.0",
+    "packages": [
+      "qlrs-num",
+      "qlrs-check"
+    ],
+    "test_scope": "workspace",
+    "caught": 270,
+    "viable": 315,
+    "missed": 45,
+    "unviable": 32,
+    "timeout": 0,
+    "total": 347
+  }
 }

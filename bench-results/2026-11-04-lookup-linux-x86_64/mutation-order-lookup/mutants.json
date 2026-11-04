@@ -1,0 +1,130 @@
+[
+  {
+    "diff": "--- crates/qlrs-schema/src/lib.rs\n+++ replace TraceStore::order_index -> Option<usize> with None\n@@ -386,22 +386,17 @@\n     pub starting_cash: i128,\n     #[doc = \"prepared column or schema field.\"]\n     pub prepared: bool,\n }\n impl TraceStore {\n     /// Resolve an order symbol, including names first interned in another role.\n     #[must_use]\n     pub fn order_index(&self, name: &str) -> Option<usize> {\n-        let symbol = self.strings.lookup(name)?;\n-        self.orders.id.binary_search(&symbol).ok().or_else(|| {\n-            // Order/trade/claim strings share the arena. Reusing an earlier\n-            // symbol as a new order name can break numeric insertion order.\n-            self.orders.id.iter().position(|id| *id == symbol)\n-        })\n+        None /* ~ changed by cargo-mutants ~ */\n     }\n     /// Create empty typed columns. Validation belongs to the strict I/O builder.\n     #[must_use]\n     pub fn new(header: Header) -> Self {\n         Self {\n             header,\n             strings: Interner::default(),\n             spine: Spine::default(),\n",
+    "file": "crates/qlrs-schema/src/lib.rs",
+    "function": {
+      "function_name": "TraceStore::order_index",
+      "return_type": "-> Option<usize>",
+      "span": {
+        "end": {
+          "column": 6,
+          "line": 400
+        },
+        "start": {
+          "column": 5,
+          "line": 391
+        }
+      }
+    },
+    "genre": "FnValue",
+    "name": "crates/qlrs-schema/src/lib.rs:394:9: replace TraceStore::order_index -> Option<usize> with None",
+    "package": "qlrs-schema",
+    "replacement": "None",
+    "span": {
+      "end": {
+        "column": 11,
+        "line": 399
+      },
+      "start": {
+        "column": 9,
+        "line": 394
+      }
+    }
+  },
+  {
+    "diff": "--- crates/qlrs-schema/src/lib.rs\n+++ replace TraceStore::order_index -> Option<usize> with Some(0)\n@@ -386,22 +386,17 @@\n     pub starting_cash: i128,\n     #[doc = \"prepared column or schema field.\"]\n     pub prepared: bool,\n }\n impl TraceStore {\n     /// Resolve an order symbol, including names first interned in another role.\n     #[must_use]\n     pub fn order_index(&self, name: &str) -> Option<usize> {\n-        let symbol = self.strings.lookup(name)?;\n-        self.orders.id.binary_search(&symbol).ok().or_else(|| {\n-            // Order/trade/claim strings share the arena. Reusing an earlier\n-            // symbol as a new order name can break numeric insertion order.\n-            self.orders.id.iter().position(|id| *id == symbol)\n-        })\n+        Some(0) /* ~ changed by cargo-mutants ~ */\n     }\n     /// Create empty typed columns. Validation belongs to the strict I/O builder.\n     #[must_use]\n     pub fn new(header: Header) -> Self {\n         Self {\n             header,\n             strings: Interner::default(),\n             spine: Spine::default(),\n",
+    "file": "crates/qlrs-schema/src/lib.rs",
+    "function": {
+      "function_name": "TraceStore::order_index",
+      "return_type": "-> Option<usize>",
+      "span": {
+        "end": {
+          "column": 6,
+          "line": 400
+        },
+        "start": {
+          "column": 5,
+          "line": 391
+        }
+      }
+    },
+    "genre": "FnValue",
+    "name": "crates/qlrs-schema/src/lib.rs:394:9: replace TraceStore::order_index -> Option<usize> with Some(0)",
+    "package": "qlrs-schema",
+    "replacement": "Some(0)",
+    "span": {
+      "end": {
+        "column": 11,
+        "line": 399
+      },
+      "start": {
+        "column": 9,
+        "line": 394
+      }
+    }
+  },
+  {
+    "diff": "--- crates/qlrs-schema/src/lib.rs\n+++ replace TraceStore::order_index -> Option<usize> with Some(1)\n@@ -386,22 +386,17 @@\n     pub starting_cash: i128,\n     #[doc = \"prepared column or schema field.\"]\n     pub prepared: bool,\n }\n impl TraceStore {\n     /// Resolve an order symbol, including names first interned in another role.\n     #[must_use]\n     pub fn order_index(&self, name: &str) -> Option<usize> {\n-        let symbol = self.strings.lookup(name)?;\n-        self.orders.id.binary_search(&symbol).ok().or_else(|| {\n-            // Order/trade/claim strings share the arena. Reusing an earlier\n-            // symbol as a new order name can break numeric insertion order.\n-            self.orders.id.iter().position(|id| *id == symbol)\n-        })\n+        Some(1) /* ~ changed by cargo-mutants ~ */\n     }\n     /// Create empty typed columns. Validation belongs to the strict I/O builder.\n     #[must_use]\n     pub fn new(header: Header) -> Self {\n         Self {\n             header,\n             strings: Interner::default(),\n             spine: Spine::default(),\n",
+    "file": "crates/qlrs-schema/src/lib.rs",
+    "function": {
+      "function_name": "TraceStore::order_index",
+      "return_type": "-> Option<usize>",
+      "span": {
+        "end": {
+          "column": 6,
+          "line": 400
+        },
+        "start": {
+          "column": 5,
+          "line": 391
+        }
+      }
+    },
+    "genre": "FnValue",
+    "name": "crates/qlrs-schema/src/lib.rs:394:9: replace TraceStore::order_index -> Option<usize> with Some(1)",
+    "package": "qlrs-schema",
+    "replacement": "Some(1)",
+    "span": {
+      "end": {
+        "column": 11,
+        "line": 399
+      },
+      "start": {
+        "column": 9,
+        "line": 394
+      }
+    }
+  },
+  {
+    "diff": "--- crates/qlrs-schema/src/lib.rs\n+++ replace == with != in TraceStore::order_index\n@@ -390,17 +390,17 @@\n impl TraceStore {\n     /// Resolve an order symbol, including names first interned in another role.\n     #[must_use]\n     pub fn order_index(&self, name: &str) -> Option<usize> {\n         let symbol = self.strings.lookup(name)?;\n         self.orders.id.binary_search(&symbol).ok().or_else(|| {\n             // Order/trade/claim strings share the arena. Reusing an earlier\n             // symbol as a new order name can break numeric insertion order.\n-            self.orders.id.iter().position(|id| *id == symbol)\n+            self.orders.id.iter().position(|id| *id != /* ~ changed by cargo-mutants ~ */ symbol)\n         })\n     }\n     /// Create empty typed columns. Validation belongs to the strict I/O builder.\n     #[must_use]\n     pub fn new(header: Header) -> Self {\n         Self {\n             header,\n             strings: Interner::default(),\n",
+    "file": "crates/qlrs-schema/src/lib.rs",
+    "function": {
+      "function_name": "TraceStore::order_index",
+      "return_type": "-> Option<usize>",
+      "span": {
+        "end": {
+          "column": 6,
+          "line": 400
+        },
+        "start": {
+          "column": 5,
+          "line": 391
+        }
+      }
+    },
+    "genre": "BinaryOperator",
+    "name": "crates/qlrs-schema/src/lib.rs:398:53: replace == with != in TraceStore::order_index",
+    "package": "qlrs-schema",
+    "replacement": "!=",
+    "span": {
+      "end": {
+        "column": 55,
+        "line": 398
+      },
+      "start": {
+        "column": 53,
+        "line": 398
+      }
+    }
+  }
+]

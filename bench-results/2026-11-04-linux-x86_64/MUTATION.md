@@ -29,5 +29,8 @@ To check the committed archive directly (the optional enumeration argument
 accounts for the archive's prefixed filenames):
 
 ```sh
-python3 ci/mutation-ratchet.py bench-results/2026-11-04-linux-x86_64/mutation-outcomes.json bench-results/2026-11-04-linux-x86_64/mutation-mutants.json
+python3 ci/mutation-ratchet.py --legacy bench-results/2026-11-04-linux-x86_64/mutation-outcomes.json bench-results/2026-11-04-linux-x86_64/mutation-mutants.json
 ```
+
+Use `--legacy` only for this archived campaign. Current CI also requires reducer
+and fingerprint coverage, recorded with the claim-boundary corrections.

@@ -1,0 +1,247 @@
+{
+  "outcomes": [
+    {
+      "scenario": "Baseline",
+      "summary": "Success",
+      "log_path": "log/baseline.log",
+      "diff_path": null,
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 13.002449798,
+          "process_status": "Success",
+          "argv": [
+            "/workspace/.qlrs-tools/rustup/toolchains/1.99.1-x86_64-unknown-linux-gnu/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=qlrs-reduce@0.1.0",
+            "--locked"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 0.10094157,
+          "process_status": "Success",
+          "argv": [
+            "/workspace/.qlrs-tools/rustup/toolchains/1.99.1-x86_64-unknown-linux-gnu/bin/cargo",
+            "test",
+            "--verbose",
+            "--package=qlrs-reduce@0.1.0",
+            "--locked"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "crates/qlrs-reduce/src/lib.rs:84:38: replace > with == in UnitGraph::build_with_checkpoint",
+          "package": "qlrs-reduce",
+          "file": "crates/qlrs-reduce/src/lib.rs",
+          "function": {
+            "function_name": "UnitGraph::build_with_checkpoint",
+            "return_type": "-> Result<Self, String>",
+            "span": {
+              "start": {
+                "line": 36,
+                "column": 5
+              },
+              "end": {
+                "line": 110,
+                "column": 6
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 84,
+              "column": 38
+            },
+            "end": {
+              "line": 84,
+              "column": 39
+            }
+          },
+          "replacement": "==",
+          "genre": "BinaryOperator"
+        }
+      },
+      "summary": "CaughtMutant",
+      "log_path": "log/crates__qlrs-reduce__src__lib.rs_line_84_col_38.log",
+      "diff_path": "diff/crates__qlrs-reduce__src__lib.rs_line_84_col_38.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 158.897328143,
+          "process_status": "Success",
+          "argv": [
+            "/workspace/.qlrs-tools/rustup/toolchains/1.99.1-x86_64-unknown-linux-gnu/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--workspace",
+            "--locked"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 9.690783964,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/workspace/.qlrs-tools/rustup/toolchains/1.99.1-x86_64-unknown-linux-gnu/bin/cargo",
+            "test",
+            "--verbose",
+            "--workspace",
+            "--locked"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "crates/qlrs-reduce/src/lib.rs:833:41: delete ! in reduce_with_limits",
+          "package": "qlrs-reduce",
+          "file": "crates/qlrs-reduce/src/lib.rs",
+          "function": {
+            "function_name": "reduce_with_limits",
+            "return_type": "-> Result<Reduction, String>",
+            "span": {
+              "start": {
+                "line": 625,
+                "column": 1
+              },
+              "end": {
+                "line": 839,
+                "column": 2
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 833,
+              "column": 41
+            },
+            "end": {
+              "line": 833,
+              "column": 42
+            }
+          },
+          "replacement": "",
+          "genre": "UnaryOperator"
+        }
+      },
+      "summary": "CaughtMutant",
+      "log_path": "log/crates__qlrs-reduce__src__lib.rs_line_833_col_41.log",
+      "diff_path": "diff/crates__qlrs-reduce__src__lib.rs_line_833_col_41.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 229.189228325,
+          "process_status": "Success",
+          "argv": [
+            "/workspace/.qlrs-tools/rustup/toolchains/1.99.1-x86_64-unknown-linux-gnu/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--workspace",
+            "--locked"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 1.403839199,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/workspace/.qlrs-tools/rustup/toolchains/1.99.1-x86_64-unknown-linux-gnu/bin/cargo",
+            "test",
+            "--verbose",
+            "--workspace",
+            "--locked"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "crates/qlrs-reduce/src/lib.rs:84:38: replace > with >= in UnitGraph::build_with_checkpoint",
+          "package": "qlrs-reduce",
+          "file": "crates/qlrs-reduce/src/lib.rs",
+          "function": {
+            "function_name": "UnitGraph::build_with_checkpoint",
+            "return_type": "-> Result<Self, String>",
+            "span": {
+              "start": {
+                "line": 36,
+                "column": 5
+              },
+              "end": {
+                "line": 110,
+                "column": 6
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 84,
+              "column": 38
+            },
+            "end": {
+              "line": 84,
+              "column": 39
+            }
+          },
+          "replacement": ">=",
+          "genre": "BinaryOperator"
+        }
+      },
+      "summary": "CaughtMutant",
+      "log_path": "log/crates__qlrs-reduce__src__lib.rs_line_84_col_38_001.log",
+      "diff_path": "diff/crates__qlrs-reduce__src__lib.rs_line_84_col_38_001.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 229.181178145,
+          "process_status": "Success",
+          "argv": [
+            "/workspace/.qlrs-tools/rustup/toolchains/1.99.1-x86_64-unknown-linux-gnu/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--workspace",
+            "--locked"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 6.018862934,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/workspace/.qlrs-tools/rustup/toolchains/1.99.1-x86_64-unknown-linux-gnu/bin/cargo",
+            "test",
+            "--verbose",
+            "--workspace",
+            "--locked"
+          ]
+        }
+      ]
+    }
+  ],
+  "total_mutants": 3,
+  "missed": 0,
+  "caught": 3,
+  "timeout": 0,
+  "unviable": 0,
+  "success": 0,
+  "start_time": "2026-11-04T18:23:02.771265493Z",
+  "end_time": "2026-11-04T18:27:18.849481069Z",
+  "cargo_mutants_version": "27.1.0"
+}

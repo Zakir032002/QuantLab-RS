@@ -1,0 +1,84 @@
+Found 560 mutants to test
+ok       Unmutated baseline in 32s build + 2s test
+MISSED   crates/qlrs-check/src/lib.rs:134:9: replace Checker::prepare with () in 10s build + 18s test
+MISSED   crates/qlrs-check/src/lib.rs:188:52: replace || with && in Checker::check_events in 12s build + 19s test
+MISSED   crates/qlrs-check/src/lib.rs:188:28: replace || with && in Checker::check_events in 45s build + 17s test
+MISSED   crates/qlrs-check/src/lib.rs:213:25: replace && with || in Checker::check_events in 5s build + 12s test
+MISSED   crates/qlrs-check/src/lib.rs:212:52: replace >= with < in Checker::check_events in 4s build + 11s test
+MISSED   crates/qlrs-check/src/lib.rs:230:46: replace || with && in Checker::check_events in 5s build + 10s test
+MISSED   crates/qlrs-check/src/lib.rs:230:63: replace == with != in Checker::check_events in 2s build + 11s test
+MISSED   crates/qlrs-check/src/lib.rs:285:56: replace < with == in Checker::check_events in 4s build + 12s test
+MISSED   crates/qlrs-check/src/lib.rs:285:56: replace < with > in Checker::check_events in 3s build + 12s test
+MISSED   crates/qlrs-check/src/lib.rs:285:56: replace < with <= in Checker::check_events in 3s build + 12s test
+MISSED   crates/qlrs-check/src/lib.rs:365:56: replace < with == in Checker::check_events in 6s build + 12s test
+MISSED   crates/qlrs-check/src/lib.rs:443:57: replace && with || in Checker::check_events in 5s build + 15s test
+MISSED   crates/qlrs-check/src/lib.rs:448:25: replace == with != in Checker::check_events in 4s build + 14s test
+MISSED   crates/qlrs-check/src/lib.rs:494:41: replace == with != in Checker::check_events in 5s build + 16s test
+MISSED   crates/qlrs-check/src/lib.rs:569:25: replace || with && in Checker::check_events in 5s build + 15s test
+MISSED   crates/qlrs-check/src/lib.rs:672:25: replace || with && in Checker::check_events in 5s build + 14s test
+MISSED   crates/qlrs-check/src/lib.rs:673:50: replace == with != in Checker::check_events in 5s build + 13s test
+MISSED   crates/qlrs-check/src/lib.rs:822:45: replace != with == in finish in 6s build + 12s test
+MISSED   crates/qlrs-check/src/lib.rs:875:33: replace > with >= in counts_pattern in 5s build + 13s test
+MISSED   crates/qlrs-check/src/lib.rs:897:61: replace && with || in relation in 5s build + 10s test
+MISSED   crates/qlrs-check/src/lib.rs:897:38: replace == with != in relation in 5s build + 10s test
+MISSED   crates/qlrs-check/src/lib.rs:970:57: replace == with != in relation in 2s build + 11s test
+MISSED   crates/qlrs-check/src/lib.rs:976:13: replace == with != in relation in 4s build + 10s test
+MISSED   crates/qlrs-check/src/checkpoint.rs:57:47: replace != with == in Checker::checkpoint_at_claim in 5s build + 13s test
+MISSED   crates/qlrs-check/src/checkpoint.rs:61:46: replace > with < in Checker::checkpoint_at_claim in 4s build + 13s test
+MISSED   crates/qlrs-check/src/checkpoint.rs:118:40: replace == with != in Checker::checkpoint_at_claim in 4s build + 11s test
+MISSED   crates/qlrs-check/src/checkpoint.rs:130:56: replace < with == in Checker::checkpoint_at_claim in 5s build + 11s test
+MISSED   crates/qlrs-check/src/checkpoint.rs:130:56: replace < with > in Checker::checkpoint_at_claim in 4s build + 10s test
+MISSED   crates/qlrs-check/src/checkpoint.rs:130:56: replace < with <= in Checker::checkpoint_at_claim in 6s build + 10s test
+MISSED   crates/qlrs-num/src/lib.rs:303:21: replace < with <= in <impl fmt::Display for Fixed>::fmt in 5s build + 15s test
+MISSED   crates/qlrs-num/src/lib.rs:332:13: replace < with <= in rescale_raw in 4s build + 14s test
+MISSED   crates/qlrs-num/src/lib.rs:381:9: delete match arm 36 in divide_power in 5s build + 14s test
+MISSED   crates/qlrs-num/src/lib.rs:464:22: replace | with ^ in wide_product in 8s build + 16s test
+MISSED   crates/qlrs-num/src/lib.rs:494:19: replace < with <= in wide_mul_rescale in 6s build + 14s test
+MISSED   crates/qlrs-num/src/lib.rs:494:38: replace < with <= in wide_mul_rescale in 5s build + 12s test
+MISSED   crates/qlrs-num/src/lib.rs:524:38: replace < with <= in wide_mul_add in 4s build + 15s test
+MISSED   crates/qlrs-num/src/lib.rs:524:57: replace < with <= in wide_mul_add in 4s build + 14s test
+MISSED   crates/qlrs-num/src/lib.rs:525:37: replace < with <= in wide_mul_add in 3s build + 14s test
+MISSED   crates/qlrs-num/src/lib.rs:583:38: replace | with ^ in wide_div in 5s build + 16s test
+MISSED   crates/qlrs-num/src/lib.rs:587:47: replace - with / in wide_div in 7s build + 13s test
+TIMEOUT  crates/qlrs-reduce/src/lib.rs:83:38: replace > with == in UnitGraph::build_with_checkpoint in 10s build + 66s test
+TIMEOUT  crates/qlrs-reduce/src/lib.rs:83:38: replace > with >= in UnitGraph::build_with_checkpoint in 9s build + 60s test
+MISSED   crates/qlrs-reduce/src/lib.rs:112:9: replace UnitGraph::prerequisites -> Vec<usize> with vec![] in 12s build + 17s test
+MISSED   crates/qlrs-reduce/src/lib.rs:112:9: replace UnitGraph::prerequisites -> Vec<usize> with vec![0] in 13s build + 16s test
+MISSED   crates/qlrs-reduce/src/lib.rs:112:9: replace UnitGraph::prerequisites -> Vec<usize> with vec![1] in 15s build + 12s test
+MISSED   crates/qlrs-reduce/src/lib.rs:134:31: replace || with && in walk in 13s build + 15s test
+MISSED   crates/qlrs-reduce/src/lib.rs:566:5: replace hex -> String with "xyzzy".into() in 7s build + 19s test
+MISSED   crates/qlrs-reduce/src/lib.rs:566:5: replace hex -> String with String::new() in 19s build + 15s test
+MISSED   crates/qlrs-reduce/src/lib.rs:580:22: delete ! in log_entry in 7s build + 12s test
+MISSED   crates/qlrs-reduce/src/lib.rs:634:9: replace || with && in reduce_with_limits in 8s build + 12s test
+MISSED   crates/qlrs-reduce/src/lib.rs:682:68: replace && with || in reduce_with_limits in 5s build + 13s test
+MISSED   crates/qlrs-reduce/src/lib.rs:682:51: replace == with != in reduce_with_limits in 5s build + 13s test
+MISSED   crates/qlrs-reduce/src/lib.rs:682:81: replace != with == in reduce_with_limits in 6s build + 12s test
+MISSED   crates/qlrs-reduce/src/lib.rs:729:34: replace && with || in reduce_with_limits in 3s build + 13s test
+MISSED   crates/qlrs-reduce/src/lib.rs:729:44: replace != with == in reduce_with_limits in 5s build + 12s test
+MISSED   crates/qlrs-reduce/src/lib.rs:744:28: delete ! in reduce_with_limits in 5s build + 12s test
+MISSED   crates/qlrs-reduce/src/lib.rs:746:28: replace < with <= in reduce_with_limits in 3s build + 11s test
+MISSED   crates/qlrs-reduce/src/lib.rs:762:40: delete ! in reduce_with_limits in 3s build + 11s test
+MISSED   crates/qlrs-reduce/src/lib.rs:770:32: replace == with != in reduce_with_limits in 4s build + 9s test
+MISSED   crates/qlrs-reduce/src/lib.rs:770:37: replace || with && in reduce_with_limits in 7s build + 10s test
+MISSED   crates/qlrs-reduce/src/lib.rs:770:64: replace == with != in reduce_with_limits in 3s build + 16s test
+MISSED   crates/qlrs-reduce/src/lib.rs:785:31: replace >= with < in reduce_with_limits in 3s build + 15s test
+MISSED   crates/qlrs-reduce/src/lib.rs:796:28: delete ! in reduce_with_limits in 6s build + 14s test
+MISSED   crates/qlrs-reduce/src/lib.rs:816:38: replace && with || in reduce_with_limits in 6s build + 14s test
+MISSED   crates/qlrs-reduce/src/lib.rs:842:38: replace && with || in finish_reduction in 5s build + 11s test
+MISSED   crates/qlrs-reduce/src/lib.rs:858:19: replace || with && in evaluate_batch in 4s build + 10s test
+MISSED   crates/qlrs-reduce/src/lib.rs:854:5: replace evaluate_batch -> Result<Option<AliveMask>, String> with Ok(None) in 8s build + 11s test
+MISSED   crates/qlrs-reduce/src/lib.rs:858:14: replace == with != in evaluate_batch in 3s build + 13s test
+MISSED   crates/qlrs-reduce/src/lib.rs:886:5: replace remove_closure -> Option<AliveMask> with None in 5s build + 10s test
+MISSED   crates/qlrs-reduce/src/lib.rs:894:13: replace == with != in remove_closure in 7s build + 11s test
+MISSED   crates/qlrs-reduce/src/lib.rs:940:13: replace || with && in pin_window in 3s build + 11s test
+MISSED   crates/qlrs-reduce/src/lib.rs:939:16: replace >= with < in pin_window in 4s build + 9s test
+MISSED   crates/qlrs-reduce/src/lib.rs:940:64: replace <= with > in pin_window in 4s build + 8s test
+TIMEOUT  crates/qlrs-reduce/src/lib.rs:816:41: delete ! in reduce_with_limits in 3s build + 60s test
+MISSED   crates/qlrs-reduce/src/lib.rs:945:44: replace == with != in pin_window in 3s build + 12s test
+MISSED   crates/qlrs-reduce/src/lib.rs:947:36: replace == with != in pin_window in 6s build + 9s test
+MISSED   crates/qlrs-reduce/src/lib.rs:955:57: replace == with != in pin_window in 5s build + 11s test
+MISSED   crates/qlrs-reduce/src/lib.rs:978:17: delete match arm Some(Kind::Filled) in pin_window in 4s build + 10s test
+MISSED   crates/qlrs-reduce/src/lib.rs:992:17: delete match arm Some(Kind::CashClaim) in pin_window in 3s build + 10s test
+MISSED   crates/qlrs-reduce/src/lib.rs:1003:17: delete match arm Some(Kind::PositionClaim) in pin_window in 3s build + 9s test
+MISSED   crates/qlrs-reduce/src/lib.rs:1025:19: replace == with != in pin_window in 5s build + 7s test
+560 mutants tested in 34m: 78 missed, 422 caught, 57 unviable, 3 timeouts

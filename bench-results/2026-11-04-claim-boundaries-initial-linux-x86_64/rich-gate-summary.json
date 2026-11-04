@@ -1,0 +1,13 @@
+{
+  "cases": 33,
+  "clean_controls": 3,
+  "min_events": 1078146,
+  "max_events": 1250022,
+  "max_kept_events": 70,
+  "max_reduction_ns": 178365242,
+  "max_predicate_calls": 2,
+  "max_log_bytes": 324,
+  "gate_kept_limit": 128,
+  "gate_time_limit_ms": 2000,
+  "gate_call_limit": 1024
+}

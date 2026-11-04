@@ -1,0 +1,7 @@
+Archived num/check-only results are rejected as current full-scope evidence: PASS
+mutation ratchet legacy: PASS (270/315; 32 unviable)
+Traceback (most recent call last):
+  File "/workspace/QuantLab-RS/ci/mutation-ratchet.py", line 33, in <module>
+    assert items,f'no mutations executed for required scope: {name}'
+           ^^^^^
+AssertionError: no mutations executed for required scope: reducer

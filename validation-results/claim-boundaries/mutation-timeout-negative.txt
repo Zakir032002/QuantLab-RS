@@ -1,0 +1,6 @@
+Expected rejection: PASS
+Traceback (most recent call last):
+  File "/workspace/QuantLab-RS/ci/mutation-ratchet.py", line 19, in <module>
+    assert result['timeout']==0,'timeouts require diagnosis; not silently counted as kills'
+           ^^^^^^^^^^^^^^^^^^^^
+AssertionError: timeouts require diagnosis; not silently counted as kills

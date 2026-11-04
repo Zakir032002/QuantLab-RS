@@ -1,0 +1,27 @@
+   Compiling qlrs-bench v0.1.0 (/workspace/QuantLab-RS/crates/qlrs-bench)
+    Finished `bench` profile [optimized + debuginfo] target(s) in 8.64s
+     Running benches/instructions.rs (target/release/deps/instructions-81bf5f7264545b65)
+gungraun_runner: Warn : The RUST_LOG environment variable to set the log level changed to GUNGRAUN_LOG
+instructions::numeric::decimal_parse
+  Instructions:                                       1297|1297                 (No change)
+  L1 Hits:                                            1344|1344                 (No change)
+  LL Hits:                                               0|0                    (No change)
+  RAM Hits:                                             11|11                   (No change)
+  Total read+write:                                   1355|1355                 (No change)
+  Estimated Cycles:                                   1729|1729                 (No change)
+instructions::numeric::mul_rescale
+  Instructions:                                        125|125                  (No change)
+  L1 Hits:                                             145|145                  (No change)
+  LL Hits:                                               0|0                    (No change)
+  RAM Hits:                                              8|8                    (No change)
+  Total read+write:                                    153|153                  (No change)
+  Estimated Cycles:                                    425|425                  (No change)
+instructions::numeric::replay_1000 prepared:(setup_replay())
+  Instructions:                                      34519|34519                (No change)
+  L1 Hits:                                           48482|48482                (No change)
+  LL Hits:                                             523|523                  (No change)
+  RAM Hits:                                              3|3                    (No change)
+  Total read+write:                                  49008|49008                (No change)
+  Estimated Cycles:                                  51202|51202                (No change)
+
+Gungraun result: Ok. 3 without regressions; 0 regressed; 0 filtered; 3 benchmarks finished in 1.01129s

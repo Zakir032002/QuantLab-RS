@@ -1,0 +1,314 @@
+{
+  "outcomes": [
+    {
+      "scenario": "Baseline",
+      "summary": "Success",
+      "log_path": "log/baseline.log",
+      "diff_path": null,
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 10.382762885,
+          "process_status": "Success",
+          "argv": [
+            "/workspace/.qlrs-tools/rustup/toolchains/1.99.1-x86_64-unknown-linux-gnu/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=qlrs-schema@0.1.0",
+            "--locked"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 0.151057447,
+          "process_status": "Success",
+          "argv": [
+            "/workspace/.qlrs-tools/rustup/toolchains/1.99.1-x86_64-unknown-linux-gnu/bin/cargo",
+            "test",
+            "--verbose",
+            "--package=qlrs-schema@0.1.0",
+            "--locked"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "crates/qlrs-schema/src/lib.rs:394:9: replace TraceStore::order_index -> Option<usize> with None",
+          "package": "qlrs-schema",
+          "file": "crates/qlrs-schema/src/lib.rs",
+          "function": {
+            "function_name": "TraceStore::order_index",
+            "return_type": "-> Option<usize>",
+            "span": {
+              "start": {
+                "line": 391,
+                "column": 5
+              },
+              "end": {
+                "line": 400,
+                "column": 6
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 394,
+              "column": 9
+            },
+            "end": {
+              "line": 399,
+              "column": 11
+            }
+          },
+          "replacement": "None",
+          "genre": "FnValue"
+        }
+      },
+      "summary": "CaughtMutant",
+      "log_path": "log/crates__qlrs-schema__src__lib.rs_line_394_col_9.log",
+      "diff_path": "diff/crates__qlrs-schema__src__lib.rs_line_394_col_9.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 135.444767058,
+          "process_status": "Success",
+          "argv": [
+            "/workspace/.qlrs-tools/rustup/toolchains/1.99.1-x86_64-unknown-linux-gnu/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--workspace",
+            "--locked"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 9.160434281,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/workspace/.qlrs-tools/rustup/toolchains/1.99.1-x86_64-unknown-linux-gnu/bin/cargo",
+            "test",
+            "--verbose",
+            "--workspace",
+            "--locked"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "crates/qlrs-schema/src/lib.rs:394:9: replace TraceStore::order_index -> Option<usize> with Some(1)",
+          "package": "qlrs-schema",
+          "file": "crates/qlrs-schema/src/lib.rs",
+          "function": {
+            "function_name": "TraceStore::order_index",
+            "return_type": "-> Option<usize>",
+            "span": {
+              "start": {
+                "line": 391,
+                "column": 5
+              },
+              "end": {
+                "line": 400,
+                "column": 6
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 394,
+              "column": 9
+            },
+            "end": {
+              "line": 399,
+              "column": 11
+            }
+          },
+          "replacement": "Some(1)",
+          "genre": "FnValue"
+        }
+      },
+      "summary": "CaughtMutant",
+      "log_path": "log/crates__qlrs-schema__src__lib.rs_line_394_col_9_002.log",
+      "diff_path": "diff/crates__qlrs-schema__src__lib.rs_line_394_col_9_002.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 22.192131883,
+          "process_status": "Success",
+          "argv": [
+            "/workspace/.qlrs-tools/rustup/toolchains/1.99.1-x86_64-unknown-linux-gnu/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--workspace",
+            "--locked"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 5.430293102,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/workspace/.qlrs-tools/rustup/toolchains/1.99.1-x86_64-unknown-linux-gnu/bin/cargo",
+            "test",
+            "--verbose",
+            "--workspace",
+            "--locked"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "crates/qlrs-schema/src/lib.rs:394:9: replace TraceStore::order_index -> Option<usize> with Some(0)",
+          "package": "qlrs-schema",
+          "file": "crates/qlrs-schema/src/lib.rs",
+          "function": {
+            "function_name": "TraceStore::order_index",
+            "return_type": "-> Option<usize>",
+            "span": {
+              "start": {
+                "line": 391,
+                "column": 5
+              },
+              "end": {
+                "line": 400,
+                "column": 6
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 394,
+              "column": 9
+            },
+            "end": {
+              "line": 399,
+              "column": 11
+            }
+          },
+          "replacement": "Some(0)",
+          "genre": "FnValue"
+        }
+      },
+      "summary": "CaughtMutant",
+      "log_path": "log/crates__qlrs-schema__src__lib.rs_line_394_col_9_001.log",
+      "diff_path": "diff/crates__qlrs-schema__src__lib.rs_line_394_col_9_001.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 147.519149607,
+          "process_status": "Success",
+          "argv": [
+            "/workspace/.qlrs-tools/rustup/toolchains/1.99.1-x86_64-unknown-linux-gnu/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--workspace",
+            "--locked"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 3.645442342,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/workspace/.qlrs-tools/rustup/toolchains/1.99.1-x86_64-unknown-linux-gnu/bin/cargo",
+            "test",
+            "--verbose",
+            "--workspace",
+            "--locked"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "crates/qlrs-schema/src/lib.rs:398:53: replace == with != in TraceStore::order_index",
+          "package": "qlrs-schema",
+          "file": "crates/qlrs-schema/src/lib.rs",
+          "function": {
+            "function_name": "TraceStore::order_index",
+            "return_type": "-> Option<usize>",
+            "span": {
+              "start": {
+                "line": 391,
+                "column": 5
+              },
+              "end": {
+                "line": 400,
+                "column": 6
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 398,
+              "column": 53
+            },
+            "end": {
+              "line": 398,
+              "column": 55
+            }
+          },
+          "replacement": "!=",
+          "genre": "BinaryOperator"
+        }
+      },
+      "summary": "CaughtMutant",
+      "log_path": "log/crates__qlrs-schema__src__lib.rs_line_398_col_53.log",
+      "diff_path": "diff/crates__qlrs-schema__src__lib.rs_line_398_col_53.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 6.23016748,
+          "process_status": "Success",
+          "argv": [
+            "/workspace/.qlrs-tools/rustup/toolchains/1.99.1-x86_64-unknown-linux-gnu/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--workspace",
+            "--locked"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 2.534006366,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/workspace/.qlrs-tools/rustup/toolchains/1.99.1-x86_64-unknown-linux-gnu/bin/cargo",
+            "test",
+            "--verbose",
+            "--workspace",
+            "--locked"
+          ]
+        }
+      ]
+    }
+  ],
+  "total_mutants": 4,
+  "missed": 0,
+  "caught": 4,
+  "timeout": 0,
+  "unviable": 0,
+  "success": 0,
+  "start_time": "2026-11-04T19:13:28.93481304Z",
+  "end_time": "2026-11-04T19:16:53.836632311Z",
+  "cargo_mutants_version": "27.1.0"
+}

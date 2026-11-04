@@ -10,8 +10,10 @@ export PATH="/workspace/.qlrs-tools/bin:$CARGO_HOME/bin:$PATH"
 cd /workspace/QuantLab-RS
 ```
 
-Read AGENTS.md, docs/HANDOFF_PART_01.md and docs/BLOCKERS.md. The full synthetic
-Part 1 workflow is implemented; use the handoff for measured gates and limits.
+Read AGENTS.md, docs/HANDOFF_CLAIM_BOUNDARIES.md and docs/BLOCKERS.md. The full
+synthetic Part 1 workflow and ten claim-boundary corrections are implemented;
+use the current handoff for measured gates and limits. HANDOFF_PART_01.md is
+the historical baseline.
 The setup script builds the locked workspace and runs ci/check-all.sh plus the
 protected catalogue CLI check. Run those checks after meaningful changes.
 
@@ -23,7 +25,7 @@ cargo run -p qlrs-cli --locked -- verify fixtures/clean/C01-worked-example.jsonl
 
 It must return CONSISTENT and expected cash 7990.00. README.md contains the full
 generate, verify, reduce and bundle-verify demonstration. Run the scale_gate
-example in release mode for the million-event gate. Bench commands, source and
+and rich_gate examples in release mode for the million-event gates. Bench commands, source and
 fixture commitments, raw samples and machine information are in bench-results.
 Linux instruction benches require Valgrind and gungraun-runner. This snapshot
 has a workspace Valgrind wrapper in /workspace/.qlrs-tools/bin; it supplies the

@@ -1,0 +1,4 @@
+crates/qlrs-schema/src/lib.rs:394:9: replace TraceStore::order_index -> Option<usize> with None
+crates/qlrs-schema/src/lib.rs:394:9: replace TraceStore::order_index -> Option<usize> with Some(1)
+crates/qlrs-schema/src/lib.rs:394:9: replace TraceStore::order_index -> Option<usize> with Some(0)
+crates/qlrs-schema/src/lib.rs:398:53: replace == with != in TraceStore::order_index

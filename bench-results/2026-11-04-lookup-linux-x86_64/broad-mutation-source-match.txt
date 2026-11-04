@@ -1,0 +1,10 @@
+All six broadly mutated source files still match the completed 111b1db campaign.
+crates/qlrs-check/src/checkpoint.rs
+crates/qlrs-check/src/fingerprint.rs
+crates/qlrs-check/src/lib.rs
+crates/qlrs-check/src/lifecycle.rs
+crates/qlrs-num/src/lib.rs
+crates/qlrs-reduce/src/lib.rs
+The later correction changes qlrs-schema order lookup and adds a regression
+to the testkit. Broad campaign results remain explicitly tied to 111b1db;
+focused schema mutations and fresh native/platform checks cover the addition.

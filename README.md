@@ -47,12 +47,19 @@ cargo run -p qlrs-testkit --example generate --release --locked -- \
   --checkpoint "$qlrs_demo/witness/synthetic_checkpoint.json" # expected exit 2
 ```
 
-Reduction preserves the exact target instance, order lifecycles and observed
-bytes. Removed prefix history is replaced by explicitly **synthetic** state
-computed by the independent ledger. The guarantee is **closure-1-minimal relative
-to pinned units**, not a global minimum. This is a Mode T output witness, not a
-reproduction from reduced engine inputs. Residual relations are heuristic hints,
-not diagnoses.
+Reduction preserves the exact target instance and observed bytes. It cuts at the
+preceding claim and carries expected cash, inventory and order status/filled
+quantity in an explicitly **synthetic** checkpoint. Opening claims supply the
+observed baseline; I1 and I2 check movement between consecutive matching claims.
+Every fill needs a later cash and same-instrument position claim; missing either
+produces `INCONCLUSIVE`.
+
+The default search budgets are 30 seconds and 10,000 candidate calls. Override
+them with `--time-limit-ms 2000 --max-calls 1024`. Exhaustion returns the best
+verified witness with `closure_1_minimal: false` and a `stop_reason`. Completed
+searches certify **closure-1-minimality relative to pinned units**. Limits are
+cooperative: input validation and a replay already in progress finish safely.
+This is a Mode T output witness; residual relations are heuristic hints.
 
 Bundles contain the manifest, violation, reduced JSONL, optional synthetic
 checkpoint, complete predicate log, reproduction instructions and a detached
@@ -65,7 +72,18 @@ Integrity checks detect corruption; they do not authenticate the bundle author.
 ./ci/check-all.sh
 python3 ci/catalogue.py
 cargo run -p qlrs-testkit --example scale_gate --release --locked
+cargo run -p qlrs-testkit --example rich_gate --release --locked -- 250000 128 2000
 cargo bench -p qlrs-bench --bench throughput --locked -- --sample-size 50
+```
+
+The extended gate runs all D01–D11 across interleaved, long-lived and sparse
+multi-instrument traces with carried-forward errors. Each case must keep at
+most 128 events, finish within 2 seconds, preserve the target and observed bytes,
+and replay from its checkpoint. Generate one such trace with:
+
+```sh
+cargo run -p qlrs-testkit --example generate_rich --release --locked -- \
+  2000 /tmp/qlrs-rich.jsonl long-lived D11 0
 ```
 
 Install the pinned validation tools in [STACK.md](docs/STACK.md) before the full
@@ -78,14 +96,11 @@ export CARGO_HOME=/workspace/.qlrs-tools/cargo
 export PATH="/workspace/.qlrs-tools/bin:$CARGO_HOME/bin:$PATH"
 ```
 
-Read [the handoff](docs/HANDOFF_PART_01.md) for actual validation, performance
-measurements and limitations; [SPEC.md](docs/SPEC.md) for the boundary and numeric
-contract; and [ADRs](docs/adr/) for decisions and disclosed deviations. Raw Linux
-benchmark results, confidence intervals and machine information are committed in
-[Linux results](bench-results/2026-11-04-linux-x86_64/) and
-[macOS arm64 results](bench-results/2026-11-04-macos-arm64/). Hosted Linux/macOS
-quality, Miri and scale/instruction jobs passed for the recorded source: see the
-[complete run](https://github.com/Zakir032002/QuantLab-RS/actions/runs/41836096568).
+Read [the corrections handoff](docs/HANDOFF_CLAIM_BOUNDARIES.md) for current
+validation, mutation coverage, measured performance and limitations;
+[SPEC.md](docs/SPEC.md) for the contract; and [ADRs](docs/adr/) for decisions.
+The [original Part 1 handoff](docs/HANDOFF_PART_01.md) and its Linux/macOS results
+are an archived baseline for the earlier implementation.
 
 NautilusTrader/LEAN adapters, multi-currency, shorting/margin, other order types,
 corporate actions, web UI and engine re-run minimization are outside Part 1.

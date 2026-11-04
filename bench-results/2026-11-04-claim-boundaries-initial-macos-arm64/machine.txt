@@ -1,0 +1,7 @@
+macOS-15.8.2-arm64-arm-64bit-Mach-O
+ProductName:		macOS
+ProductVersion:		15.8.2
+BuildVersion:		24H232
+machdep.cpu.brand_string: Apple M1 (Virtual)
+hw.ncpu: 3
+hw.memsize: 7516192768

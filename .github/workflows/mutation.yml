@@ -22,7 +22,7 @@ jobs:
         shell: bash
         run: |
           set +e
-          cargo mutants -p qlrs-num -p qlrs-check -p qlrs-reduce --test-workspace true --jobs 4 --timeout 60 --no-shuffle --cargo-arg=--locked
+          cargo mutants -p qlrs-num -p qlrs-check -p qlrs-reduce --copy-target true --test-workspace true --jobs 4 --timeout 60 --no-shuffle --cargo-arg=--locked
           result=$?
           set -e
           test "$result" -eq 0 || test "$result" -eq 2

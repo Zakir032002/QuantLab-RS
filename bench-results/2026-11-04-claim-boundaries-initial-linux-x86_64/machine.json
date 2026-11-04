@@ -1,0 +1,12 @@
+{
+  "system": "Linux",
+  "release": "6.18.57",
+  "machine": "x86_64",
+  "cpu_model": "AMD EPYC 9V74 80-Core Processor",
+  "os_release": "PRETTY_NAME=\"Debian GNU/Linux 13 (trixie)\"\nNAME=\"Debian GNU/Linux\"\nVERSION_ID=\"13\"\nVERSION=\"13 (trixie)\"\nVERSION_CODENAME=trixie\nDEBIAN_VERSION_FULL=13.6\nID=debian\nHOME_URL=\"https://www.debian.org/\"\nSUPPORT_URL=\"https://www.debian.org/support\"\nBUG_REPORT_URL=\"https://bugs.debian.org/\"\n",
+  "cpu_max": "400000 100000",
+  "rayon_num_threads": 5,
+  "source_state": "clean production sources; recorded source hashes apply to the rich gate and final instruction run",
+  "base_commit": "0de080cc8e71a28ec369cac312edf023a1f29ed1",
+  "measured_source_commit": "956790b046bfca81560bea9b268cd4cef0a5a783"
+}

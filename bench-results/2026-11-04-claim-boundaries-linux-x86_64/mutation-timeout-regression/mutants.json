@@ -1,0 +1,98 @@
+[
+  {
+    "diff": "--- crates/qlrs-reduce/src/lib.rs\n+++ replace > with == in UnitGraph::build_with_checkpoint\n@@ -76,17 +76,17 @@\n                             edges.push((buy, unit));\n                         }\n                         needed = needed\n                             .checked_sub(consumed)\n                             .ok_or(\"dependency quantity overflow\")?;\n                         let remaining = qty\n                             .checked_sub(consumed)\n                             .ok_or(\"dependency quantity overflow\")?;\n-                        if remaining > 0 {\n+                        if remaining == /* ~ changed by cargo-mutants ~ */ 0 {\n                             remainder = Some((buy, remaining));\n                         }\n                     }\n                     // Each iteration permanently consumes one queue entry.\n                     // Return a partially consumed lot only after the loop, so\n                     // even a zero lot can never be repeatedly re-enqueued.\n                     if let Some(lot) = remainder {\n                         history.push_front(lot);\n",
+    "file": "crates/qlrs-reduce/src/lib.rs",
+    "function": {
+      "function_name": "UnitGraph::build_with_checkpoint",
+      "return_type": "-> Result<Self, String>",
+      "span": {
+        "end": {
+          "column": 6,
+          "line": 110
+        },
+        "start": {
+          "column": 5,
+          "line": 36
+        }
+      }
+    },
+    "genre": "BinaryOperator",
+    "name": "crates/qlrs-reduce/src/lib.rs:84:38: replace > with == in UnitGraph::build_with_checkpoint",
+    "package": "qlrs-reduce",
+    "replacement": "==",
+    "span": {
+      "end": {
+        "column": 39,
+        "line": 84
+      },
+      "start": {
+        "column": 38,
+        "line": 84
+      }
+    }
+  },
+  {
+    "diff": "--- crates/qlrs-reduce/src/lib.rs\n+++ replace > with >= in UnitGraph::build_with_checkpoint\n@@ -76,17 +76,17 @@\n                             edges.push((buy, unit));\n                         }\n                         needed = needed\n                             .checked_sub(consumed)\n                             .ok_or(\"dependency quantity overflow\")?;\n                         let remaining = qty\n                             .checked_sub(consumed)\n                             .ok_or(\"dependency quantity overflow\")?;\n-                        if remaining > 0 {\n+                        if remaining >= /* ~ changed by cargo-mutants ~ */ 0 {\n                             remainder = Some((buy, remaining));\n                         }\n                     }\n                     // Each iteration permanently consumes one queue entry.\n                     // Return a partially consumed lot only after the loop, so\n                     // even a zero lot can never be repeatedly re-enqueued.\n                     if let Some(lot) = remainder {\n                         history.push_front(lot);\n",
+    "file": "crates/qlrs-reduce/src/lib.rs",
+    "function": {
+      "function_name": "UnitGraph::build_with_checkpoint",
+      "return_type": "-> Result<Self, String>",
+      "span": {
+        "end": {
+          "column": 6,
+          "line": 110
+        },
+        "start": {
+          "column": 5,
+          "line": 36
+        }
+      }
+    },
+    "genre": "BinaryOperator",
+    "name": "crates/qlrs-reduce/src/lib.rs:84:38: replace > with >= in UnitGraph::build_with_checkpoint",
+    "package": "qlrs-reduce",
+    "replacement": ">=",
+    "span": {
+      "end": {
+        "column": 39,
+        "line": 84
+      },
+      "start": {
+        "column": 38,
+        "line": 84
+      }
+    }
+  },
+  {
+    "diff": "--- crates/qlrs-reduce/src/lib.rs\n+++ delete ! in reduce_with_limits\n@@ -825,17 +825,17 @@\n                 budget.calls = budget.calls.saturating_add(1);\n                 if accepted {\n                     current = candidate;\n                     improved = true;\n                     break;\n                 }\n             }\n         }\n-        if budget.reason().is_none() && !improved {\n+        if budget.reason().is_none() &&  /* ~ changed by cargo-mutants ~ */improved {\n             certified = true;\n             break;\n         }\n     }\n     finish_reduction(predicate, current, &budget, certified)\n }\n fn finish_reduction(\n     predicate: ReductionPredicate<'_>,\n",
+    "file": "crates/qlrs-reduce/src/lib.rs",
+    "function": {
+      "function_name": "reduce_with_limits",
+      "return_type": "-> Result<Reduction, String>",
+      "span": {
+        "end": {
+          "column": 2,
+          "line": 839
+        },
+        "start": {
+          "column": 1,
+          "line": 625
+        }
+      }
+    },
+    "genre": "UnaryOperator",
+    "name": "crates/qlrs-reduce/src/lib.rs:833:41: delete ! in reduce_with_limits",
+    "package": "qlrs-reduce",
+    "replacement": "",
+    "span": {
+      "end": {
+        "column": 42,
+        "line": 833
+      },
+      "start": {
+        "column": 41,
+        "line": 833
+      }
+    }
+  }
+]

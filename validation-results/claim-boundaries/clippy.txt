@@ -1,0 +1,6 @@
+    Checking qlrs-reduce v0.1.0 (/workspace/QuantLab-RS/crates/qlrs-reduce)
+    Checking qlrs-bundle v0.1.0 (/workspace/QuantLab-RS/crates/qlrs-bundle)
+    Checking qlrs-testkit v0.1.0 (/workspace/QuantLab-RS/crates/qlrs-testkit)
+    Checking qlrs-cli v0.1.0 (/workspace/QuantLab-RS/crates/qlrs-cli)
+    Checking qlrs-bench v0.1.0 (/workspace/QuantLab-RS/crates/qlrs-bench)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.78s

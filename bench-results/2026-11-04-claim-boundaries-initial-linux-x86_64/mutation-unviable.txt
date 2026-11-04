@@ -1,0 +1,57 @@
+crates/qlrs-check/src/lib.rs:109:9: replace Report::keys -> impl Iterator<Item =&InstanceKey> with ::std::iter::once(Box::leak(Box::new(Default::default())))
+crates/qlrs-check/src/lib.rs:114:9: replace Report::at_seq -> Option<&Finding> with Some(Box::leak(Box::new(Default::default())))
+crates/qlrs-check/src/lib.rs:146:9: replace Checker::evaluate -> Report with Default::default()
+crates/qlrs-check/src/lib.rs:159:9: replace Checker::check -> Report with Default::default()
+crates/qlrs-check/src/lib.rs:171:9: replace Checker::check_selected -> Report with Default::default()
+crates/qlrs-check/src/lib.rs:182:9: replace Checker::check_events -> Report with Default::default()
+crates/qlrs-check/src/lib.rs:345:28: replace match guard seen.insert(index) && opening.seq.is_none_or(|seq| seq <= cp.cut_seq) with true in Checker::check_events
+crates/qlrs-check/src/lib.rs:345:28: replace match guard seen.insert(index) && opening.seq.is_none_or(|seq| seq <= cp.cut_seq) with false in Checker::check_events
+crates/qlrs-check/src/lib.rs:462:25: replace && with || in Checker::check_events
+crates/qlrs-check/src/lib.rs:572:21: replace && with || in Checker::check_events
+crates/qlrs-check/src/lib.rs:689:33: replace && with || in Checker::check_events
+crates/qlrs-check/src/lib.rs:778:5: replace limitation -> Finding with Default::default()
+crates/qlrs-check/src/lib.rs:794:5: replace finish -> Report with Default::default()
+crates/qlrs-check/src/lib.rs:840:5: replace violation -> Finding with Default::default()
+crates/qlrs-check/src/lib.rs:863:5: replace counts_pattern -> Vec<(Kind, u64)> with vec![(Default::default(), 0)]
+crates/qlrs-check/src/lib.rs:863:5: replace counts_pattern -> Vec<(Kind, u64)> with vec![(Default::default(), 1)]
+crates/qlrs-check/src/checkpoint.rs:48:9: replace Checker::checkpoint_at_claim -> Result<SyntheticCheckpoint, String> with Ok(Default::default())
+crates/qlrs-check/src/lifecycle.rs:32:9: replace Progress::observe -> Result<OrderState, NumericError> with Ok(Default::default())
+crates/qlrs-num/src/lib.rs:101:9: replace Fixed::parse -> Result<Self, NumericError> with Ok(Default::default())
+crates/qlrs-num/src/lib.rs:146:9: replace Fixed::checked_add -> Result<Self, NumericError> with Ok(Default::default())
+crates/qlrs-num/src/lib.rs:162:9: replace Fixed::checked_sub -> Result<Self, NumericError> with Ok(Default::default())
+crates/qlrs-num/src/lib.rs:198:9: replace Fixed::mul_add_rescale -> Result<Self, NumericError> with Ok(Default::default())
+crates/qlrs-num/src/lib.rs:179:9: replace Fixed::checked_mul -> Result<Self, NumericError> with Ok(Default::default())
+crates/qlrs-num/src/lib.rs:235:9: replace Fixed::mul_rescale -> Result<Self, NumericError> with Ok(Default::default())
+crates/qlrs-num/src/lib.rs:253:9: replace Fixed::rescale -> Result<Self, NumericError> with Ok(Default::default())
+crates/qlrs-num/src/lib.rs:262:9: replace Fixed::numeric_cmp -> Ordering with Default::default()
+crates/qlrs-num/src/lib.rs:297:9: replace <impl FromStr for Fixed>::from_str -> Result<Self, Self::Err> with Ok(Default::default())
+crates/qlrs-num/src/lib.rs:322:5: replace rescale_raw -> Result<Fixed, NumericError> with Ok(Default::default())
+crates/qlrs-num/src/lib.rs:345:5: replace divide_power -> Result<Fixed, NumericError> with Ok(Default::default())
+crates/qlrs-num/src/lib.rs:392:5: replace divide_const -> Result<Fixed, NumericError> with Ok(Default::default())
+crates/qlrs-num/src/lib.rs:410:5: replace rounded -> Result<Fixed, NumericError> with Ok(Default::default())
+crates/qlrs-num/src/lib.rs:475:5: replace wide_mul_rescale -> Result<Fixed, NumericError> with Ok(Default::default())
+crates/qlrs-num/src/lib.rs:508:5: replace wide_mul_add -> Result<Fixed, NumericError> with Ok(Default::default())
+crates/qlrs-reduce/src/lib.rs:34:9: replace UnitGraph::build -> Result<Self, String> with Ok(Default::default())
+crates/qlrs-reduce/src/lib.rs:43:9: replace UnitGraph::build_with_checkpoint -> Result<Self, String> with Ok(Default::default())
+crates/qlrs-reduce/src/lib.rs:226:9: replace Budget::reason -> Option<LimitReason> with Some(Default::default())
+crates/qlrs-reduce/src/lib.rs:318:71: delete ! in frontier
+crates/qlrs-reduce/src/lib.rs:329:5: replace window -> Result<(AliveMask, Option<u64>, u64), String> with Ok((Default::default(), None, 0))
+crates/qlrs-reduce/src/lib.rs:329:5: replace window -> Result<(AliveMask, Option<u64>, u64), String> with Ok((Default::default(), None, 1))
+crates/qlrs-reduce/src/lib.rs:329:5: replace window -> Result<(AliveMask, Option<u64>, u64), String> with Ok((Default::default(), Some(0), 0))
+crates/qlrs-reduce/src/lib.rs:329:5: replace window -> Result<(AliveMask, Option<u64>, u64), String> with Ok((Default::default(), Some(0), 1))
+crates/qlrs-reduce/src/lib.rs:329:5: replace window -> Result<(AliveMask, Option<u64>, u64), String> with Ok((Default::default(), Some(1), 0))
+crates/qlrs-reduce/src/lib.rs:329:5: replace window -> Result<(AliveMask, Option<u64>, u64), String> with Ok((Default::default(), Some(1), 1))
+crates/qlrs-reduce/src/lib.rs:420:9: replace ReductionPredicate<'a>::candidate_mask -> AliveMask with Default::default()
+crates/qlrs-reduce/src/lib.rs:427:9: replace ReductionPredicate<'a>::candidate_checkpoint -> Result<Option<SyntheticCheckpoint>, String> with Ok(Some(Default::default()))
+crates/qlrs-reduce/src/lib.rs:469:9: replace ReductionPredicate<'a>::report -> Result<Report, String> with Ok(Default::default())
+crates/qlrs-reduce/src/lib.rs:538:9: replace <impl Predicate for ReductionPredicate<'_>>::test -> Result<Outcome, String> with Ok(Default::default())
+crates/qlrs-reduce/src/lib.rs:575:5: replace log_entry -> LogEntry with Default::default()
+crates/qlrs-reduce/src/lib.rs:610:5: replace reduce -> Result<Reduction, String> with Ok(Default::default())
+crates/qlrs-reduce/src/lib.rs:626:5: replace reduce_with_limits -> Result<Reduction, String> with Ok(Default::default())
+crates/qlrs-reduce/src/lib.rs:829:5: replace finish_reduction -> Result<Reduction, String> with Ok(Default::default())
+crates/qlrs-reduce/src/lib.rs:854:5: replace evaluate_batch -> Result<Option<AliveMask>, String> with Ok(Some(Default::default()))
+crates/qlrs-reduce/src/lib.rs:886:5: replace remove_closure -> Option<AliveMask> with Some(Default::default())
+crates/qlrs-reduce/src/lib.rs:898:5: replace pinned_units -> Result<AliveMask, String> with Ok(Default::default())
+crates/qlrs-reduce/src/lib.rs:906:5: replace pin_window -> Result<AliveMask, String> with Ok(Default::default())
+crates/qlrs-reduce/src/lib.rs:923:9: replace && with || in pin_window
+crates/qlrs-reduce/src/lib.rs:919:9: replace && with || in pin_window

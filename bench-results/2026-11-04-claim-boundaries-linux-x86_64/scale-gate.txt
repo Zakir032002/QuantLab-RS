@@ -1,0 +1,9 @@
+   Compiling qlrs-reduce v0.1.0 (/workspace/QuantLab-RS/crates/qlrs-reduce)
+   Compiling qlrs-bundle v0.1.0 (/workspace/QuantLab-RS/crates/qlrs-bundle)
+   Compiling qlrs-testkit v0.1.0 (/workspace/QuantLab-RS/crates/qlrs-testkit)
+    Finished `release` profile [optimized + debuginfo] target(s) in 10.02s
+     Running `target/release/examples/scale_gate`
+defect=D01 seed=42 events=1000000 source_bytes=178567133 source_blake3=a7b6d5474d4495261f15f555d900809565a1ef7cb511831a88057a3e97b11ed2 column_bytes=99187828 parse_ns=604607070 prepare_ns=13349235 reduction_ns=73415490 kept_events=6 predicate_calls=2 closure_1_minimal=true verbatim=true target_replayed=true
+defect=D03 seed=42 events=1000000 source_bytes=178567133 source_blake3=e6d969d34b2b39886ec1be4ef544781366661cf3b6aa8d11eda3af0dde0da96e column_bytes=99187828 parse_ns=494760078 prepare_ns=13409626 reduction_ns=74724696 kept_events=6 predicate_calls=2 closure_1_minimal=true verbatim=true target_replayed=true
+defect=D07 seed=42 events=1000001 source_bytes=178567260 source_blake3=f731615c38221624508fc4591e184282acea2a25012d060b992a3a89729121a4 column_bytes=99187869 parse_ns=529761281 prepare_ns=13384268 reduction_ns=74092178 kept_events=6 predicate_calls=2 closure_1_minimal=true verbatim=true target_replayed=true
+VmHWM:	  334420 kB

@@ -21,19 +21,23 @@ mutants=[item for item in result['outcomes'] if isinstance(item['scenario'],dict
 assert len(mutants)==result['total_mutants'],'missing mutant outcomes'
 packages={item['scenario']['Mutant']['package'] for item in mutants}
 assert {'qlrs-num','qlrs-check'}<=packages,'legacy package coverage missing'
+if args.legacy:
+ assert packages=={'qlrs-num','qlrs-check'},'archive mode is only for historical num/check-only campaigns'
 scopes={
  'legacy':[item for item in mutants if item['scenario']['Mutant']['package'] in {'qlrs-num','qlrs-check'}],
  'reducer':[item for item in mutants if item['scenario']['Mutant']['package']=='qlrs-reduce'],
  'fingerprints':[item for item in mutants if item['scenario']['Mutant']['file']=='crates/qlrs-check/src/fingerprint.rs'],
 }
-for name,items in scopes.items():
- if args.legacy and name!='legacy':continue
- assert items,f'no mutations executed for required scope: {name}'
+required=['legacy'] if args.legacy else list(scopes)
+for name in required:
+ assert scopes[name],f'no mutations executed for required scope: {name}'
+for name in required:
+ items=scopes[name]
  counts=collections.Counter(item['summary'] for item in items)
  assert set(counts)<={'CaughtMutant','MissedMutant','Unviable'},f'unexpected outcomes in {name}: {counts}'
  caught=counts['CaughtMutant'];viable=caught+counts['MissedMutant']
  assert viable>0,f'zero viable mutations: {name}'
- floor=baseline if name=='legacy' else baseline.get('scopes',{}).get(name)
+ floor=(baseline.get('archived_legacy',baseline) if args.legacy else baseline) if name=='legacy' else baseline.get('scopes',{}).get(name)
  assert floor and floor['viable']>0,f'no measured baseline recorded for {name}'
  assert caught*floor['viable']>=floor['caught']*viable,f'mutation score decreased in {name}: {caught}/{viable}'
  print(f'mutation ratchet {name}: PASS ({caught}/{viable}; {counts["Unviable"]} unviable)')

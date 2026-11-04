@@ -1,0 +1,3 @@
+The ledger, allocation instrumentation and numeric source hashes are identical
+between 956790b and final source 111b1db. Local Miri logs are reused for these
+unchanged files; fresh final-source hosted Miri is recorded in hosted-ci.json.

@@ -1,0 +1,3 @@
+mutation ratchet legacy: PASS (347/387; 33 unviable)
+mutation ratchet reducer: PASS (78/117; 24 unviable)
+mutation ratchet fingerprints: PASS (11/11; 0 unviable)

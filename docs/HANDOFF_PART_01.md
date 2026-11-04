@@ -1,5 +1,9 @@
 # Part 1 handoff
 
+Historical baseline for tag `cp1.8`. The user's subsequent corrections supersede
+the global I2, prefix checkpoint and mutation-scope descriptions below. See the
+[current corrections handoff](HANDOFF_CLAIM_BOUNDARIES.md) and ADR-0008.
+
 The synthetic counterexample engine is implemented end to end. Local acceptance
 checks and both synthetic gates pass. Hosted Linux/macOS quality, Miri, scale,
 instruction and macOS benchmark jobs all passed for evidence commit

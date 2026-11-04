@@ -10,7 +10,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-24.04, macos-15]
+        os: [ubuntu-24.04, macos-15-intel]
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
@@ -58,7 +58,7 @@ jobs:
             instructions.txt
             rich-gate.txt
   macos-benchmarks:
-    runs-on: macos-15
+    runs-on: macos-15-intel
     env:
       RAYON_NUM_THREADS: 5
     steps:

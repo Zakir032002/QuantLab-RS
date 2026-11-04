@@ -3,7 +3,10 @@
 An independent exact ledger and dependency-aware counterexample reducer for synthetic financial traces.
 
 Use the existing isolated checkout; do not create a worktree unless requested.
-Read `docs/BLOCKERS.md` and `docs/PART_01_INSTRUCTIONS.md` before resuming. The full Part 1 implementation and measured validation status are in the handoff.
+Read `docs/BLOCKERS.md`, `docs/HANDOFF_CLAIM_BOUNDARIES.md` and
+`docs/PART_01_INSTRUCTIONS.md` before resuming. The corrections handoff records
+the user's later requirements and current evidence; the original Part 1 handoff
+is a historical baseline.
 
 ## Commands
 
@@ -17,7 +20,7 @@ python3 ci/numeric-oracle.py
 ```
 
 Run ./ci/check-all.sh for the complete routine suite, python3 ci/catalogue.py
-for the protected matrix, and the scale_gate example for million-event evidence.
+for the protected matrix, and the scale_gate/rich_gate examples for million-event evidence.
 Miri and mutation coverage/ratchets are documented in the handoff and CI.
 
 ## Mandatory rules (verbatim from Part 1 section 4)

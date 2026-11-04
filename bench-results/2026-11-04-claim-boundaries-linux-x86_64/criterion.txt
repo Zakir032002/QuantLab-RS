@@ -1,0 +1,85 @@
+   Compiling qlrs-reduce v0.1.0 (/workspace/QuantLab-RS/crates/qlrs-reduce)
+   Compiling qlrs-bundle v0.1.0 (/workspace/QuantLab-RS/crates/qlrs-bundle)
+   Compiling qlrs-testkit v0.1.0 (/workspace/QuantLab-RS/crates/qlrs-testkit)
+   Compiling qlrs-bench v0.1.0 (/workspace/QuantLab-RS/crates/qlrs-bench)
+    Finished `bench` profile [optimized + debuginfo] target(s) in 28.10s
+     Running benches/throughput.rs (target/release/deps/throughput-a074aec094635639)
+Gnuplot not found, using plotters backend
+Benchmarking decimal_parse
+Benchmarking decimal_parse: Warming up for 3.0000 s
+Benchmarking decimal_parse: Collecting 50 samples in estimated 5.0001 s (69M iterations)
+Benchmarking decimal_parse: Analyzing
+decimal_parse           time:   [72.183 ns 73.629 ns 75.098 ns]
+                        change: [−5.6031% −2.7194% +0.3982%] (p = 0.09 > 0.05)
+                        No change in performance detected.
+Found 1 outliers among 50 measurements (2.00%)
+  1 (2.00%) high mild
+
+Benchmarking mul_rescale_i128
+Benchmarking mul_rescale_i128: Warming up for 3.0000 s
+Benchmarking mul_rescale_i128: Collecting 50 samples in estimated 5.0000 s (401M iterations)
+Benchmarking mul_rescale_i128: Analyzing
+mul_rescale_i128        time:   [12.449 ns 12.647 ns 12.878 ns]
+                        change: [−4.0995% −1.1371% +1.8404%] (p = 0.47 > 0.05)
+                        No change in performance detected.
+Found 2 outliers among 50 measurements (4.00%)
+  2 (4.00%) high mild
+
+Benchmarking mul_rescale_wide
+Benchmarking mul_rescale_wide: Warming up for 3.0000 s
+Benchmarking mul_rescale_wide: Collecting 50 samples in estimated 5.0001 s (11M iterations)
+Benchmarking mul_rescale_wide: Analyzing
+mul_rescale_wide        time:   [430.01 ns 437.92 ns 448.16 ns]
+                        change: [−2.4567% −0.1548% +2.3540%] (p = 0.90 > 0.05)
+                        No change in performance detected.
+Found 6 outliers among 50 measurements (12.00%)
+  4 (8.00%) high mild
+  2 (4.00%) high severe
+
+Benchmarking pipeline/parse_100k
+Benchmarking pipeline/parse_100k: Warming up for 3.0000 s
+Benchmarking pipeline/parse_100k: Collecting 50 samples in estimated 5.6112 s (100 iterations)
+Benchmarking pipeline/parse_100k: Analyzing
+pipeline/parse_100k     time:   [55.513 ms 58.461 ms 62.263 ms]
+                        thrpt:  [268.61 MiB/s 286.08 MiB/s 301.27 MiB/s]
+                 change:
+                        time:   [−1.0244% +4.9045% +12.321%] (p = 0.17 > 0.05)
+                        thrpt:  [−10.970% −4.6752% +1.0350%]
+                        No change in performance detected.
+Found 4 outliers among 50 measurements (8.00%)
+  4 (8.00%) high severe
+Benchmarking pipeline/replay_100k
+Benchmarking pipeline/replay_100k: Warming up for 3.0000 s
+Benchmarking pipeline/replay_100k: Collecting 50 samples in estimated 5.1409 s (31k iterations)
+Benchmarking pipeline/replay_100k: Analyzing
+pipeline/replay_100k    time:   [169.84 µs 171.94 µs 174.35 µs]
+                        thrpt:  [573.55 Melem/s 581.59 Melem/s 588.80 Melem/s]
+                 change:
+                        time:   [−10.638% −8.3244% −5.9905%] (p = 0.00 < 0.05)
+                        thrpt:  [+6.3722% +9.0802% +11.905%]
+                        Performance has improved.
+Benchmarking pipeline/check_100k
+Benchmarking pipeline/check_100k: Warming up for 3.0000 s
+Benchmarking pipeline/check_100k: Collecting 50 samples in estimated 7.2437 s (2550 iterations)
+Benchmarking pipeline/check_100k: Analyzing
+pipeline/check_100k     time:   [2.7626 ms 2.7964 ms 2.8368 ms]
+                        thrpt:  [35.251 Melem/s 35.760 Melem/s 36.197 Melem/s]
+                 change:
+                        time:   [−8.6946% −5.6282% −2.5909%] (p = 0.00 < 0.05)
+                        thrpt:  [+2.6598% +5.9638% +9.5226%]
+                        Performance has improved.
+Found 3 outliers among 50 measurements (6.00%)
+  3 (6.00%) high mild
+
+Benchmarking reduce_100k
+Benchmarking reduce_100k: Warming up for 3.0000 s
+
+Warning: Unable to complete 50 samples in 5.0s. You may wish to increase target time to 7.2s, enable flat sampling, or reduce sample count to 20.
+Benchmarking reduce_100k: Collecting 50 samples in estimated 7.1941 s (1275 iterations)
+Benchmarking reduce_100k: Analyzing
+reduce_100k             time:   [5.4657 ms 5.6374 ms 5.8718 ms]
+                        change: [−5.4186% −1.4062% +2.6893%] (p = 0.51 > 0.05)
+                        No change in performance detected.
+Found 2 outliers among 50 measurements (4.00%)
+  2 (4.00%) high mild
+

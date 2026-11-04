@@ -1,0 +1,4 @@
+   Compiling qlrs-testkit v0.1.0 (/workspace/QuantLab-RS/crates/qlrs-testkit)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 2.04s
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.13s
+protected catalogue CLI matrix: PASS

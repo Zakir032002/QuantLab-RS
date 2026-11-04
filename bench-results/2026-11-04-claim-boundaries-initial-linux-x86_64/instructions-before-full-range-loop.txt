@@ -1,0 +1,34 @@
+   Compiling qlrs-schema v0.1.0 (/workspace/QuantLab-RS/crates/qlrs-schema)
+   Compiling qlrs-ledger v0.1.0 (/workspace/QuantLab-RS/crates/qlrs-ledger)
+   Compiling qlrs-io v0.1.0 (/workspace/QuantLab-RS/crates/qlrs-io)
+   Compiling qlrs-check v0.1.0 (/workspace/QuantLab-RS/crates/qlrs-check)
+   Compiling qlrs-reduce v0.1.0 (/workspace/QuantLab-RS/crates/qlrs-reduce)
+   Compiling qlrs-bundle v0.1.0 (/workspace/QuantLab-RS/crates/qlrs-bundle)
+   Compiling qlrs-testkit v0.1.0 (/workspace/QuantLab-RS/crates/qlrs-testkit)
+   Compiling qlrs-bench v0.1.0 (/workspace/QuantLab-RS/crates/qlrs-bench)
+    Finished `bench` profile [optimized + debuginfo] target(s) in 13.77s
+     Running benches/instructions.rs (target/release/deps/instructions-81bf5f7264545b65)
+gungraun_runner: Warn : The RUST_LOG environment variable to set the log level changed to GUNGRAUN_LOG
+instructions::numeric::decimal_parse
+  Instructions:                                       1297|1297                 (No change)
+  L1 Hits:                                            1344|1342                 (+0.14903%) [+1.00149x]
+  LL Hits:                                               0|0                    (No change)
+  RAM Hits:                                             11|13                   (-15.3846%) [-1.18182x]
+  Total read+write:                                   1355|1355                 (No change)
+  Estimated Cycles:                                   1729|1797                 (-3.78408%) [-1.03933x]
+instructions::numeric::mul_rescale
+  Instructions:                                        125|125                  (No change)
+  L1 Hits:                                             145|145                  (No change)
+  LL Hits:                                               0|0                    (No change)
+  RAM Hits:                                              8|8                    (No change)
+  Total read+write:                                    153|153                  (No change)
+  Estimated Cycles:                                    425|425                  (No change)
+instructions::numeric::replay_1000 prepared:(setup_replay())
+  Instructions:                                      38525|35063                (+9.87366%) [+1.09874x]
+  L1 Hits:                                           55489|49391                (+12.3464%) [+1.12346x]
+  LL Hits:                                             523|500                  (+4.60000%) [+1.04600x]
+  RAM Hits:                                              3|11                   (-72.7273%) [-3.66667x]
+  Total read+write:                                  56015|49902                (+12.2500%) [+1.12250x]
+  Estimated Cycles:                                  58209|52276                (+11.3494%) [+1.11349x]
+
+Gungraun result: Ok. 3 without regressions; 0 regressed; 0 filtered; 3 benchmarks finished in 0.85844s

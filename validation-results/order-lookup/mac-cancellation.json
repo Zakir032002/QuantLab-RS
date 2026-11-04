@@ -1,0 +1,14 @@
+{
+  "source_commit": "e348f562128c59c337590869544afd34aa91bfdf",
+  "observed_at": "2026-11-04T19:30:20.100991+00:00",
+  "workflow_url": "https://github.com/Zakir032002/QuantLab-RS/actions/runs/41893992136",
+  "quality_job_url": "https://github.com/Zakir032002/QuantLab-RS/actions/runs/41893992136/job/126798480588",
+  "provider_messages": [
+    "The job was not acquired by Runner of type hosted even after multiple attempts",
+    "Internal server error. Correlation ID: f298568e-ce85-4e67-a1ac-8f1970fdf97b",
+    "Due to capacity constraints, jobs targeting macOS arm64 runners may experience longer queue times."
+  ],
+  "classification": "runner-capacity cancellation; no macOS test result",
+  "retry_runner": "macos-15-intel",
+  "runner_label_reference": "https://github.com/actions/runner-images/blob/main/README.md"
+}
