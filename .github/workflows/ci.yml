@@ -1,79 +1,86 @@
-name: Part 1 quality
+name: Export measured macOS evidence
 on:
   push:
-  pull_request:
-  workflow_dispatch:
+    branches: [ci/export-macos-evidence]
 permissions:
   contents: read
+  actions: read
 jobs:
-  quality:
-    strategy:
-      fail-fast: false
-      matrix:
-        os: [ubuntu-24.04, macos-15]
-    runs-on: ${{ matrix.os }}
-    steps:
-      - uses: actions/checkout@v4
-      - name: Pinned compiler and tools
-        run: |
-          rustup toolchain install 1.99.1 --profile minimal --component rustfmt --component clippy
-          cargo install cargo-nextest --version 0.9.151 --locked
-          cargo install cargo-deny --version 0.20.2 --locked
-          cargo install cargo-audit --version 0.22.2 --locked
-      - run: ./ci/check-all.sh
-      - run: python3 ci/catalogue.py
-  miri:
+  export:
     runs-on: ubuntu-24.04
-    env:
-      RAYON_NUM_THREADS: 1
     steps:
       - uses: actions/checkout@v4
-      - run: rustup toolchain install nightly-2026-11-04 --profile minimal --component miri --component rust-src
-      - name: Numeric edge paths (bulk stress runs natively in quality)
-        run: |
-          cargo +nightly-2026-11-04 miri test -p qlrs-num --lib --locked -- --skip req_num_002_checked_operations_and_parser_never_panic --skip req_num_006_roundtrip_100k_values
-          cargo +nightly-2026-11-04 miri test -p qlrs-num --test properties --locked req_num_011
-          cargo +nightly-2026-11-04 miri test -p qlrs-testkit --test allocations --locked
-  scale-and-instructions:
-    runs-on: ubuntu-24.04
-    env:
-      GUNGRAUN_ALLOW_ASLR: 'yes'
-      RAYON_NUM_THREADS: 5
-    steps:
-      - uses: actions/checkout@v4
-      - run: rustup toolchain install 1.99.1 --profile minimal
-      - run: sudo apt-get update && sudo apt-get install -y valgrind
-      - run: cargo install gungraun-runner --version 0.20.0 --locked
-      - run: cargo run -p qlrs-testkit --example scale_gate --release --locked
-      - run: cargo bench -p qlrs-bench --bench instructions --locked > instructions.txt
-      - run: python3 ci/instruction-ratchet.py instructions.txt
-      - uses: actions/upload-artifact@v4
-        if: always()
+      - uses: actions/download-artifact@v4
         with:
-          name: linux-instruction-results
-          path: instructions.txt
-  macos-benchmarks:
-    runs-on: macos-15
-    env:
-      RAYON_NUM_THREADS: 5
-    steps:
-      - uses: actions/checkout@v4
-      - run: rustup toolchain install 1.99.1 --profile minimal
-      - name: Measure and retain the complete raw benchmark record
+          github-token: ${{ github.token }}
+          run-id: 41836096568
+          name: macos-criterion-results
+          path: macos-criterion
+      - name: Export only validated benchmark measurements and required metadata
         shell: bash
         run: |
-          mkdir macos-criterion
-          cargo bench -p qlrs-bench --bench throughput --locked -- --sample-size 50 > macos-criterion/criterion.txt 2>&1
-          cargo build -p qlrs-testkit --example generate --release --locked
-          cargo build -p qlrs-io --example hash --release --locked
-          qlrs_fixtures=$(mktemp -d)
-          trap 'rm -rf "$qlrs_fixtures"' EXIT
-          target/release/examples/generate 20000 "$qlrs_fixtures/clean-100k.jsonl"
-          target/release/examples/generate 20000 "$qlrs_fixtures/d03-100k.jsonl" D03 12000
-          target/release/examples/hash "$qlrs_fixtures" > macos-criterion/input-digests.txt
-          python3 ci/package-benchmarks.py macos-criterion
-      - uses: actions/upload-artifact@v4
-        if: always()
-        with:
-          name: macos-criterion-results
-          path: macos-criterion/
+          python3 - <<'PY'
+          import base64,hashlib,io,json,re,zipfile
+          from pathlib import Path
+          original=Path('macos-criterion/raw-benchmarks.zip').read_bytes()
+          original_digest=hashlib.sha256(original).hexdigest()
+          assert original_digest=='987f8038139a675892d955c92b5024fe5187cf03f7fca92d44d6176bc9827f46'
+          workloads=['decimal_parse','mul_rescale_i128','mul_rescale_wide','pipeline/check_100k','pipeline/parse_100k','pipeline/replay_100k','reduce_100k']
+          metadata={'COMMANDS.md','MEDIANS.md','criterion.txt','git-commit.txt','input-digests.txt','machine.txt','rustc.txt','source-sha256.txt','MANIFEST.sha256'}
+          numeric={f'criterion/{w}/new/{n}.json' for w in workloads for n in ['benchmark','estimates','sample','tukey']}
+          files={}
+          with zipfile.ZipFile(io.BytesIO(original)) as archive:
+              assert archive.testzip() is None
+              assert set(archive.namelist())==numeric|metadata
+              for name in numeric:
+                  data=archive.read(name)
+                  parsed=json.loads(data)
+                  if name.endswith('/benchmark.json'):
+                      expected=json.loads(Path('bench-results/2026-11-04-linux-x86_64',name).read_bytes())
+                      assert parsed==expected
+                  else:
+                      def numbers(value):
+                          if isinstance(value,dict):return all(numbers(v) for v in value.values())
+                          if isinstance(value,list):return all(numbers(v) for v in value)
+                          return value is None or isinstance(value,(int,float)) or value in ('Linear','Flat')
+                      assert numbers(parsed)
+                  files[name]=data
+              source=archive.read('source-sha256.txt')
+              assert source==Path('bench-results/2026-11-04-linux-x86_64/source-sha256.txt').read_bytes()
+              files['source-sha256.txt']=source
+              expected_commit=b'7ff05069f19358e646687e41cf5d6b80afaaec6e\n'
+              assert archive.read('git-commit.txt')==expected_commit
+              files['git-commit.txt']=expected_commit
+              expected_inputs='\n'.join(line for line in Path('bench-results/2026-11-04-linux-x86_64/input-digests.txt').read_text().splitlines() if re.match(r'^[0-9a-f]{64}  ',line))+'\n'
+              assert archive.read('input-digests.txt').decode()==expected_inputs
+              files['input-digests.txt']=expected_inputs.encode()
+              compiler=archive.read('rustc.txt').decode()
+              assert 'release: 1.99.1\n' in compiler and 'host: aarch64-apple-darwin\n' in compiler
+              assert len(compiler.splitlines())==7
+              files['rustc.txt']=compiler.encode()
+              # Keep only the CPU/OS fields expressly required by Part 1.
+              # Do not publish the original uname hostname or build-path console.
+              machine=[]
+              for line in archive.read('machine.txt').decode().splitlines():
+                  if line.startswith(('ProductName:','ProductVersion:','BuildVersion:','machdep.cpu.brand_string:','hw.ncpu:','hw.memsize:')):
+                      assert len(line)<120 and re.fullmatch(r'[A-Za-z0-9_ .():\t-]+',line)
+                      machine.append(line)
+              assert len(machine)==6
+              files['machine.txt']=('\n'.join(machine)+'\n').encode()
+          rows=[]
+          for w in workloads:
+              data=json.loads(files[f'criterion/{w}/new/estimates.json'])['median'];ci=data['confidence_interval']
+              rows.append(f"| {w} | {data['point_estimate']:.3f} | {ci['lower_bound']:.3f}–{ci['upper_bound']:.3f} |")
+          files['MEDIANS.md']=('# Criterion medians\n\nNanoseconds per iteration; 50 samples.\n\n| Workload | Median ns | Median confidence interval ns |\n|---|---:|---:|\n'+'\n'.join(rows)+'\n').encode()
+          files['COMMANDS.md']=b'RAYON_NUM_THREADS=5 cargo bench -p qlrs-bench --bench throughput --locked -- --sample-size 50\n\nDefault portable CPU target, system allocator, fat LTO, overflow checks enabled. Criterion default warm-up/measurement; 50 samples. Seed 42, 20000 orders, D03 index 12000, 20% fills. Replay is single-threaded. Parsing uses five workers; input cloning is outside timing.\n\nThis validated subset retains all raw numeric JSON unchanged. Hostnames and the console with build paths are omitted. The original complete artifact remains on the original workflow run.\n'
+          files['PROVENANCE.json']=json.dumps(dict(original_archive_sha256=original_digest,source_commit=expected_commit.decode().strip(),workflow_url='https://github.com/Zakir032002/QuantLab-RS/actions/runs/41836096568',job_url='https://github.com/Zakir032002/QuantLab-RS/actions/runs/41836096568/job/126595273221',selection='unchanged raw numeric JSON and required CPU/OS/compiler/command/input/source metadata only; no hostname or build console'),indent=2).encode()+b'\n'
+          files['MANIFEST.sha256']=''.join(hashlib.sha256(data).hexdigest()+'  '+name+'\n' for name,data in sorted(files.items())).encode()
+          raw=io.BytesIO()
+          with zipfile.ZipFile(raw,'w',zipfile.ZIP_DEFLATED) as out:
+              for name,data in sorted(files.items()):out.writestr(name,data)
+          data=raw.getvalue();digest=hashlib.sha256(data).hexdigest();encoded=base64.b64encode(data).decode()
+          chunks=[encoded[i:i+3600] for i in range(0,len(encoded),3600)]
+          assert len(chunks)<=10
+          for i,chunk in enumerate(chunks,1):
+              print(f'::notice title=QLRS_RAW_BENCHMARK_ARCHIVE_V1_{i}_OF_{len(chunks)}::{digest}:{i}:{len(chunks)}:{chunk}')
+          PY
