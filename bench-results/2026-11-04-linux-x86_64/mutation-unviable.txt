@@ -1,0 +1,32 @@
+crates/qlrs-check/src/lib.rs:104:9: replace Report::keys -> impl Iterator<Item =&InstanceKey> with ::std::iter::once(Box::leak(Box::new(Default::default())))
+crates/qlrs-check/src/lib.rs:109:9: replace Report::at_seq -> Option<&Finding> with Some(Box::leak(Box::new(Default::default())))
+crates/qlrs-check/src/lib.rs:134:9: replace Checker::evaluate -> Report with Default::default()
+crates/qlrs-check/src/lib.rs:147:9: replace Checker::check -> Report with Default::default()
+crates/qlrs-check/src/lib.rs:549:27: delete ! in Checker::check
+crates/qlrs-check/src/lib.rs:571:5: replace limitation -> Finding with Default::default()
+crates/qlrs-check/src/lib.rs:587:5: replace finish -> Report with Default::default()
+crates/qlrs-check/src/lib.rs:627:5: replace violation -> Finding with Default::default()
+crates/qlrs-check/src/lib.rs:705:5: replace window_pattern -> Vec<(Kind, u64)> with vec![(Default::default(), 0)]
+crates/qlrs-check/src/lib.rs:705:5: replace window_pattern -> Vec<(Kind, u64)> with vec![(Default::default(), 1)]
+crates/qlrs-check/src/lib.rs:713:13: replace && with || in window_pattern
+crates/qlrs-check/src/lib.rs:712:13: replace && with || in window_pattern
+crates/qlrs-check/src/lib.rs:739:5: replace order_pattern -> Vec<(Kind, u64)> with vec![(Default::default(), 0)]
+crates/qlrs-check/src/lib.rs:739:5: replace order_pattern -> Vec<(Kind, u64)> with vec![(Default::default(), 1)]
+crates/qlrs-check/src/lib.rs:750:13: replace && with || in order_pattern
+crates/qlrs-check/src/lib.rs:749:13: replace && with || in order_pattern
+crates/qlrs-check/src/lib.rs:748:13: replace && with || in order_pattern
+crates/qlrs-num/src/lib.rs:101:9: replace Fixed::parse -> Result<Self, NumericError> with Ok(Default::default())
+crates/qlrs-num/src/lib.rs:146:9: replace Fixed::checked_add -> Result<Self, NumericError> with Ok(Default::default())
+crates/qlrs-num/src/lib.rs:162:9: replace Fixed::checked_sub -> Result<Self, NumericError> with Ok(Default::default())
+crates/qlrs-num/src/lib.rs:179:9: replace Fixed::checked_mul -> Result<Self, NumericError> with Ok(Default::default())
+crates/qlrs-num/src/lib.rs:198:9: replace Fixed::mul_add_rescale -> Result<Self, NumericError> with Ok(Default::default())
+crates/qlrs-num/src/lib.rs:235:9: replace Fixed::mul_rescale -> Result<Self, NumericError> with Ok(Default::default())
+crates/qlrs-num/src/lib.rs:253:9: replace Fixed::rescale -> Result<Self, NumericError> with Ok(Default::default())
+crates/qlrs-num/src/lib.rs:262:9: replace Fixed::numeric_cmp -> Ordering with Default::default()
+crates/qlrs-num/src/lib.rs:297:9: replace <impl FromStr for Fixed>::from_str -> Result<Self, Self::Err> with Ok(Default::default())
+crates/qlrs-num/src/lib.rs:322:5: replace rescale_raw -> Result<Fixed, NumericError> with Ok(Default::default())
+crates/qlrs-num/src/lib.rs:345:5: replace divide_power -> Result<Fixed, NumericError> with Ok(Default::default())
+crates/qlrs-num/src/lib.rs:392:5: replace divide_const -> Result<Fixed, NumericError> with Ok(Default::default())
+crates/qlrs-num/src/lib.rs:410:5: replace rounded -> Result<Fixed, NumericError> with Ok(Default::default())
+crates/qlrs-num/src/lib.rs:475:5: replace wide_mul_rescale -> Result<Fixed, NumericError> with Ok(Default::default())
+crates/qlrs-num/src/lib.rs:508:5: replace wide_mul_add -> Result<Fixed, NumericError> with Ok(Default::default())

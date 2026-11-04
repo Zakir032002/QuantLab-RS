@@ -1,0 +1,5 @@
+Commands: generate 200000 CLEAN; qlrs verify CLEAN; hash DIRECTORY
+seed=42 events= 1000000 bytes= 178567133
+{"status":"CONSISTENT","findings":[],"expected_cash":"999563800000.00","expected_positions":["4000000.000"]}
+3cfe93ad85ab9f2628849d99a032c478003f921ce317a4e76099c8bd6399b21e  clean-million.jsonl
+million-event clean trace: PASS

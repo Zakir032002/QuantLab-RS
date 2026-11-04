@@ -1,0 +1,18 @@
+   Compiling proc-macro2 v1.0.107
+   Compiling quote v1.0.47
+   Compiling syn v3.0.9
+   Compiling serde_derive v1.0.229
+   Compiling serde v1.0.229
+   Compiling qlrs-schema v0.1.0 (/workspace/QuantLab-RS/crates/qlrs-schema)
+   Compiling qlrs-ledger v0.1.0 (/workspace/QuantLab-RS/crates/qlrs-ledger)
+   Compiling qlrs-io v0.1.0 (/workspace/QuantLab-RS/crates/qlrs-io)
+   Compiling qlrs-check v0.1.0 (/workspace/QuantLab-RS/crates/qlrs-check)
+   Compiling qlrs-reduce v0.1.0 (/workspace/QuantLab-RS/crates/qlrs-reduce)
+   Compiling qlrs-bundle v0.1.0 (/workspace/QuantLab-RS/crates/qlrs-bundle)
+   Compiling qlrs-testkit v0.1.0 (/workspace/QuantLab-RS/crates/qlrs-testkit)
+    Finished `release` profile [optimized + debuginfo] target(s) in 12.14s
+     Running `target/release/examples/scale_gate`
+defect=D01 seed=42 events=1000000 source_bytes=178567133 source_blake3=a7b6d5474d4495261f15f555d900809565a1ef7cb511831a88057a3e97b11ed2 column_bytes=142145536 parse_ns=739228429 prepare_ns=11481205 reduction_ns=68944267 kept_events=6 predicate_calls=2 closure_1_minimal=true verbatim=true target_replayed=true
+defect=D03 seed=42 events=1000000 source_bytes=178567133 source_blake3=e6d969d34b2b39886ec1be4ef544781366661cf3b6aa8d11eda3af0dde0da96e column_bytes=142145536 parse_ns=700799178 prepare_ns=11279411 reduction_ns=66112493 kept_events=6 predicate_calls=2 closure_1_minimal=true verbatim=true target_replayed=true
+defect=D07 seed=42 events=1000001 source_bytes=178567260 source_blake3=f731615c38221624508fc4591e184282acea2a25012d060b992a3a89729121a4 column_bytes=142145552 parse_ns=683392754 prepare_ns=12059568 reduction_ns=81756671 kept_events=6 predicate_calls=2 closure_1_minimal=true verbatim=true target_replayed=true
+VmHWM:	  362300 kB

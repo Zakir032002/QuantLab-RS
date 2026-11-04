@@ -52,3 +52,28 @@ jobs:
         with:
           name: linux-instruction-results
           path: instructions.txt
+  macos-benchmarks:
+    runs-on: macos-15
+    env:
+      RAYON_NUM_THREADS: 5
+    steps:
+      - uses: actions/checkout@v4
+      - run: rustup toolchain install 1.99.1 --profile minimal
+      - name: Measure and retain the complete raw benchmark record
+        shell: bash
+        run: |
+          mkdir macos-criterion
+          cargo bench -p qlrs-bench --bench throughput --locked -- --sample-size 50 > macos-criterion/criterion.txt 2>&1
+          cargo build -p qlrs-testkit --example generate --release --locked
+          cargo build -p qlrs-io --example hash --release --locked
+          qlrs_fixtures=$(mktemp -d)
+          trap 'rm -rf "$qlrs_fixtures"' EXIT
+          target/release/examples/generate 20000 "$qlrs_fixtures/clean-100k.jsonl"
+          target/release/examples/generate 20000 "$qlrs_fixtures/d03-100k.jsonl" D03 12000
+          target/release/examples/hash "$qlrs_fixtures" > macos-criterion/input-digests.txt
+          python3 ci/package-benchmarks.py macos-criterion
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: macos-criterion-results
+          path: macos-criterion/

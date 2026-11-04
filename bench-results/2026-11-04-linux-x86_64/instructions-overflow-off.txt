@@ -1,0 +1,108 @@
+   Compiling proc-macro2 v1.0.107
+   Compiling quote v1.0.47
+   Compiling unicode-ident v1.0.27
+   Compiling serde_core v1.0.229
+   Compiling serde v1.0.229
+   Compiling shlex v2.0.1
+   Compiling find-msvc-tools v0.1.15
+   Compiling zmij v1.0.23
+   Compiling cc v1.11.0
+   Compiling serde_json v1.0.154
+   Compiling crossbeam-utils v0.8.23
+   Compiling syn v3.0.9
+   Compiling syn v2.0.119
+   Compiling crossbeam-epoch v0.9.21
+   Compiling cfg-if v1.0.5
+   Compiling crossbeam-deque v0.8.8
+   Compiling either v1.19.0
+   Compiling rayon-core v1.13.0
+   Compiling blake3 v1.8.7
+   Compiling qlrs-num v0.1.0 (/workspace/QuantLab-RS/crates/qlrs-num)
+   Compiling foldhash v0.2.0
+   Compiling constant_time_eq v0.4.2
+   Compiling memchr v2.8.3
+   Compiling arrayvec v0.7.8
+   Compiling cpufeatures v0.3.1
+   Compiling itoa v1.0.18
+   Compiling rayon v1.12.0
+   Compiling serde_derive v1.0.229
+   Compiling zerocopy v0.8.63
+   Compiling zerocopy-derive v0.8.63
+   Compiling autocfg v1.5.1
+   Compiling semver v1.0.28
+   Compiling rustversion v1.0.23
+   Compiling rustc_version v0.4.1
+   Compiling num-traits v0.2.19
+   Compiling derive_more-impl v2.1.1
+   Compiling libc v0.2.191
+   Compiling qlrs-schema v0.1.0 (/workspace/QuantLab-RS/crates/qlrs-schema)
+   Compiling qlrs-bundle v0.1.0 (/workspace/QuantLab-RS/crates/qlrs-bundle)
+   Compiling qlrs-ledger v0.1.0 (/workspace/QuantLab-RS/crates/qlrs-ledger)
+   Compiling qlrs-check v0.1.0 (/workspace/QuantLab-RS/crates/qlrs-check)
+   Compiling qlrs-io v0.1.0 (/workspace/QuantLab-RS/crates/qlrs-io)
+   Compiling qlrs-reduce v0.1.0 (/workspace/QuantLab-RS/crates/qlrs-reduce)
+   Compiling gungraun-macros v0.10.0
+   Compiling alloca v0.4.0
+   Compiling proc-macro-error-attr3 v3.1.1
+   Compiling gungraun-common v0.1.0
+   Compiling clap_lex v1.1.1
+   Compiling anstyle v1.0.14
+   Compiling plotters-backend v0.3.7
+   Compiling half v2.7.1
+   Compiling ciborium-io v0.2.2
+   Compiling bincode-next v3.1.1
+   Compiling regex-syntax v0.8.11
+   Compiling ciborium-ll v0.2.2
+   Compiling plotters-svg v0.3.7
+   Compiling clap_builder v4.6.7
+   Compiling proc-macro-error3 v3.1.1
+   Compiling rapidhash v4.5.1
+   Compiling regex-automata v0.4.18
+   Compiling either-or-both v0.3.1
+   Compiling derive_more v2.1.1
+   Compiling itertools v0.13.0
+   Compiling unty-next v0.1.2
+   Compiling gungraun v0.20.0
+   Compiling pastey v0.2.3
+   Compiling same-file v1.0.6
+   Compiling cast v0.3.0
+   Compiling walkdir v2.5.0
+   Compiling criterion-plot v0.8.2
+   Compiling gungraun-runner v0.20.0
+   Compiling page_size v0.6.0
+   Compiling regex v1.13.1
+   Compiling clap v4.6.7
+   Compiling plotters v0.3.7
+   Compiling qlrs-testkit v0.1.0 (/workspace/QuantLab-RS/crates/qlrs-testkit)
+   Compiling ciborium v0.2.2
+   Compiling tinytemplate v1.2.1
+   Compiling oorandom v11.1.5
+   Compiling anes v0.1.6
+   Compiling criterion v0.8.2
+   Compiling qlrs-bench v0.1.0 (/workspace/QuantLab-RS/crates/qlrs-bench)
+    Finished `bench` profile [optimized + debuginfo] target(s) in 36.47s
+     Running benches/instructions.rs (target/release/deps/instructions-7ddfdbfd6046ba53)
+gungraun_runner: Warn : The RUST_LOG environment variable to set the log level changed to GUNGRAUN_LOG
+instructions::numeric::decimal_parse
+  Instructions:                                       1297|1297                 (No change)
+  L1 Hits:                                            1342|1344                 (-0.14881%) [-1.00149x]
+  LL Hits:                                               0|0                    (No change)
+  RAM Hits:                                             13|11                   (+18.1818%) [+1.18182x]
+  Total read+write:                                   1355|1355                 (No change)
+  Estimated Cycles:                                   1797|1729                 (+3.93291%) [+1.03933x]
+instructions::numeric::mul_rescale
+  Instructions:                                        125|125                  (No change)
+  L1 Hits:                                             145|144                  (+0.69444%) [+1.00694x]
+  LL Hits:                                               0|0                    (No change)
+  RAM Hits:                                              8|9                    (-11.1111%) [-1.12500x]
+  Total read+write:                                    153|153                  (No change)
+  Estimated Cycles:                                    425|459                  (-7.40741%) [-1.08000x]
+instructions::numeric::replay_1000 prepared:(setup_replay())
+  Instructions:                                      35063|35063                (No change)
+  L1 Hits:                                           49391|49369                (+0.04456%) [+1.00045x]
+  LL Hits:                                             500|522                  (-4.21456%) [-1.04400x]
+  RAM Hits:                                             11|11                   (No change)
+  Total read+write:                                  49902|49902                (No change)
+  Estimated Cycles:                                  52276|52364                (-0.16805%) [-1.00168x]
+
+Gungraun result: Ok. 3 without regressions; 0 regressed; 0 filtered; 3 benchmarks finished in 0.85666s

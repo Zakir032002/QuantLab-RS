@@ -1,0 +1,49 @@
+Found 347 mutants to test
+ok       Unmutated baseline in 21s build + 1s test
+ INFO Auto-set test timeout to 20s
+MISSED   crates/qlrs-check/src/lib.rs:153:52: replace || with && in Checker::check in 6s build + 11s test
+MISSED   crates/qlrs-check/src/lib.rs:153:28: replace || with && in Checker::check in 3s build + 9s test
+MISSED   crates/qlrs-check/src/lib.rs:171:46: replace || with && in Checker::check in 3s build + 7s test
+MISSED   crates/qlrs-check/src/lib.rs:171:63: replace == with != in Checker::check in 2s build + 6s test
+MISSED   crates/qlrs-check/src/lib.rs:183:47: replace > with < in Checker::check in 2s build + 8s test
+MISSED   crates/qlrs-check/src/lib.rs:266:57: replace && with || in Checker::check in 2s build + 9s test
+MISSED   crates/qlrs-check/src/lib.rs:271:25: replace == with != in Checker::check in 2s build + 8s test
+MISSED   crates/qlrs-check/src/lib.rs:281:35: replace < with == in Checker::check in 1s build + 7s test
+MISSED   crates/qlrs-check/src/lib.rs:281:35: replace < with <= in Checker::check in 1s build + 8s test
+MISSED   crates/qlrs-check/src/lib.rs:322:41: replace == with != in Checker::check in 2s build + 7s test
+MISSED   crates/qlrs-check/src/lib.rs:331:44: replace == with != in Checker::check in 2s build + 7s test
+MISSED   crates/qlrs-check/src/lib.rs:362:44: delete ! in Checker::check in 2s build + 7s test
+MISSED   crates/qlrs-check/src/lib.rs:380:37: replace && with || in Checker::check in 2s build + 7s test
+MISSED   crates/qlrs-check/src/lib.rs:609:45: replace != with == in finish in 1s build + 6s test
+MISSED   crates/qlrs-check/src/lib.rs:636:23: replace < with == in violation in 2s build + 6s test
+MISSED   crates/qlrs-check/src/lib.rs:636:23: replace < with > in violation in 2s build + 6s test
+MISSED   crates/qlrs-check/src/lib.rs:636:23: replace < with <= in violation in 1s build + 9s test
+MISSED   crates/qlrs-check/src/lib.rs:636:29: delete - in violation in 2s build + 9s test
+MISSED   crates/qlrs-check/src/lib.rs:636:54: replace > with == in violation in 3s build + 8s test
+MISSED   crates/qlrs-check/src/lib.rs:636:54: replace > with < in violation in 2s build + 7s test
+MISSED   crates/qlrs-check/src/lib.rs:636:54: replace > with >= in violation in 2s build + 8s test
+MISSED   crates/qlrs-check/src/lib.rs:705:5: replace window_pattern -> Vec<(Kind, u64)> with vec![] in 5s build + 10s test
+MISSED   crates/qlrs-check/src/lib.rs:730:33: replace > with >= in window_pattern in 3s build + 8s test
+MISSED   crates/qlrs-check/src/lib.rs:730:33: replace > with == in window_pattern in 10s build + 6s test
+MISSED   crates/qlrs-check/src/lib.rs:730:33: replace > with < in window_pattern in 10s build + 6s test
+MISSED   crates/qlrs-check/src/lib.rs:739:5: replace order_pattern -> Vec<(Kind, u64)> with vec![] in 1s build + 6s test
+MISSED   crates/qlrs-check/src/lib.rs:768:29: replace > with == in order_pattern in 2s build + 5s test
+MISSED   crates/qlrs-check/src/lib.rs:747:40: replace == with != in order_pattern in 2s build + 6s test
+MISSED   crates/qlrs-check/src/lib.rs:768:29: replace > with < in order_pattern in 1s build + 6s test
+MISSED   crates/qlrs-check/src/lib.rs:768:29: replace > with >= in order_pattern in 2s build + 6s test
+MISSED   crates/qlrs-check/src/lib.rs:782:13: replace && with || in relation in 2s build + 6s test
+MISSED   crates/qlrs-check/src/lib.rs:781:38: replace == with != in relation in 2s build + 6s test
+MISSED   crates/qlrs-check/src/lib.rs:859:57: replace == with != in relation in 2s build + 6s test
+MISSED   crates/qlrs-check/src/lib.rs:865:13: replace == with != in relation in 1s build + 6s test
+MISSED   crates/qlrs-num/src/lib.rs:303:21: replace < with <= in <impl fmt::Display for Fixed>::fmt in 2s build + 11s test
+MISSED   crates/qlrs-num/src/lib.rs:332:13: replace < with <= in rescale_raw in 2s build + 11s test
+MISSED   crates/qlrs-num/src/lib.rs:381:9: delete match arm 36 in divide_power in 3s build + 12s test
+MISSED   crates/qlrs-num/src/lib.rs:464:22: replace | with ^ in wide_product in 2s build + 10s test
+MISSED   crates/qlrs-num/src/lib.rs:494:19: replace < with <= in wide_mul_rescale in 2s build + 10s test
+MISSED   crates/qlrs-num/src/lib.rs:494:38: replace < with <= in wide_mul_rescale in 2s build + 8s test
+MISSED   crates/qlrs-num/src/lib.rs:524:38: replace < with <= in wide_mul_add in 3s build + 9s test
+MISSED   crates/qlrs-num/src/lib.rs:524:57: replace < with <= in wide_mul_add in 2s build + 8s test
+MISSED   crates/qlrs-num/src/lib.rs:525:37: replace < with <= in wide_mul_add in 3s build + 9s test
+MISSED   crates/qlrs-num/src/lib.rs:583:38: replace | with ^ in wide_div in 3s build + 11s test
+MISSED   crates/qlrs-num/src/lib.rs:587:47: replace - with / in wide_div in 3s build + 6s test
+347 mutants tested in 16m: 45 missed, 270 caught, 32 unviable

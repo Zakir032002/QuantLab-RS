@@ -5,10 +5,10 @@
     "qlrs-check"
   ],
   "test_scope": "workspace",
-  "caught": 267,
-  "viable": 312,
+  "caught": 270,
+  "viable": 315,
   "missed": 45,
   "unviable": 32,
   "timeout": 0,
-  "total": 344
+  "total": 347
 }

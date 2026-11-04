@@ -1,0 +1,1 @@
+PASS: 100000 seeded operands x 4 modes = 400000 oracle comparisons

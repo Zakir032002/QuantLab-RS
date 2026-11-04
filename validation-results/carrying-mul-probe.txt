@@ -1,0 +1,6 @@
+Compatibility probe on the pinned stable compiler
+Command: rustc +1.99.1 /tmp/qlrs-carrying-probe.rs -o /tmp/qlrs-carrying-probe
+Source:
+fn main(){let _ = 1_u128.carrying_mul(2,0);}
+
+Compile exit: 0

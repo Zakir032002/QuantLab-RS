@@ -1,0 +1,40 @@
+warning: unused workspace dependency `qlrs-bench`
+  --> Cargo.toml:48:1
+   |
+48 | qlrs-bench = { path = "crates/qlrs-bench", version = "=0.1.0" }
+   | ^^^^^^^^^^
+   |
+   = note: `cargo::unused_workspace_dependencies` is set to `warn` by default
+help: consider removing the workspace dependency `qlrs-bench`
+warning: unused workspace dependency `qlrs-cli`
+  --> Cargo.toml:46:1
+   |
+46 | qlrs-cli = { path = "crates/qlrs-cli", version = "=0.1.0" }
+   | ^^^^^^^^
+   |
+help: consider removing the workspace dependency `qlrs-cli`
+warning: unused field `repository` in `workspace.package`
+  --> Cargo.toml:11:1
+   |
+11 | repository = "https://github.com/Zakir032002/QuantLab-RS"
+   | ^^^^^^^^^^
+   |
+   = note: `cargo::unused_workspace_package_fields` is set to `warn` by default
+help: consider removing the field `workspace.package.repository`
+warning: workspace (manifest) generated 3 warnings
+    Finished `test` profile [optimized + debuginfo] target(s) in 0.04s
+     Running unittests src/lib.rs (target/miri/x86_64-unknown-linux-gnu/debug/build/qlrs-num/d8a4dba70d5d407a/out/qlrs_num-d8a4dba70d5d407a)
+warning: Miri does not support optimizations: the opt-level is ignored. The only effect of selecting a Cargo profile that enables optimizations (such as --release) is to apply its remaining settings, such as whether debug assertions and overflow checks are enabled.
+
+
+running 5 tests
+test tests::req_num_001_decimal_grammar_and_per_value_scale ... ok
+test tests::req_num_002_signed_limits_and_checked_overflow ... ok
+test tests::req_num_003_all_rounding_modes_signed_ties ... ok
+test tests::req_num_004_wide_intermediate_can_fit_final_value ... ok
+test tests::req_num_005_compare_by_upscaling_without_overflow ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 2 filtered out; finished in 3.73s
+
+warning: 1 warning emitted
+

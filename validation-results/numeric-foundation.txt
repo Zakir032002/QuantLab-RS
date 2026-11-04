@@ -1,0 +1,37 @@
+warning: Cargo.toml: `panic` setting is ignored for `bench` profile
+warning: workspace (manifest) generated 1 warning
+   Compiling qlrs-num v0.1.0 (/workspace/QuantLab-RS/crates/qlrs-num)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.10s
+warning: Cargo.toml: `panic` setting is ignored for `bench` profile
+warning: workspace (manifest) generated 1 warning
+    Checking qlrs-num v0.1.0 (/workspace/QuantLab-RS/crates/qlrs-num)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.15s
+warning: Cargo.toml: `panic` setting is ignored for `bench` profile
+warning: workspace (manifest) generated 1 warning
+   Compiling qlrs-num v0.1.0 (/workspace/QuantLab-RS/crates/qlrs-num)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.23s
+     Running unittests src/lib.rs (target/debug/deps/qlrs_num-11eaf1ae73a29fdd)
+
+running 7 tests
+test tests::req_num_001_decimal_grammar_and_per_value_scale ... ok
+test tests::req_num_003_all_rounding_modes_signed_ties ... ok
+test tests::req_num_004_wide_intermediate_can_fit_final_value ... ok
+test tests::req_num_005_compare_by_upscaling_without_overflow ... ok
+test tests::req_num_002_signed_limits_and_checked_overflow ... ok
+test tests::req_num_002_checked_operations_and_parser_never_panic ... ok
+test tests::req_num_006_roundtrip_100k_values ... ok
+
+test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.29s
+
+   Doc-tests qlrs_num
+
+running 1 test
+test crates/qlrs-num/src/lib.rs - (line 6) ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+all doctests ran in 0.18s; merged doctests compilation took 0.18s
+warning: Cargo.toml: `panic` setting is ignored for `bench` profile
+warning: workspace (manifest) generated 1 warning
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.00s
+PASS: 100000 seeded operands x 4 modes = 400000 oracle comparisons

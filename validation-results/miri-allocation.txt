@@ -1,0 +1,42 @@
+warning: unused workspace dependency `qlrs-bench`
+  --> Cargo.toml:48:1
+   |
+48 | qlrs-bench = { path = "crates/qlrs-bench", version = "=0.1.0" }
+   | ^^^^^^^^^^
+   |
+   = note: `cargo::unused_workspace_dependencies` is set to `warn` by default
+help: consider removing the workspace dependency `qlrs-bench`
+warning: unused workspace dependency `qlrs-cli`
+  --> Cargo.toml:46:1
+   |
+46 | qlrs-cli = { path = "crates/qlrs-cli", version = "=0.1.0" }
+   | ^^^^^^^^
+   |
+help: consider removing the workspace dependency `qlrs-cli`
+warning: unused field `repository` in `workspace.package`
+  --> Cargo.toml:11:1
+   |
+11 | repository = "https://github.com/Zakir032002/QuantLab-RS"
+   | ^^^^^^^^^^
+   |
+   = note: `cargo::unused_workspace_package_fields` is set to `warn` by default
+help: consider removing the field `workspace.package.repository`
+warning: workspace (manifest) generated 3 warnings
+   Compiling qlrs-ledger v0.1.0 (/workspace/QuantLab-RS/crates/qlrs-ledger)
+   Compiling qlrs-io v0.1.0 (/workspace/QuantLab-RS/crates/qlrs-io)
+   Compiling qlrs-check v0.1.0 (/workspace/QuantLab-RS/crates/qlrs-check)
+   Compiling qlrs-reduce v0.1.0 (/workspace/QuantLab-RS/crates/qlrs-reduce)
+   Compiling qlrs-bundle v0.1.0 (/workspace/QuantLab-RS/crates/qlrs-bundle)
+   Compiling qlrs-testkit v0.1.0 (/workspace/QuantLab-RS/crates/qlrs-testkit)
+    Finished `test` profile [optimized + debuginfo] target(s) in 0.71s
+     Running tests/allocations.rs (target/miri/x86_64-unknown-linux-gnu/debug/build/qlrs-testkit/5f14b68bedba1aac/out/allocations-5f14b68bedba1aac)
+warning: Miri does not support optimizations: the opt-level is ignored. The only effect of selecting a Cargo profile that enables optimizations (such as --release) is to apply its remaining settings, such as whether debug assertions and overflow checks are enabled.
+
+
+running 1 test
+test req_ledger_001_zero_allocations_in_replay_loop ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 28.81s
+
+warning: 1 warning emitted
+

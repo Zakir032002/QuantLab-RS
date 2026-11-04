@@ -1,0 +1,2 @@
+PASS: deliberately added ledger -> io runtime edge was rejected.
+qlrs-ledger -> qlrs-io: forbidden runtime edge

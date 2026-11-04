@@ -1,0 +1,27 @@
+   Compiling qlrs-bench v0.1.0 (/workspace/QuantLab-RS/crates/qlrs-bench)
+    Finished `bench` profile [optimized + debuginfo] target(s) in 7.72s
+     Running benches/instructions.rs (target/release/deps/instructions-81bf5f7264545b65)
+gungraun_runner: Warn : The RUST_LOG environment variable to set the log level changed to GUNGRAUN_LOG
+instructions::numeric::decimal_parse
+  Instructions:                                       1297|1288                 (+0.69876%) [+1.00699x]
+  L1 Hits:                                            1344|1326                 (+1.35747%) [+1.01357x]
+  LL Hits:                                               0|0                    (No change)
+  RAM Hits:                                             11|8                    (+37.5000%) [+1.37500x]
+  Total read+write:                                   1355|1334                 (+1.57421%) [+1.01574x]
+  Estimated Cycles:                                   1729|1606                 (+7.65878%) [+1.07659x]
+instructions::numeric::mul_rescale
+  Instructions:                                        125|125                  (No change)
+  L1 Hits:                                             144|145                  (-0.68966%) [-1.00694x]
+  LL Hits:                                               0|0                    (No change)
+  RAM Hits:                                              9|8                    (+12.5000%) [+1.12500x]
+  Total read+write:                                    153|153                  (No change)
+  Estimated Cycles:                                    459|425                  (+8.00000%) [+1.08000x]
+instructions::numeric::replay_1000 prepared:(setup_replay())
+  Instructions:                                      35063|N/A                  (*********)
+  L1 Hits:                                           49369|N/A                  (*********)
+  LL Hits:                                             522|N/A                  (*********)
+  RAM Hits:                                             11|N/A                  (*********)
+  Total read+write:                                  49902|N/A                  (*********)
+  Estimated Cycles:                                  52364|N/A                  (*********)
+
+Gungraun result: Ok. 3 without regressions; 0 regressed; 0 filtered; 3 benchmarks finished in 0.70766s
