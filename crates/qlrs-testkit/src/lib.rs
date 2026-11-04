@@ -287,3 +287,6 @@ pub fn generate(
 
 mod rich;
 pub use rich::{GeneratorConfig, generate_rich};
+
+mod shapes;
+pub use shapes::{SHAPES, generate_shape};

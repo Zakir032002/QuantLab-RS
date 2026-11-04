@@ -159,7 +159,8 @@ preceding same-scope claim, or the latest preceding claim for I3. Its expected
 cash/positions come only from the independent ledger. Its referenced order
 metadata, status and filled quantities permit continuing long-lived orders.
 Relevant prior trade IDs preserve cross-boundary uniqueness. Header/instruments
-and target anchors remain pinned, as do all fills in the local I1/I2 window.
+and the two same-scope boundary units remain pinned. Contributing fills are
+evaluated by exact residual equality; they are not hard-pinned.
 
 Observed opening cash/position values are separate `cash_window` and
 `position_windows` context, each with its original sequence and independently
@@ -173,51 +174,44 @@ retained; unrelated evidence schedules do not extend the window. CSR
 inventory dependencies consume checkpoint positions first and only reference
 post-cut buys for uncovered sells. Removing units closes over dependents.
 
-Stage A slices to pins/prerequisites. Stage B evaluates deterministic bounded
-batches of ddmin subsets/complements. Among verified successes, the smallest
-observed-event count wins; input order resolves ties. Stage C checks each
-remaining removable single closure. Results are closure-1-minimal relative to
-pins/closures only after that pass completes without exhaustion.
+SBR seeds nonzero algebraic contributions and their prerequisites. A rejected
+seed uses cost-sorted binary prefix unions; ddmin-closures is the explicit
+reference algorithm. Small exact financial windows also search cheaper numerical
+subsets, preserving checked residuals before full-oracle admission. A repeated
+single-closure pass certifies the final kept set relative to boundary pins.
+Do not assume global monotonicity or claim global minimality on large windows.
 
-Candidate hashing commits a u64 unit count, then each optional inclusive sequence
-bound as a presence byte/u64 little-endian pair, then little-endian mask words.
-The cache stores both admission and the exact verified finding. A u32 CSR event
-index supplies sorted retained events to the complete checker for I1/I2/I3,
-preconditions and target scope. Dense/sparse differential tests and an
-independent fingerprint-window counter protect equivalence. Incremental global
-and per-order kind counts replace repeated source-history scans. All accepted
-candidates have already passed complete replay; final bundle verification also
-reparses/replays the written witness.
+Numerical columns and prefix unions use checked i128 arithmetic; nonlinear
+rounding, I3 and overflow fall back to full checking. Cache hits compare canonical
+kept-unit lists in addition to a deterministic incremental 128-bit tabulation key.
+Scope/window identity is fixed per predicate. The full checker verifies every
+accepted result and the final witness. Dense/sparse and independent numerical
+properties protect both paths.
 
-Default cooperative limits are 30 seconds and 10000 candidate calls, including
-cache hits. Mandatory input validation is separate; setup and already-started
-replay finish safely. `--time-limit-ms` and `--max-calls` override defaults.
-Exhaustion returns the best verified witness with `closure_1_minimal:false` and
-`stop_reason`. A zero budget can return the verified original; if no lifecycle-
-valid target witness is known, an error is returned rather than inventing one.
-Completed searches/call-limited results are deterministic across thread counts;
-wall-time-limited cutoffs can differ with scheduling.
+Checkpoint v1 adds schema_version and preserves orders/trades. Bundle v1 records
+Anchor/Asserted/Evidence/Synthetic roles, original byte ranges, compact logs and a
+closure certificate. Legacy v0 reading retains full-trace verification. Optional
+certificate rechecking rebuilds dependencies and reproduces every rejection.
+Zero tested removable candidates is explicitly vacuous. Exhausted budgets return
+partial certificates and closure_1_minimal=false.
 
-Each log record contains the candidate commitment, removed-unit COUNT, result,
-cache hit and full-replay flag. Old removed-ID arrays remain readable. Logs no
-longer grow proportionally to removed history per candidate. The input-validation
-fallback has one initial record and zero candidate calls; other records correspond
-to actual budgeted predicate calls. Errors remain fallible, not cache misses.
+Default limits remain 30 seconds and 10000 candidate calls including cache hits.
+Keep --time-limit-ms and --max-calls. Mandatory input, context and final validation
+are outside search caps; a zero budget returns the verified scoped window.
+Only wall-clock exhaustion is permitted to produce different cutoffs across runs.
 
-The extended gate covers D01-D11 on interleaved, long-lived and sparse multi-
-instrument traces with carried-forward errors. For each of the three profiles,
-250000 orders produce over a million events. Fixed limits are 128 observed
-witness events, 2000 ms reduction time and 1024 candidate calls; exact target
-replay, byte-identical observations, labelled context and a complete minimality
-pass are mandatory. The original six-event D01/D03/D07 gate remains unchanged.
+The rebased gate covers D01-D11 on S1-S9 with actual event counts recorded for
+requested 1k/10k/100k budgets and seeds 1/2/3. Per-case bounds are target-window
+fills plus two boundary claims plus order context, or twice the exhaustive
+minimum where computable. Small windows use the stricter exhaustive comparison.
+No universal 32-event cap is imposed on sparse windows. Each generated profile
+has removable context; some cases must test real certificate candidates.
+The historical Part 1 rich/six-event gates remain active separately.
 
-Bundles use `qlrs-bundle/v0` with the files in the supplied contract and an
-additional `manifest.blake3` detached commitment. Paths are allowlisted, unique,
-sorted regular files; traversal, symlinks and unexpected files are rejected.
-Verification rehashes every byte, checks canonical manifest encoding, replays
-with the labelled checkpoint, and requires the exact finding and instance key.
-This is integrity checking, not author authentication or proof of removed history
-without access to the original trace. The original digest is a source commitment.
+Bundles retain detached manifest.blake3 commitments, strict canonical manifests,
+allowlisted sorted regular files and exact full-oracle finding verification.
+Integrity detects corruption; it does not authenticate an author or prove removed
+history without the original trace. The original digest remains a commitment.
 
 - REQ-IO-005: cash only header needs no instruments.
 
@@ -291,3 +285,15 @@ positions need no invented buy unit. Full financial replay remains authoritative
 - REQ-CHECK-014: a proven violation outranks uncovered tails and remains reducible.
 - REQ-REDUCE-009: I2 witnesses retain only target-scope position evidence.
 - REQ-REDUCE-010: R1 D04 sizes finish within the existing bounded search.
+
+- REQ-REDUCE-011: cache forced collision and incremental toggles.
+
+- REQ-REDUCE-012: long-lived and second carried-error regressions.
+
+- REQ-REDUCE-013: algebra agrees with the independent full checker per shape.
+
+- REQ-REDUCE-014: evaluate_batch selects valid results and enforces caps.
+
+- REQ-REDUCE-015: remove_closure preserves dependencies, pins and no-op behavior.
+
+- REQ-GATE-002: nine profiles exercise removals and offline closure proofs.

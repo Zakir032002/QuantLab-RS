@@ -42,6 +42,9 @@ enum Command {
         /// Maximum candidate predicate calls, including cache hits.
         #[arg(long, default_value_t = 10_000)]
         max_calls: u64,
+        /// sbr (default), or ddmin-closures for reference comparisons.
+        #[arg(long, default_value = "sbr", value_parser = ["sbr", "ddmin-closures"])]
+        algorithm: String,
     },
     /// Verify an existing evidence bundle offline.
     Bundle {
@@ -51,7 +54,11 @@ enum Command {
 }
 #[derive(Subcommand)]
 enum BundleCommand {
-    Verify { directory: PathBuf },
+    Verify {
+        directory: PathBuf,
+        #[arg(long)]
+        recheck_certificate: bool,
+    },
 }
 fn checkpoint(path: Option<PathBuf>) -> Result<Option<SyntheticCheckpoint>, String> {
     path.map(|path| {
@@ -93,11 +100,12 @@ fn run(cli: Cli) -> Result<u8, String> {
             target_seq,
             time_limit_ms,
             max_calls,
+            algorithm,
         } => {
             let cp = checkpoint(cp)?;
             let mut trace = qlrs_io::ParsedTrace::read(trace).map_err(|e| e.to_string())?;
             qlrs_ledger::Ledger::prepare_with_checkpoint(&mut trace.store, cp.as_ref())?;
-            let reduction = qlrs_reduce::reduce_with_limits(
+            let reduction = qlrs_reduce::reduce_with_options(
                 &trace.store,
                 &qlrs_io::digest(&trace.source),
                 cp.as_ref(),
@@ -105,6 +113,11 @@ fn run(cli: Cli) -> Result<u8, String> {
                 qlrs_reduce::ReductionLimits {
                     max_calls,
                     time_limit: std::time::Duration::from_millis(time_limit_ms),
+                },
+                if algorithm == "sbr" {
+                    qlrs_reduce::Algorithm::Sbr
+                } else {
+                    qlrs_reduce::Algorithm::DdminClosures
                 },
             )?;
             let manifest = qlrs_bundle::write(output, &trace, &reduction)?;
@@ -115,9 +128,13 @@ fn run(cli: Cli) -> Result<u8, String> {
             Ok(0)
         }
         Command::Bundle {
-            command: BundleCommand::Verify { directory },
+            command:
+                BundleCommand::Verify {
+                    directory,
+                    recheck_certificate,
+                },
         } => {
-            let manifest = qlrs_bundle::verify(directory)?;
+            let manifest = qlrs_bundle::verify_with_options(directory, recheck_certificate)?;
             io::stdout()
                 .lock()
                 .write_all(&qlrs_io::encode(&manifest).map_err(|e| e.to_string())?)

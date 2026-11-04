@@ -886,6 +886,7 @@ dependencies = [
  "qlrs-num",
  "qlrs-reduce",
  "qlrs-schema",
+ "rayon",
 ]
 
 [[package]]

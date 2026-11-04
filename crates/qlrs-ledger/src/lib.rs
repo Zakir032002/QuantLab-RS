@@ -123,6 +123,22 @@ impl Ledger {
             return;
         }
         store.prepared = true;
+        store.orders.quantity_limit = (0..store.orders.id.len())
+            .map(|order| {
+                let instrument = store
+                    .orders
+                    .instrument
+                    .get(order)
+                    .and_then(|id| store.header.instruments.get(*id as usize))?;
+                Fixed::new(
+                    *store.orders.qty_raw.get(order)?,
+                    *store.orders.qty_scale.get(order)?,
+                )
+                .and_then(|value| value.rescale(instrument.qty_precision, Rounding::Exact))
+                .ok()
+                .map(Fixed::raw)
+            })
+            .collect();
         store.delta_cash.resize(store.len(), 0);
         store.fill_qty.resize(store.fills.order.len(), 0);
         let Some(currency) = store.header.currencies.first() else {
@@ -261,7 +277,8 @@ impl Ledger {
             cut_seq: checkpoint.map(|cp| cp.cut_seq),
         };
         if let Some(cp) = checkpoint {
-            if cp.provenance != "synthetic"
+            if cp.schema_version > 1
+                || cp.provenance != "synthetic"
                 || cp.account_id != store.account()
                 || cp.currency != store.header.model.base_currency
                 || cp.source_digest.len() != 64

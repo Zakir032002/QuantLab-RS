@@ -1,4 +1,4 @@
-name: Part 1 quality
+name: QuantLab quality
 on:
   push:
   pull_request:
@@ -12,6 +12,8 @@ jobs:
       matrix:
         os: [ubuntu-24.04, macos-15-intel]
     runs-on: ${{ matrix.os }}
+    env:
+      QLRS_DIFFERENTIAL_CASES: 10000
     steps:
       - uses: actions/checkout@v4
       - name: Pinned compiler and tools

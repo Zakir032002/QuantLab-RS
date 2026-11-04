@@ -3,11 +3,73 @@
 #![allow(clippy::missing_errors_doc, clippy::module_name_repetitions)]
 use qlrs_check::{Checker, Finding, InstanceKey};
 use qlrs_io::{ParsedTrace, decode, digest, encode};
+use qlrs_reduce::Certificate;
 use qlrs_reduce::Reduction;
 use qlrs_schema::{AliveMask, Model, Status, SyntheticCheckpoint};
 use serde::{Deserialize, Serialize};
 use std::{collections::BTreeSet, fs, path::Path};
 
+/// Whether an immutable observed record is asserted or supplies context.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+pub enum WitnessRole {
+    #[doc = "Observed opening, never asserted."]
+    Anchor,
+    #[doc = "Target assertion."]
+    Asserted,
+    #[doc = "Observed supporting event."]
+    Evidence,
+    #[doc = "Independent expected state."]
+    Synthetic,
+}
+/// A role and its original byte/sequence provenance.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct RoleEntry {
+    /// Observed sequence, absent for synthetic state.
+    pub original_seq: Option<u64>,
+    /// Original source byte range, absent for synthetic state.
+    pub source_range: Option<[usize; 2]>,
+    /// Evidence role.
+    pub role: WitnessRole,
+}
+fn roles(trace: &ParsedTrace, reduction: &Reduction) -> Result<Vec<RoleEntry>, String> {
+    let mut out = Vec::new();
+    for event in 0..trace.store.len() {
+        if !reduction.alive.contains_event(&trace.store, event) {
+            continue;
+        }
+        let seq = *trace.store.spine.seq.get(event).ok_or("missing sequence")?;
+        let range = trace
+            .lines
+            .get(event.saturating_add(1))
+            .ok_or("missing source range")?;
+        out.push(RoleEntry {
+            original_seq: Some(seq),
+            source_range: Some([range.start, range.end]),
+            role: if seq == reduction.target.window.end_seq {
+                WitnessRole::Asserted
+            } else if Some(seq) == reduction.target.window.start_seq
+                && reduction
+                    .target
+                    .instance_key
+                    .as_ref()
+                    .is_some_and(|key| key.invariant_id != qlrs_check::Invariant::I3)
+            {
+                WitnessRole::Anchor
+            } else {
+                WitnessRole::Evidence
+            },
+        });
+    }
+    if reduction.checkpoint.is_some() {
+        out.push(RoleEntry {
+            original_seq: None,
+            source_range: None,
+            role: WitnessRole::Synthetic,
+        });
+    }
+    Ok(out)
+}
 /// File content commitment; paths are restricted to the v0 allowlist.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
@@ -55,6 +117,15 @@ pub struct Manifest {
     /// Actual candidate calls; absent in older bundles.
     #[serde(default, skip_serializing_if = "zero_calls")]
     pub predicate_calls: u64,
+    /// Final removable closures actually tested (zero is vacuous).
+    #[serde(default, skip_serializing_if = "zero_calls")]
+    pub certificate_candidates_tested: u64,
+    /// Reserved full-check slots, including canceled speculative work.
+    #[serde(default, skip_serializing_if = "zero_calls")]
+    pub full_calls: u64,
+    /// Algebraic queries.
+    #[serde(default, skip_serializing_if = "zero_calls")]
+    pub fast_probes: u64,
     /// Exhausted search budget, when minimality has not been certified.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub stop_reason: Option<qlrs_reduce::LimitReason>,
@@ -111,6 +182,16 @@ pub fn write(
             &encode(checkpoint).map_err(|e| e.to_string())?,
         )?);
     }
+    files.push(put(
+        dir,
+        "minimality_certificate.json",
+        &encode(&reduction.certificate).map_err(|e| e.to_string())?,
+    )?);
+    files.push(put(
+        dir,
+        "witness_roles.json",
+        &encode(&roles(trace, reduction)?).map_err(|e| e.to_string())?,
+    )?);
     let mut log = Vec::new();
     for entry in &reduction.log {
         log.extend(encode(entry).map_err(|e| e.to_string())?);
@@ -150,6 +231,9 @@ pub fn write(
             .ok_or("missing target key")?,
         closure_1_minimal: reduction.closure_1_minimal,
         predicate_calls: reduction.predicate_calls,
+        certificate_candidates_tested: reduction.certificate.candidates_tested,
+        full_calls: reduction.full_calls,
+        fast_probes: reduction.fast_probes,
         stop_reason: reduction.stop_reason,
         minimality_guarantee: minimality_text(reduction.closure_1_minimal).into(),
         retained_events: reduction.retained_events,
@@ -169,6 +253,14 @@ pub fn write(
 /// Integrity detects corruption; it does not authenticate a malicious author.
 #[allow(clippy::too_many_lines)]
 pub fn verify(dir: impl AsRef<Path>) -> Result<Manifest, String> {
+    verify_with_options(dir, false)
+}
+/// Verify integrity and optionally replay every certificate candidate offline.
+#[allow(clippy::too_many_lines)]
+pub fn verify_with_options(
+    dir: impl AsRef<Path>,
+    recheck_certificate: bool,
+) -> Result<Manifest, String> {
     let dir = dir.as_ref();
     let manifest_bytes = regular_file(dir, "manifest.json")?;
     let commitment = regular_file(dir, "manifest.blake3")?;
@@ -195,6 +287,8 @@ pub fn verify(dir: impl AsRef<Path>) -> Result<Manifest, String> {
         "reduction_log.jsonl",
         "synthetic_checkpoint.json",
         "violation.json",
+        "minimality_certificate.json",
+        "witness_roles.json",
     ];
     let mut names = BTreeSet::from(["manifest.json".to_owned(), "manifest.blake3".to_owned()]);
     let mut previous = "";
@@ -222,6 +316,11 @@ pub fn verify(dir: impl AsRef<Path>) -> Result<Manifest, String> {
         if !names.contains(required) {
             return Err(format!("missing file: {required}"));
         }
+    }
+    if manifest.schema == "qlrs-bundle/v1"
+        && (!names.contains("minimality_certificate.json") || !names.contains("witness_roles.json"))
+    {
+        return Err("v1 proof files missing".into());
     }
     let actual: Result<BTreeSet<_>, _> = fs::read_dir(dir)
         .map_err(|e| e.to_string())?
@@ -272,6 +371,71 @@ pub fn verify(dir: impl AsRef<Path>) -> Result<Manifest, String> {
         || !report.findings.contains(&expected)
     {
         return Err("target instance or evidence not reproduced".into());
+    }
+    if manifest.schema == "qlrs-bundle/v1" {
+        let certificate: Certificate = decode(&regular_file(dir, "minimality_certificate.json")?)
+            .map_err(|e| e.to_string())?;
+        if certificate.target != manifest.instance_key
+            || certificate.complete != manifest.closure_1_minimal
+            || certificate.candidates_tested != manifest.certificate_candidates_tested
+            || certificate.vacuous != (certificate.candidates_tested == 0)
+        {
+            return Err("certificate and manifest disagree".into());
+        }
+        let entries: Vec<RoleEntry> =
+            decode(&regular_file(dir, "witness_roles.json")?).map_err(|e| e.to_string())?;
+        if entries.len()
+            != trace
+                .store
+                .len()
+                .saturating_add(usize::from(checkpoint.is_some()))
+        {
+            return Err("role coverage mismatch".into());
+        }
+        let mut previous_end = 0;
+        for (event, seq) in trace.store.spine.seq.iter().enumerate() {
+            let entry = entries.get(event).ok_or("missing role")?;
+            let wanted = if *seq == expected.window.end_seq {
+                WitnessRole::Asserted
+            } else if Some(*seq) == expected.window.start_seq
+                && manifest.instance_key.invariant_id != qlrs_check::Invariant::I3
+            {
+                WitnessRole::Anchor
+            } else {
+                WitnessRole::Evidence
+            };
+            let [first, last] = entry.source_range.ok_or("missing observed range")?;
+            let local = trace
+                .lines
+                .get(event.saturating_add(1))
+                .ok_or("missing observed bytes")?;
+            if entry.original_seq != Some(*seq)
+                || entry.role != wanted
+                || first < previous_end
+                || last < first
+                || u64::try_from(last).map_err(|_| "invalid source range")?
+                    > manifest.original_trace.byte_length
+                || last.saturating_sub(first) != local.len()
+            {
+                return Err("invalid witness role or range".into());
+            }
+            previous_end = last;
+        }
+        if checkpoint.is_some()
+            && entries.last()
+                != Some(&RoleEntry {
+                    original_seq: None,
+                    source_range: None,
+                    role: WitnessRole::Synthetic,
+                })
+        {
+            return Err("missing synthetic role".into());
+        }
+        if recheck_certificate {
+            qlrs_reduce::recheck_certificate(&trace.store, checkpoint.as_ref(), &certificate)?;
+        }
+    } else if recheck_certificate {
+        return Err("legacy v0 bundle has no closure certificate".into());
     }
     let log_bytes = regular_file(dir, "reduction_log.jsonl")?;
     let mut entries = 0_usize;

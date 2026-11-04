@@ -4,6 +4,8 @@ use qlrs_num::Fixed;
 use qlrs_schema::{Account, CashRounding, Currency, Header, Instrument, Model, Origin};
 
 /// Deterministic generator dimensions, independent of the defect operator.
+// These switches are independent generator axes, not mutually exclusive states.
+#[allow(clippy::struct_excessive_bools)]
 #[derive(Debug, Clone)]
 pub struct GeneratorConfig {
     /// Ordinary and long-lived orders, excluding inventory bootstrap orders.
@@ -20,6 +22,16 @@ pub struct GeneratorConfig {
     pub long_lived_orders: usize,
     /// Keep a planted cash/position offset in subsequent observations.
     pub carry_errors: bool,
+    /// Independent cash and per-instrument observation schedules.
+    pub staggered: bool,
+    /// Add a second, earlier carried cash error without selecting it as target.
+    pub earlier_cash_error: bool,
+    /// Perturb every position claim by an increasing instrument-local offset.
+    pub dense_violations: bool,
+    /// Number of initial buy orders before a scaled sell (zero disables).
+    pub fifo_ladder: usize,
+    /// A clean parent emits one-lot partials throughout ordinary batches.
+    pub parent_partials: bool,
 }
 impl GeneratorConfig {
     /// Named reproducible profiles used by the extended gate.
@@ -38,6 +50,11 @@ impl GeneratorConfig {
             claim_every,
             long_lived_orders: long_lived_orders.min(orders.saturating_sub(1)),
             carry_errors: true,
+            staggered: false,
+            earlier_cash_error: false,
+            dense_violations: false,
+            fifo_ladder: 0,
+            parent_partials: false,
         })
     }
 }
@@ -46,6 +63,8 @@ struct Order {
     instrument: usize,
     sell: bool,
     defect: Option<Defect>,
+    factor: i128,
+    parent: bool,
 }
 struct Generator {
     config: GeneratorConfig,
@@ -62,6 +81,7 @@ struct Generator {
     pending_position: Option<usize>,
     scale_cash: bool,
     target_seq: Option<u64>,
+    observations: usize,
 }
 impl Generator {
     fn price(&self, instrument: usize) -> i128 {
@@ -85,18 +105,37 @@ impl Generator {
             self.cash_bias = (self.cash + self.cash_bias) * 10 - self.cash;
             self.scale_cash = false;
         }
+        self.observations = self.observations.saturating_add(1);
+        let cash_due =
+            !self.config.staggered || force || self.pending_cash || self.observations % 3 == 1;
         let balance = Self::money(self.cash + self.cash_bias)?;
-        let seq = emit(
-            &mut self.out,
-            &mut self.seq,
-            "AccountClaim",
-            format_args!("\"currency\":\"INR\",\"balance_total\":\"{balance}\""),
-        )?;
-        if self.pending_cash {
-            self.target_seq = Some(seq);
-            self.pending_cash = false;
+        if cash_due {
+            let seq = emit(
+                &mut self.out,
+                &mut self.seq,
+                "AccountClaim",
+                format_args!("\"currency\":\"INR\",\"balance_total\":\"{balance}\""),
+            )?;
+            if self.pending_cash {
+                self.target_seq = Some(seq);
+                self.pending_cash = false;
+            }
         }
         for instrument in 0..self.positions.len() {
+            let position_due = if instrument == 0 {
+                self.observations % 3 == 2
+            } else {
+                self.observations % (instrument.saturating_add(3)) == instrument.saturating_sub(1)
+            };
+            if self.config.staggered && !force && !position_due {
+                continue;
+            }
+            if self.config.dense_violations {
+                *self
+                    .position_bias
+                    .get_mut(instrument)
+                    .ok_or("missing position bias")? += 1000;
+            }
             let quantity = Self::quantity(
                 self.positions
                     .get(instrument)
@@ -144,19 +183,37 @@ impl Generator {
         if defect == Some(Defect::D04) && available < 20_000 {
             return Err("D04 target requires unreserved sell inventory".into());
         }
-        let is_sell = defect == Some(Defect::D04)
-            || (id / self.config.instruments % 3 == 2 && available >= 20_000);
+        let ladder_sell = self.config.fifo_ladder > 0 && id == self.config.fifo_ladder;
+        let factor = if ladder_sell {
+            i128::try_from(self.config.fifo_ladder).map_err(|_| "ladder too long")?
+        } else {
+            1
+        };
+        let is_sell = ladder_sell
+            || defect == Some(Defect::D04)
+            || (id >= self.config.fifo_ladder
+                && id / self.config.instruments % 3 == 2
+                && available >= 20_000);
         if is_sell {
             let reserved = self
                 .reserved
                 .get_mut(instrument)
                 .ok_or("missing reservation")?;
-            *reserved += 20_000;
+            *reserved += 20_000 * factor;
         }
-        let quantity = if defect == Some(Defect::D08) {
-            "10.000"
+        let parent = self.config.parent_partials && id == 0 && defect.is_none();
+        let quantity = if parent {
+            let parts = self
+                .config
+                .orders
+                .saturating_sub(self.config.long_lived_orders)
+                .div_ceil(self.config.active_orders)
+                .saturating_add(2);
+            Self::quantity(i128::try_from(parts).map_err(|_| "parent too long")? * 1000)?
+        } else if defect == Some(Defect::D08) {
+            "10.000".to_owned()
         } else {
-            "20.000"
+            Self::quantity(20_000 * factor)?
         };
         emit(
             &mut self.out,
@@ -180,10 +237,18 @@ impl Generator {
             instrument,
             sell: is_sell,
             defect,
+            factor,
+            parent,
         })
     }
     fn fill(&mut self, order: &Order, part: usize) -> Result<(), String> {
-        let qty = if part == 0 { 5_i128 } else { 15_i128 };
+        let qty = if order.parent {
+            1
+        } else if part == 0 {
+            5_i128
+        } else {
+            15_i128
+        } * order.factor;
         let price = self.price(order.instrument);
         let notional = qty * price * 100;
         let trade_part = if order.defect == Some(Defect::D11) {
@@ -215,6 +280,9 @@ impl Generator {
         }
         let delta = if order.sell { notional } else { -notional } - self.fee * 100;
         self.cash += delta;
+        if self.config.earlier_cash_error && order.id == 0 && part == 1 {
+            self.cash_bias += 100;
+        }
         if part == 0 {
             if order.defect == Some(Defect::D06) {
                 *self
@@ -343,6 +411,7 @@ pub fn generate_rich(
         pending_position: None,
         scale_cash: false,
         target_seq: None,
+        observations: 0,
     };
     generator.flush(true)?;
     // Observed bootstrap orders provide long-only sell inventory. Checkpoints
@@ -407,12 +476,17 @@ pub fn generate_rich(
             let index = offset.saturating_add(rotation) % active.len();
             generator.fill(active.get(index).ok_or("invalid order")?, 1)?;
         }
+        if generator.config.parent_partials {
+            for order in &long_lived {
+                generator.fill(order, next.saturating_add(2))?;
+            }
+        }
         next = stop;
     }
     for order in long_lived.iter().rev() {
         generator.fill(order, 1)?;
     }
-    generator.flush(false)?;
+    generator.flush(true)?;
     if mutation.is_some() && generator.target_seq.is_none() {
         return Err("defect target was not emitted".into());
     }

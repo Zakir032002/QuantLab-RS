@@ -31,3 +31,10 @@ source and successful command result are in
 [carrying-mul-probe.txt](../validation-results/carrying-mul-probe.txt). Existing
 safe, independently tested limb arithmetic is retained; switching to the newer
 primitive without a demonstrated benefit is deferred (ADR-0001/0006).
+
+Part 2 recheck: Rayon 1.12.0, released 2026-04-14, not yanked, verified
+2026-11-05 Asia/Calcutta (2026-11-04 UTC) via
+https://crates.io/api/v1/crates/rayon . The direct testkit edge reuses this exact
+workspace pin; no package version was added or bumped. Raw metadata:
+bench/results/CP2.8/rayon-release.json. Rust remains 1.99.1; CP2.0 contains the
+official channel recheck.

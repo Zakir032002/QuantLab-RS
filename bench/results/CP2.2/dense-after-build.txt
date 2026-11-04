@@ -1,0 +1,49 @@
+   Compiling qlrs-check v0.1.0 (/workspace/QuantLab-RS/crates/qlrs-check)
+   Compiling qlrs-reduce v0.1.0 (/workspace/QuantLab-RS/crates/qlrs-reduce)
+warning: field `fast_probes` is never read
+   --> crates/qlrs-reduce/src/lib.rs:450:5
+    |
+439 | pub struct ReductionPredicate<'a> {
+    |            ------------------ field in this struct
+...
+450 |     fast_probes: u64,
+    |     ^^^^^^^^^^^
+    |
+    = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+warning: field `rejection` is never read
+   --> crates/qlrs-reduce/src/lib.rs:689:5
+    |
+686 | struct CandidateResult {
+    |        --------------- field in this struct
+...
+689 |     rejection: Option<Rejection>,
+    |     ^^^^^^^^^
+    |
+    = note: `CandidateResult` has a derived impl for the trait `Clone`, but this is intentionally ignored during dead code analysis
+
+warning: missing documentation for a struct field
+ --> crates/qlrs-reduce/src/certificate.rs:9:23
+  |
+9 |     ResidualChanged { new_residual: String },
+  |                       ^^^^^^^^^^^^^^^^^^^^
+  |
+  = note: requested on the command line with `-W missing-docs`
+
+warning: missing documentation for a struct field
+  --> crates/qlrs-reduce/src/certificate.rs:11:20
+   |
+11 |     NewViolation { key: InstanceKey },
+   |                    ^^^^^^^^^^^^^^^^
+
+warning: missing documentation for a struct field
+  --> crates/qlrs-reduce/src/certificate.rs:13:24
+   |
+13 |     LifecycleInvalid { sub_code: String },
+   |                        ^^^^^^^^^^^^^^^^
+
+   Compiling qlrs-bundle v0.1.0 (/workspace/QuantLab-RS/crates/qlrs-bundle)
+   Compiling qlrs-testkit v0.1.0 (/workspace/QuantLab-RS/crates/qlrs-testkit)
+warning: `qlrs-reduce` (lib) generated 5 warnings
+    Finished `release` profile [optimized + debuginfo] target(s) in 10.32s
+     Running `target/release/examples/part2_metrics`

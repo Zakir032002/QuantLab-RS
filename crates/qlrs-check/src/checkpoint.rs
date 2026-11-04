@@ -253,6 +253,7 @@ impl Checker {
             .map_or(digest, |cp| cp.source_digest.as_str())
             .to_owned();
         Ok(SyntheticCheckpoint {
+            schema_version: 1,
             provenance: "synthetic".into(),
             account_id: store.account().into(),
             currency: store.header.model.base_currency.clone(),

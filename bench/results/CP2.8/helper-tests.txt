@@ -1,0 +1,11 @@
+   Compiling qlrs-reduce v0.1.0 (/workspace/QuantLab-RS/crates/qlrs-reduce)
+    Finished `test` profile [optimized + debuginfo] target(s) in 2.33s
+     Running unittests src/lib.rs (target/debug/deps/qlrs_reduce-0e18891faa17176f)
+
+running 3 tests
+test cache::tests::req_reduce_011_cache_forced_collision_and_incremental_toggles ... ok
+test helper_tests::req_reduce_015_remove_closure_respects_dependents_pins_and_noops ... ok
+test helper_tests::req_reduce_014_evaluate_batch_selects_success_and_obeys_limits ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+

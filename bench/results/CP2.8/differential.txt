@@ -1,0 +1,12 @@
+   Compiling qlrs-reduce v0.1.0 (/workspace/QuantLab-RS/crates/qlrs-reduce)
+   Compiling qlrs-bundle v0.1.0 (/workspace/QuantLab-RS/crates/qlrs-bundle)
+   Compiling qlrs-testkit v0.1.0 (/workspace/QuantLab-RS/crates/qlrs-testkit)
+    Finished `test` profile [optimized + debuginfo] target(s) in 1.90s
+     Running tests/differential_part2.rs (target/debug/deps/differential_part2-3178b404481793f7)
+
+running 1 test
+differential: 10000 cases per invariant per shape, 9 shapes, no mismatches
+test req_reduce_013_algebra_matches_full_checker_on_closed_subsets_per_shape ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.72s
+

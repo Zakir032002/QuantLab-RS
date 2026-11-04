@@ -65,26 +65,13 @@ pub(crate) fn terminal(state: OrderState) -> bool {
     )
 }
 pub(crate) fn quantity_limit(store: &TraceStore, order: usize) -> Result<i128, NumericError> {
-    let instrument = store
+    store
         .orders
-        .instrument
+        .quantity_limit
         .get(order)
-        .and_then(|id| store.header.instruments.get(*id as usize))
-        .ok_or(NumericError::InvalidDecimal)?;
-    Fixed::new(
-        *store
-            .orders
-            .qty_raw
-            .get(order)
-            .ok_or(NumericError::InvalidDecimal)?,
-        *store
-            .orders
-            .qty_scale
-            .get(order)
-            .ok_or(NumericError::InvalidDecimal)?,
-    )?
-    .rescale(instrument.qty_precision, Rounding::Exact)
-    .map(qlrs_num::Fixed::raw)
+        .copied()
+        .flatten()
+        .ok_or(NumericError::InvalidDecimal)
 }
 pub(crate) enum ProgressTable {
     Dense(Vec<Progress>),

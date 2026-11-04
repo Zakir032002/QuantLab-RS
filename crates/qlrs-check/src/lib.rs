@@ -15,7 +15,7 @@ mod checkpoint;
 mod fingerprint;
 mod lifecycle;
 pub use fingerprint::{class_fingerprint, fingerprint_bytes};
-use lifecycle::{ProgressTable, quantity_limit, terminal};
+use lifecycle::{ProgressTable, terminal};
 use std::collections::HashSet;
 
 /// Invariant identifier, stable across evidence versions.
@@ -156,7 +156,7 @@ impl Checker {
         checkpoint: Option<&SyntheticCheckpoint>,
         partial: bool,
     ) -> Report {
-        Self::check_events(store, alive, checkpoint, partial, None)
+        Self::check_events(store, alive, checkpoint, partial, None, 0..store.len())
     }
     /// Complete invariant checking over sorted retained event indices.
     /// The same core checker is used for dense and sparse replay.
@@ -168,7 +168,14 @@ impl Checker {
         partial: bool,
         events: &[usize],
     ) -> Report {
-        Self::check_events(store, alive, checkpoint, partial, Some(events))
+        Self::check_events(
+            store,
+            alive,
+            checkpoint,
+            partial,
+            Some(events),
+            events.iter().copied(),
+        )
     }
     /// Replay a witness under its declared target scope. Tail-coverage checks
     /// belong to full traces; all retained lifecycle/model checks still apply.
@@ -179,7 +186,12 @@ impl Checker {
         checkpoint: Option<&SyntheticCheckpoint>,
         target: &InstanceKey,
     ) -> Report {
-        witness_report(Self::check(store, alive, checkpoint, true), target)
+        witness_report(
+            Self::check(store, alive, checkpoint, true),
+            target,
+            store,
+            alive,
+        )
     }
     /// Scoped witness replay over sorted retained event indices.
     #[must_use]
@@ -193,6 +205,8 @@ impl Checker {
         witness_report(
             Self::check_selected(store, alive, checkpoint, true, events),
             target,
+            store,
+            alive,
         )
     }
     // SAFETY-BOUNDS: validated column shapes and payload references guard the core loop.
@@ -203,6 +217,7 @@ impl Checker {
         checkpoint: Option<&SyntheticCheckpoint>,
         partial: bool,
         events: Option<&[usize]>,
+        indices: impl Iterator<Item = usize>,
     ) -> Report {
         let mut report = Report {
             status: Status::Consistent,
@@ -389,12 +404,7 @@ impl Checker {
         let start = checkpoint.map_or(0, |cp| {
             store.spine.seq.partition_point(|seq| *seq < cp.cut_seq)
         });
-        let sequence: Box<dyn Iterator<Item = usize> + '_> = if let Some(events) = events {
-            Box::new(events.iter().copied())
-        } else {
-            Box::new(start..store.len())
-        };
-        for event in sequence {
+        for event in indices {
             if !alive.contains_event(store, event) || event < start {
                 continue;
             }
@@ -442,7 +452,7 @@ impl Checker {
                     financial = false;
                     continue;
                 };
-                let limit = quantity_limit(store, order).ok();
+                let limit = store.orders.quantity_limit.get(order).copied().flatten();
                 let qty = if kind == Kind::Filled {
                     store.fill_qty.get(payload).copied().unwrap_or(0)
                 } else {
@@ -714,6 +724,9 @@ impl Checker {
                                 && let Some(residual) = observed.raw().checked_sub(expected)
                             {
                                 if residual != 0 && !opening {
+                                    if report.findings.is_empty() {
+                                        report.findings.reserve(store.position_claims.raw.len());
+                                    }
                                     report.findings.push(violation(
                                         store,
                                         Invariant::I2,
@@ -843,7 +856,33 @@ fn finish(mut report: Report, partial: bool) -> Report {
     report
 }
 
-fn witness_report(mut report: Report, target: &InstanceKey) -> Report {
+fn witness_report(
+    mut report: Report,
+    target: &InstanceKey,
+    store: &TraceStore,
+    alive: &AliveMask,
+) -> Report {
+    let missing_opening = report
+        .findings
+        .iter()
+        .filter(|finding| finding.instance_key.as_ref() == Some(target))
+        .filter(|_| target.invariant_id != Invariant::I3)
+        .filter_map(|finding| finding.window.start_seq)
+        .any(|seq| {
+            store
+                .spine
+                .seq
+                .binary_search(&seq)
+                .ok()
+                .is_none_or(|event| !alive.contains_event(store, event))
+        });
+    if missing_opening {
+        report.findings.push(limitation(
+            Status::Inconclusive,
+            target.anchor_claim_original_seq,
+            "missing-witness-anchor",
+        ));
+    }
     report.findings.retain(|finding| {
         !finding
             .reason

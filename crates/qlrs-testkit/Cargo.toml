@@ -18,6 +18,7 @@ expect_used = "deny"
 indexing_slicing = "warn"
 
 [dependencies]
+rayon.workspace = true
 qlrs-num.workspace = true
 qlrs-schema.workspace = true
 qlrs-io.workspace = true

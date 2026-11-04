@@ -281,6 +281,8 @@ pub struct Spine {
 /// Submitted order metadata, referenced by all lifecycle events.
 #[derive(Debug, Clone, Default)]
 pub struct Orders {
+    /// Prepared submitted quantities at each instrument quantity precision.
+    pub quantity_limit: Vec<Option<i128>>,
     #[doc = "id column or schema field."]
     pub id: Vec<Id>,
     #[doc = "instrument column or schema field."]
@@ -673,6 +675,9 @@ impl AliveMask {
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
 pub struct SyntheticCheckpoint {
+    /// Version 1 preserves orders/trades; absent in legacy checkpoints.
+    #[serde(default, skip_serializing_if = "legacy_checkpoint_version")]
+    pub schema_version: u16,
     #[doc = "provenance column or schema field."]
     pub provenance: String,
     #[doc = "account id column or schema field."]
@@ -761,4 +766,9 @@ pub struct CheckpointPosition {
     pub instrument_id: String,
     #[doc = "net qty column or schema field."]
     pub net_qty: String,
+}
+
+#[allow(clippy::trivially_copy_pass_by_ref)]
+fn legacy_checkpoint_version(version: &u16) -> bool {
+    *version == 0
 }

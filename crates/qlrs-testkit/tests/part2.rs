@@ -154,3 +154,87 @@ fn req_reduce_010_r1_d04_sizes_finish_under_existing_budgets() {
         assert!(result.predicate_calls <= 200);
     }
 }
+
+#[test]
+fn req_gate_002_shapes_have_real_removals_and_recheckable_certificates() {
+    use qlrs_testkit::{DEFECTS, SHAPES, generate_shape};
+    let mut tested = 0;
+    for shape in SHAPES {
+        for defect in DEFECTS.into_iter().take(11) {
+            let fixture = generate_shape(shape, 3, 1000, Some(defect)).unwrap();
+            let trace = prepared(fixture.bytes);
+            let result = qlrs_reduce::reduce(
+                &trace.store,
+                &qlrs_io::digest(&trace.source),
+                None,
+                fixture.target_seq,
+            )
+            .unwrap_or_else(|error| panic!("{shape} {defect:?}: {error}"));
+            assert!(result.closure_1_minimal, "{shape} {defect:?}");
+            assert!(result.certificate.complete);
+            assert_eq!(
+                result.certificate.vacuous,
+                result.certificate.candidates_tested == 0
+            );
+            tested += result.certificate.candidates_tested;
+            let noise = trace.store.order_index("NOISE").unwrap();
+            assert!(
+                !result
+                    .alive
+                    .contains(*trace.store.orders.unit.get(noise).unwrap() as usize)
+            );
+            let dir = std::env::temp_dir().join(format!(
+                "qlrs-p2-cert-{}-{shape}-{defect:?}",
+                std::process::id()
+            ));
+            qlrs_bundle::write(&dir, &trace, &result).unwrap();
+            qlrs_bundle::verify_with_options(&dir, true)
+                .unwrap_or_else(|error| panic!("{shape} {defect:?}: {error}"));
+            std::fs::remove_dir_all(dir).unwrap();
+        }
+    }
+    assert!(tested > 0);
+}
+
+#[test]
+fn req_reduce_012_long_lived_and_second_carried_error_are_bounded() {
+    use qlrs_testkit::generate_shape;
+    for shape in ["S3", "S6"] {
+        let fixture = generate_shape(shape, 42, 12_000, Some(Defect::D04)).unwrap();
+        let trace = prepared(fixture.bytes);
+        let original = Checker::check(
+            &trace.store,
+            &AliveMask::all(trace.store.units.len()),
+            None,
+            true,
+        );
+        let result = qlrs_reduce::reduce_with_limits(
+            &trace.store,
+            &qlrs_io::digest(&trace.source),
+            None,
+            fixture.target_seq,
+            qlrs_reduce::ReductionLimits {
+                max_calls: 200,
+                time_limit: std::time::Duration::from_secs(5),
+            },
+        )
+        .unwrap();
+        assert!(result.closure_1_minimal);
+        assert!(result.predicate_calls <= 200);
+        assert_eq!(
+            result.target.instance_key,
+            original
+                .at_seq(fixture.target_seq.unwrap())
+                .unwrap()
+                .instance_key
+        );
+        if shape == "S6" {
+            assert!(
+                original
+                    .keys()
+                    .any(|key| key.anchor_claim_original_seq < fixture.target_seq.unwrap())
+            );
+            assert!(result.target.window.start_seq.is_some());
+        }
+    }
+}

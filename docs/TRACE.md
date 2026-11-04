@@ -68,3 +68,15 @@ Every requirement maps to an executable test. CI checks the mapping.
 | REQ-CHECK-014 | `req_check_014_violation_dominates_uncovered_tail_and_is_reducible` | [part2.rs](../crates/qlrs-testkit/tests/part2.rs) |
 | REQ-REDUCE-009 | `req_reduce_009_i2_witness_needs_only_its_instrument_and_position_claims` | [part2.rs](../crates/qlrs-testkit/tests/part2.rs) |
 | REQ-REDUCE-010 | `req_reduce_010_r1_d04_sizes_finish_under_existing_budgets` | [part2.rs](../crates/qlrs-testkit/tests/part2.rs) |
+
+| REQ-REDUCE-011 | `req_reduce_011_cache_forced_collision_and_incremental_toggles` | [test](../crates/qlrs-reduce/src/cache.rs) |
+
+| REQ-REDUCE-012 | `req_reduce_012_long_lived_and_second_carried_error_are_bounded` | [test](../crates/qlrs-testkit/tests/part2.rs) |
+
+| REQ-REDUCE-013 | `req_reduce_013_algebra_matches_full_checker_on_closed_subsets_per_shape` | [test](../crates/qlrs-testkit/tests/differential_part2.rs) |
+
+| REQ-REDUCE-014 | `req_reduce_014_evaluate_batch_selects_success_and_obeys_limits` | [test](../crates/qlrs-reduce/src/lib.rs) |
+
+| REQ-REDUCE-015 | `req_reduce_015_remove_closure_respects_dependents_pins_and_noops` | [test](../crates/qlrs-reduce/src/lib.rs) |
+
+| REQ-GATE-002 | `req_gate_002_shapes_have_real_removals_and_recheckable_certificates` | [test](../crates/qlrs-testkit/tests/part2.rs) |

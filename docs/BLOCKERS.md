@@ -1,3 +1,16 @@
+# Part 2 checkpoint limits
+
+CP2.2 R4 scaling gate is stopped after two measured attempts on this shared Linux
+host. Raw samples: bench/results/CP2.2/dense-checker.jsonl and
+ dense-checker-after-reserve.jsonl. First medians: 1,954,778 ns / 28,174,363 ns
+(ratio 14.413). Reserving dense finding output changed medians to 2,206,738 ns /
+26,998,455 ns (ratio 12.2346), still above the fixed 12 limit. Both 100k checks
+are below 0.5 seconds. Hypothesis: output allocation/cache behavior dominates
+this workload. Do not claim CP2.2 passed or change the threshold. Other Part 2
+checkpoints can proceed independently. No third attempt at this gate is made.
+
+The macOS ARM capacity limitation and older Part 1 provenance follow below.
+
 # Status and remaining limitations
 
 There is no local or cross-platform quality blocker to the synthetic Part 1
