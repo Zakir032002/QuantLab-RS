@@ -41,6 +41,13 @@ with explicit kept-event and time bounds. Extend mutation scope to reducer and
 fingerprint code, preserve the legacy score floor and record new scope floors
 from actual completed campaigns.
 
+The initial expanded mutation run exposed FIFO mutants that repeatedly
+reinserted a zero remainder and timed out. Do not count those timeouts as kills
+or loosen the zero-timeout gate. Consume queue entries monotonically and return
+a residual lot only after consumption finishes. Extend the FIFO regression to
+cover a partially consumed buy lot spanning two sells, then rerun the complete
+campaign on the corrected source.
+
 ## Consequences
 
 Checkpoint and log fields extend the v0 contract; older absent optional context

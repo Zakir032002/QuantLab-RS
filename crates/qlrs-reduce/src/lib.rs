@@ -66,6 +66,7 @@ impl UnitGraph {
                     let covered = quantity.min(*opening);
                     *opening = opening.checked_sub(covered).ok_or("inventory overflow")?;
                     let mut needed = quantity.checked_sub(covered).ok_or("inventory overflow")?;
+                    let mut remainder = None;
                     while needed > 0 {
                         let Some((buy, qty)) = history.pop_front() else {
                             return Err("sell inventory not covered by checkpoint or buys".into());
@@ -81,8 +82,14 @@ impl UnitGraph {
                             .checked_sub(consumed)
                             .ok_or("dependency quantity overflow")?;
                         if remaining > 0 {
-                            history.push_front((buy, remaining));
+                            remainder = Some((buy, remaining));
                         }
+                    }
+                    // Each iteration permanently consumes one queue entry.
+                    // Return a partially consumed lot only after the loop, so
+                    // even a zero lot can never be repeatedly re-enqueued.
+                    if let Some(lot) = remainder {
+                        history.push_front(lot);
                     }
                 }
                 None => return Err("missing side".into()),

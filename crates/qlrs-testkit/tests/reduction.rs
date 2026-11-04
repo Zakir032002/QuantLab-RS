@@ -206,7 +206,7 @@ fn req_graph_001_sell_closures_consume_earlier_buy_inventory() {
         "\"client_order_id\":\"O3\",\"instrument_id\":\"X\",\"side\":\"BUY\"",
         "\"client_order_id\":\"O3\",\"instrument_id\":\"X\",\"side\":\"SELL\"",
     );
-    let input = prepared(text.into_bytes());
+    let mut input = prepared(text.into_bytes());
     let graph = UnitGraph::build(&input.store).unwrap();
     let units = &input.store.orders.unit;
     let a = *units.first().unwrap() as usize;
@@ -215,6 +215,16 @@ fn req_graph_001_sell_closures_consume_earlier_buy_inventory() {
     let d = *units.get(3).unwrap() as usize;
     assert!(graph.closure(&[a]).contains(&c));
     assert!(!graph.closure(&[a]).contains(&d));
+    assert!(graph.closure(&[b]).contains(&d));
+    assert!(!graph.closure(&[b]).contains(&c));
+
+    // The first sell leaves part of A; the next sell needs that remainder
+    // followed by B. Returning a residual lot must preserve FIFO dependencies.
+    *input.store.fill_qty.get_mut(0).unwrap() = 30_000;
+    *input.store.fill_qty.get_mut(1).unwrap() = 10_000;
+    let graph = UnitGraph::build(&input.store).unwrap();
+    assert!(graph.closure(&[a]).contains(&c));
+    assert!(graph.closure(&[a]).contains(&d));
     assert!(graph.closure(&[b]).contains(&d));
     assert!(!graph.closure(&[b]).contains(&c));
 }
