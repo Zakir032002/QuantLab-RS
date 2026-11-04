@@ -80,3 +80,13 @@ Every requirement maps to an executable test. CI checks the mapping.
 | REQ-REDUCE-015 | `req_reduce_015_remove_closure_respects_dependents_pins_and_noops` | [test](../crates/qlrs-reduce/src/lib.rs) |
 
 | REQ-GATE-002 | `req_gate_002_shapes_have_real_removals_and_recheckable_certificates` | [test](../crates/qlrs-testkit/tests/part2.rs) |
+
+| REQ-BUNDLE-002 | `req_bundle_002_v1_roles_and_certificates_reject_false_proofs` | [test](../crates/qlrs-testkit/tests/part2.rs) |
+
+| REQ-BUNDLE-003 | `req_bundle_003_original_v0_writer_bundle_still_verifies` | [test](../crates/qlrs-testkit/tests/part2.rs) |
+
+| REQ-REDUCE-016 | `req_reduce_016_unit_renaming_preserves_observed_witness` | [test](../crates/qlrs-testkit/tests/part2.rs) |
+
+| REQ-REDUCE-017 | `req_reduce_017_nonmonotone_superset_is_saved_and_seed_recovers` | [test](../crates/qlrs-testkit/tests/part2.rs) |
+
+| REQ-REDUCE-018 | `req_reduce_018_graph_commitment_is_canonical_and_rle_is_exact` | [test](../crates/qlrs-reduce/src/lib.rs) |

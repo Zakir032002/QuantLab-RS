@@ -118,8 +118,8 @@ pub struct Manifest {
     #[serde(default, skip_serializing_if = "zero_calls")]
     pub predicate_calls: u64,
     /// Final removable closures actually tested (zero is vacuous).
-    #[serde(default, skip_serializing_if = "zero_calls")]
-    pub certificate_candidates_tested: u64,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub certificate_candidates_tested: Option<u64>,
     /// Reserved full-check slots, including canceled speculative work.
     #[serde(default, skip_serializing_if = "zero_calls")]
     pub full_calls: u64,
@@ -193,7 +193,7 @@ pub fn write(
         &encode(&roles(trace, reduction)?).map_err(|e| e.to_string())?,
     )?);
     let mut log = Vec::new();
-    for entry in &reduction.log {
+    for entry in &reduction.steps {
         log.extend(encode(entry).map_err(|e| e.to_string())?);
     }
     files.push(put(dir, "reduction_log.jsonl", &log)?);
@@ -231,7 +231,7 @@ pub fn write(
             .ok_or("missing target key")?,
         closure_1_minimal: reduction.closure_1_minimal,
         predicate_calls: reduction.predicate_calls,
-        certificate_candidates_tested: reduction.certificate.candidates_tested,
+        certificate_candidates_tested: Some(reduction.certificate.candidates_tested),
         full_calls: reduction.full_calls,
         fast_probes: reduction.fast_probes,
         stop_reason: reduction.stop_reason,
@@ -377,7 +377,7 @@ pub fn verify_with_options(
             .map_err(|e| e.to_string())?;
         if certificate.target != manifest.instance_key
             || certificate.complete != manifest.closure_1_minimal
-            || certificate.candidates_tested != manifest.certificate_candidates_tested
+            || Some(certificate.candidates_tested) != manifest.certificate_candidates_tested
             || certificate.vacuous != (certificate.candidates_tested == 0)
         {
             return Err("certificate and manifest disagree".into());
@@ -440,7 +440,17 @@ pub fn verify_with_options(
     let log_bytes = regular_file(dir, "reduction_log.jsonl")?;
     let mut entries = 0_usize;
     for line in log_bytes.split_inclusive(|b| *b == b'\n') {
-        let _: qlrs_reduce::LogEntry = decode(line).map_err(|e| e.to_string())?;
+        if manifest.schema == "qlrs-bundle/v1" {
+            let entry: qlrs_reduce::StepLog = decode(line).map_err(|e| e.to_string())?;
+            if entry.schema != "qlrs-reduce-log/v1"
+                || entry.step != u64::try_from(entries).map_err(|_| "too many steps")?
+                || !matches!(entry.phase.as_str(), "input" | "search" | "certificate")
+            {
+                return Err("invalid compact reduction log".into());
+            }
+        } else {
+            let _: qlrs_reduce::LogEntry = decode(line).map_err(|e| e.to_string())?;
+        }
         entries = entries.saturating_add(1);
     }
     if entries == 0 {

@@ -9,9 +9,11 @@
 mod algebra;
 mod cache;
 mod certificate;
+mod log;
 pub use algebra::{ContributionTable, FastPredicate};
 use cache::{Cached, HashState, lookup};
 pub use certificate::{Certificate, ClosureTest, Rejection, UnitIdentity, rle};
+pub use log::{StepLog, StepOutcome};
 use qlrs_check::{Checker, Finding, InstanceKey, Invariant, Report};
 use qlrs_ledger::Ledger;
 use qlrs_schema::{AliveMask, Kind, Side, Status, SyntheticCheckpoint, TraceStore};
@@ -448,6 +450,7 @@ pub struct ReductionPredicate<'a> {
     hash_state: HashState,
     full_calls: u64,
     fast_probes: u64,
+    commits: Vec<Commit>,
     log: Vec<LogEntry>,
 }
 impl<'a> ReductionPredicate<'a> {
@@ -490,6 +493,7 @@ impl<'a> ReductionPredicate<'a> {
             hash_state: HashState::default(),
             full_calls: 0,
             fast_probes: 0,
+            commits: Vec::new(),
             log: Vec::new(),
         })
     }
@@ -607,6 +611,22 @@ impl<'a> ReductionPredicate<'a> {
             rejection: Some(outcome),
         })
     }
+    fn record_commit(&mut self, mask: &AliveMask) {
+        let units = self.canonical(mask);
+        if self
+            .commits
+            .last()
+            .is_some_and(|commit| commit.units == units)
+        {
+            return;
+        }
+        self.commits.push(Commit {
+            units,
+            events: self.events.kept(mask).len(),
+            full: self.full_calls,
+            fast: self.fast_probes,
+        });
+    }
     fn canonical(&self, mask: &AliveMask) -> Vec<u32> {
         self.events
             .unit_ids
@@ -681,6 +701,12 @@ impl<'a> ReductionPredicate<'a> {
         }
         Ok(out)
     }
+}
+struct Commit {
+    units: Vec<u32>,
+    events: usize,
+    full: u64,
+    fast: u64,
 }
 #[derive(Clone)]
 struct CandidateResult {
@@ -761,6 +787,8 @@ pub struct Reduction {
     pub full_calls: u64,
     /// Checked numerical prefilter queries.
     pub fast_probes: u64,
+    /// Versioned compact wire log, separate from legacy candidate telemetry.
+    pub steps: Vec<StepLog>,
 }
 /// Search strategy; SBR is the default, ddmin remains a reference implementation.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, Default)]
@@ -856,8 +884,35 @@ pub fn reduce_with_options(
         budget.calls = budget.calls.saturating_add(1);
     }
     if !verified {
-        return Err("claim-boundary context failed exact original replay".into());
+        if budget.reason().is_some() {
+            return Err(
+                "budget exhausted before a lifecycle-valid target witness was verified".into(),
+            );
+        }
+        let pins = pin_window(store, &target, &current)?;
+        let graph =
+            UnitGraph::build_with_checkpoint(store, predicate.checkpoint.as_ref(), &current)?;
+        let mut roots = predicate.contributions.seed_roots();
+        roots.extend(pins.iter());
+        let mut seed =
+            AliveMask::empty(store.units.len()).with_range(current.bounds().0, current.bounds().1);
+        for unit in graph.prerequisites(&roots) {
+            if current.contains(unit) {
+                seed.set(unit, true);
+            }
+        }
+        let accepted = predicate
+            .batch(std::slice::from_ref(&seed))?
+            .first()
+            .copied()
+            .unwrap_or(false);
+        budget.calls = budget.calls.saturating_add(1);
+        if !accepted {
+            return Err("claim-boundary context failed exact original replay".into());
+        }
+        current = seed;
     }
+    predicate.record_commit(&current);
     if budget.reason().is_some() {
         return finish_reduction(predicate, current, &budget, false, Vec::new());
     }
@@ -881,6 +936,7 @@ pub fn reduce_with_options(
         budget.calls = budget.calls.saturating_add(1);
         if accepted {
             current = sliced.clone();
+            predicate.record_commit(&current);
         }
     }
     if algorithm == Algorithm::DdminClosures {
@@ -917,6 +973,7 @@ pub fn reduce_with_options(
                     if batch.len() == 8 || index.saturating_add(1) == chunks.len() {
                         if let Some(best) = evaluate_batch(&mut predicate, &mut budget, &batch)? {
                             current = best;
+                            predicate.record_commit(&current);
                             improved = true;
                             break;
                         }
@@ -997,6 +1054,7 @@ pub fn reduce_with_options(
                     .ok_or("missing winning prefix")?;
                 let point = *positions.get(index).ok_or("missing prefix position")?;
                 current = best;
+                predicate.record_commit(&current);
                 if point == 0 {
                     break;
                 }
@@ -1105,6 +1163,7 @@ pub fn reduce_with_options(
                     }
                     if let Some(best) = evaluate_batch(&mut predicate, &mut budget, &[candidate])? {
                         current = best;
+                        predicate.record_commit(&current);
                         break;
                     }
                 }
@@ -1142,6 +1201,7 @@ pub fn reduce_with_options(
                 budget.calls = budget.calls.saturating_add(1);
                 if accepted {
                     current = candidate;
+                    predicate.record_commit(&current);
                     improved = true;
                     break;
                 }
@@ -1197,6 +1257,7 @@ fn finish_reduction(
         entries,
         certified && stop_reason.is_none(),
     )?;
+    let steps = compact_steps(&predicate, &current, &certificate)?;
     let retained_events = predicate.events.kept(&current).len();
     Ok(Reduction {
         alive: current,
@@ -1210,7 +1271,60 @@ fn finish_reduction(
         certificate,
         full_calls: predicate.full_calls,
         fast_probes: predicate.fast_probes,
+        steps,
     })
+}
+
+fn compact_steps(
+    predicate: &ReductionPredicate<'_>,
+    current: &AliveMask,
+    certificate: &Certificate,
+) -> Result<Vec<StepLog>, String> {
+    let mut out = Vec::new();
+    let mut previous: Vec<u32> = Vec::new();
+    for commit in &predicate.commits {
+        let removed: Vec<_> = previous
+            .iter()
+            .filter(|unit| commit.units.binary_search(unit).is_err())
+            .map(|id| *id as usize)
+            .collect();
+        out.push(StepLog {
+            schema: "qlrs-reduce-log/v1".into(),
+            step: u64::try_from(out.len()).map_err(|_| "too many steps")?,
+            phase: if out.is_empty() { "input" } else { "search" }.into(),
+            removed: rle(&removed),
+            kept_units: commit.units.len(),
+            kept_events: commit.events,
+            calls_full: commit.full,
+            probes_fast: commit.fast,
+            outcome: StepOutcome::Accepted,
+        });
+        previous.clone_from(&commit.units);
+    }
+    for entry in &certificate.entries {
+        let mut candidate = current.clone();
+        for range in &entry.removed_closure {
+            let first = *range.first().ok_or("invalid RLE")?;
+            let last = *range.get(1).ok_or("invalid RLE")?;
+            for unit in first..=last {
+                candidate.set(unit as usize, false);
+            }
+        }
+        out.push(StepLog {
+            schema: "qlrs-reduce-log/v1".into(),
+            step: u64::try_from(out.len()).map_err(|_| "too many steps")?,
+            phase: "certificate".into(),
+            removed: entry.removed_closure.clone(),
+            kept_units: candidate.count(),
+            kept_events: predicate.events.kept(&candidate).len(),
+            calls_full: predicate.full_calls,
+            probes_fast: predicate.fast_probes,
+            outcome: StepOutcome::Rejected {
+                reason: entry.outcome.clone(),
+            },
+        });
+    }
+    Ok(out)
 }
 
 fn build_certificate(
@@ -1291,13 +1405,33 @@ fn graph_commitment(graph: &UnitGraph, identities: &[UnitIdentity]) -> Result<St
     identities_sorted.sort_by_key(|identity| identity.first_original_seq);
     for identity in identities_sorted {
         hash.update(&identity.first_original_seq.to_le_bytes());
+        let row = graph
+            .unit_ids
+            .binary_search(&identity.id)
+            .map_err(|_| "unknown graph row")?;
+        let start = graph
+            .offsets
+            .get(row)
+            .copied()
+            .ok_or("missing graph offset")? as usize;
+        let end = graph
+            .offsets
+            .get(row.saturating_add(1))
+            .copied()
+            .ok_or("missing graph offset")? as usize;
         let mut dependents: Vec<_> = graph
-            .closure(&[identity.id as usize])
-            .into_iter()
-            .map(|dependent| {
+            .targets
+            .get(start..end)
+            .ok_or("invalid graph row")?
+            .iter()
+            .map(|target| {
+                let id = *graph
+                    .unit_ids
+                    .get(*target as usize)
+                    .ok_or("invalid graph target")?;
                 identities
                     .iter()
-                    .find(|identity| identity.id as usize == dependent)
+                    .find(|identity| identity.id == id)
                     .map(|identity| identity.first_original_seq)
                     .ok_or("unknown graph unit")
             })
@@ -1359,6 +1493,15 @@ pub fn recheck_certificate(
         &"0".repeat(64),
     )?;
     predicate.original = certificate.original_keys.iter().cloned().collect();
+    if predicate.original.len() != certificate.original_keys.len()
+        || certificate
+            .original_keys
+            .windows(2)
+            .any(|pair| pair.first() >= pair.get(1))
+        || !predicate.classify(&all)?.accepted
+    {
+        return Err("certificate baseline predicate failed".into());
+    }
     let target = original
         .findings
         .iter()
@@ -1683,5 +1826,58 @@ mod helper_tests {
         assert_eq!(remove_closure(&small, &graph, &[3], &pinned), None);
         let smaller = remove_closure(&current, &graph, &[1], &AliveMask::empty(4)).unwrap();
         assert_eq!(smaller.iter().collect::<Vec<_>>(), vec![0, 3]);
+    }
+    #[test]
+    fn req_reduce_018_graph_commitment_is_canonical_and_rle_is_exact() {
+        let (offsets, targets) = csr(2, &[(0, 1)]).unwrap();
+        let (parent_offsets, parents) = csr(2, &[(1, 0)]).unwrap();
+        let graph = UnitGraph {
+            unit_ids: vec![5, 9],
+            offsets,
+            targets,
+            parent_offsets,
+            parents,
+        };
+        let ids = vec![
+            UnitIdentity {
+                id: 5,
+                first_original_seq: 10,
+            },
+            UnitIdentity {
+                id: 9,
+                first_original_seq: 20,
+            },
+        ];
+        let mut encoded = b"qlrs-graph/v1".to_vec();
+        for value in [10_u64, 20, u64::MAX, 20, u64::MAX] {
+            encoded.extend_from_slice(&value.to_le_bytes());
+        }
+        let digest = graph_commitment(&graph, &ids).unwrap();
+        assert_eq!(digest.len(), 64);
+        assert_eq!(digest, blake3::hash(&encoded).to_hex().to_string());
+        let renamed = UnitGraph {
+            unit_ids: vec![50, 90],
+            ..graph.clone()
+        };
+        let renamed_ids = vec![
+            UnitIdentity {
+                id: 90,
+                first_original_seq: 20,
+            },
+            UnitIdentity {
+                id: 50,
+                first_original_seq: 10,
+            },
+        ];
+        assert_eq!(graph_commitment(&renamed, &renamed_ids).unwrap(), digest);
+        let (offsets, targets) = csr(2, &[]).unwrap();
+        let independent = UnitGraph {
+            offsets,
+            targets,
+            ..graph
+        };
+        assert_ne!(graph_commitment(&independent, &ids).unwrap(), digest);
+        assert_eq!(rle(&[0, 1, 2, 5, 8, 9]), vec![[0, 2], [5, 5], [8, 9]]);
+        assert_eq!(rle(&[]), [] as [[u32; 2]; 0]);
     }
 }

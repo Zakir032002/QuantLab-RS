@@ -237,4 +237,207 @@ fn req_reduce_012_long_lived_and_second_carried_error_are_bounded() {
             assert!(result.target.window.start_seq.is_some());
         }
     }
+    let fixture = generate_rich(
+        GeneratorConfig::profile("long-lived", 2400, 42).unwrap(),
+        Some((Defect::D07, 0)),
+    )
+    .unwrap();
+    let trace = prepared(fixture.bytes);
+    let result = qlrs_reduce::reduce_with_limits(
+        &trace.store,
+        &qlrs_io::digest(&trace.source),
+        None,
+        fixture.target_seq,
+        qlrs_reduce::ReductionLimits {
+            max_calls: 200,
+            time_limit: std::time::Duration::from_secs(5),
+        },
+    )
+    .unwrap();
+    assert!(result.closure_1_minimal);
+    assert!(result.checkpoint.as_ref().unwrap().cut_seq > 10_000);
+    assert!(result.predicate_calls <= 200);
+}
+
+#[test]
+fn req_bundle_002_v1_roles_and_certificates_reject_false_proofs() {
+    let fixture = qlrs_testkit::generate_shape("S9", 3, 1000, Some(Defect::D06)).unwrap();
+    let trace = prepared(fixture.bytes);
+    let result = qlrs_reduce::reduce(
+        &trace.store,
+        &qlrs_io::digest(&trace.source),
+        None,
+        fixture.target_seq,
+    )
+    .unwrap();
+    let dir = std::env::temp_dir().join(format!("qlrs-proof-tamper-{}", std::process::id()));
+    let manifest = qlrs_bundle::write(&dir, &trace, &result).unwrap();
+    assert_eq!(manifest.schema, "qlrs-bundle/v1");
+    assert_eq!(
+        manifest.certificate_candidates_tested,
+        Some(result.certificate.candidates_tested)
+    );
+    let roles: Vec<qlrs_bundle::RoleEntry> =
+        qlrs_io::decode(&std::fs::read(dir.join("witness_roles.json")).unwrap()).unwrap();
+    assert_eq!(
+        roles
+            .iter()
+            .filter(|entry| entry.role == qlrs_bundle::WitnessRole::Anchor)
+            .count(),
+        1
+    );
+    assert_eq!(
+        roles
+            .iter()
+            .filter(|entry| entry.role == qlrs_bundle::WitnessRole::Asserted)
+            .count(),
+        1
+    );
+    assert!(
+        roles
+            .iter()
+            .any(|entry| entry.role == qlrs_bundle::WitnessRole::Synthetic)
+    );
+    assert!(
+        roles
+            .iter()
+            .any(|entry| entry.role == qlrs_bundle::WitnessRole::Evidence)
+    );
+    let mut witness = qlrs_io::ParsedTrace::read(dir.join("reduced_trace.jsonl")).unwrap();
+    let checkpoint: qlrs_schema::SyntheticCheckpoint =
+        qlrs_io::decode(&std::fs::read(dir.join("synthetic_checkpoint.json")).unwrap()).unwrap();
+    assert_eq!(checkpoint.schema_version, 1);
+    qlrs_ledger::Ledger::prepare_with_checkpoint(&mut witness.store, Some(&checkpoint)).unwrap();
+    let check = |certificate: &qlrs_reduce::Certificate| {
+        qlrs_reduce::recheck_certificate(&witness.store, Some(&checkpoint), certificate)
+    };
+    check(&result.certificate).unwrap();
+    let mut bad = result.certificate.clone();
+    bad.candidates_tested += 1;
+    assert!(check(&bad).is_err());
+    let mut bad = result.certificate.clone();
+    bad.graph_digest = "0".repeat(64);
+    assert!(check(&bad).is_err());
+    let mut bad = result.certificate.clone();
+    bad.entries.pop();
+    assert!(check(&bad).is_err());
+    let mut bad = result.certificate.clone();
+    bad.original_keys.clear();
+    assert!(check(&bad).is_err());
+    let mut bad = result.certificate.clone();
+    bad.pinned.clear();
+    assert!(check(&bad).is_err());
+    let mut bad = result.certificate.clone();
+    bad.kept_units.pop();
+    assert!(check(&bad).is_err());
+    let mut bad = result.certificate.clone();
+    bad.entries.first_mut().unwrap().removed_closure = vec![[0, u32::MAX]];
+    assert!(check(&bad).is_err());
+    let mut bad = result.certificate.clone();
+    bad.entries.first_mut().unwrap().outcome = qlrs_reduce::Rejection::ResidualChanged {
+        new_residual: "123456789".into(),
+    };
+    assert!(check(&bad).is_err());
+    let log = std::fs::read(dir.join("reduction_log.jsonl")).unwrap();
+    assert!(
+        std::str::from_utf8(&log)
+            .unwrap()
+            .contains("qlrs-reduce-log/v1")
+    );
+    assert!(log.len() < 16_384);
+    qlrs_bundle::verify_with_options(&dir, true).unwrap();
+    std::fs::remove_dir_all(dir).unwrap();
+}
+
+#[test]
+fn req_reduce_016_unit_renaming_preserves_observed_witness() {
+    let fixture = qlrs_testkit::generate_shape("S5", 42, 1000, Some(Defect::D06)).unwrap();
+    let first = prepared(fixture.bytes.clone());
+    let mut second = prepared(fixture.bytes);
+    let count = second.store.units.len();
+    second.store.units.reverse();
+    for unit in &mut second.store.spine.unit {
+        *unit = u32::try_from(count.saturating_sub(1).saturating_sub(*unit as usize)).unwrap();
+    }
+    for unit in &mut second.store.orders.unit {
+        *unit = u32::try_from(count.saturating_sub(1).saturating_sub(*unit as usize)).unwrap();
+    }
+    let a = qlrs_reduce::reduce(
+        &first.store,
+        &qlrs_io::digest(&first.source),
+        None,
+        fixture.target_seq,
+    )
+    .unwrap();
+    let b = qlrs_reduce::reduce(
+        &second.store,
+        &qlrs_io::digest(&second.source),
+        None,
+        fixture.target_seq,
+    )
+    .unwrap();
+    let mut left = Vec::new();
+    first.write_kept(&a.alive, &mut left).unwrap();
+    let mut right = Vec::new();
+    second.write_kept(&b.alive, &mut right).unwrap();
+    assert_eq!(left, right);
+    assert_eq!(a.target.instance_key, b.target.instance_key);
+    assert_eq!(a.checkpoint, b.checkpoint);
+}
+
+#[test]
+fn req_reduce_017_nonmonotone_superset_is_saved_and_seed_recovers() {
+    use qlrs_reduce::{Predicate, ReductionPredicate};
+    let trace =
+        prepared(include_bytes!("../../../fixtures/part2/nonmonotone-extra-order.jsonl").to_vec());
+    let original = Checker::check(
+        &trace.store,
+        &AliveMask::all(trace.store.units.len()),
+        None,
+        true,
+    );
+    let key = original.at_seq(7).unwrap().instance_key.clone().unwrap();
+    let mut predicate = ReductionPredicate::new(
+        &trace.store,
+        key.clone(),
+        &original,
+        None,
+        &qlrs_io::digest(&trace.source),
+    )
+    .unwrap();
+    let b = predicate.candidate_mask(&AliveMask::all(trace.store.units.len()));
+    let mut a = b.clone();
+    let noise = trace.store.order_index("NOISE").unwrap();
+    a.set(*trace.store.orders.unit.get(noise).unwrap() as usize, false);
+    assert!(a.iter().all(|unit| b.contains(unit)));
+    assert!(predicate.test(&a).unwrap().accepted);
+    assert!(!predicate.test(&b).unwrap().accepted);
+    let result =
+        qlrs_reduce::reduce(&trace.store, &qlrs_io::digest(&trace.source), None, Some(7)).unwrap();
+    assert!(result.closure_1_minimal);
+    assert_eq!(result.target.instance_key, Some(key));
+    assert!(
+        !result
+            .alive
+            .contains(*trace.store.orders.unit.get(noise).unwrap() as usize)
+    );
+    println!("saved nonmonotone case: P(A)=true, P(B)=false, A subset B; SBR seed recovers");
+}
+
+#[test]
+fn req_bundle_003_original_v0_writer_bundle_still_verifies() {
+    let dir =
+        std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("../../fixtures/compat/bundle-v0");
+    let manifest = qlrs_bundle::verify(&dir).unwrap();
+    assert_eq!(manifest.schema, "qlrs-bundle/v0");
+    assert!(qlrs_bundle::verify_with_options(&dir, true).is_err());
+    let checkpoint: qlrs_schema::SyntheticCheckpoint =
+        qlrs_io::decode(&std::fs::read(dir.join("synthetic_checkpoint.json")).unwrap()).unwrap();
+    assert_eq!(checkpoint.schema_version, 0);
+    assert!(
+        !qlrs_io::encode(&checkpoint)
+            .unwrap()
+            .windows(b"schema_version".len())
+            .any(|bytes| bytes == b"schema_version")
+    );
 }

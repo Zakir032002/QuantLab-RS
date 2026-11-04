@@ -1,0 +1,19 @@
+   Compiling qlrs-reduce v0.1.0 (/workspace/QuantLab-RS/crates/qlrs-reduce)
+   Compiling qlrs-bundle v0.1.0 (/workspace/QuantLab-RS/crates/qlrs-bundle)
+   Compiling qlrs-testkit v0.1.0 (/workspace/QuantLab-RS/crates/qlrs-testkit)
+    Finished `test` profile [optimized + debuginfo] target(s) in 4.01s
+     Running tests/part2.rs (target/debug/deps/part2-ba680c5e47a44e85)
+
+running 9 tests
+test req_bundle_003_original_v0_writer_bundle_still_verifies ... ok
+test req_check_014_violation_dominates_uncovered_tail_and_is_reducible ... ok
+test req_reduce_009_i2_witness_needs_only_its_instrument_and_position_claims ... ok
+test req_bundle_002_v1_roles_and_certificates_reject_false_proofs ... ok
+test req_reduce_010_r1_d04_sizes_finish_under_existing_budgets ... ok
+test req_reduce_017_nonmonotone_superset_is_saved_and_seed_recovers ... ok
+test req_reduce_016_unit_renaming_preserves_observed_witness ... ok
+test req_reduce_012_long_lived_and_second_carried_error_are_bounded ... ok
+test req_gate_002_shapes_have_real_removals_and_recheckable_certificates ... ok
+
+test result: ok. 9 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.57s
+

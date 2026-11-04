@@ -297,3 +297,13 @@ positions need no invented buy unit. Full financial replay remains authoritative
 - REQ-REDUCE-015: remove_closure preserves dependencies, pins and no-op behavior.
 
 - REQ-GATE-002: nine profiles exercise removals and offline closure proofs.
+
+- REQ-BUNDLE-002: v1 roles and rejection certificates reject false proofs.
+
+- REQ-BUNDLE-003: original v0 writer bundles remain verifiable.
+
+- REQ-REDUCE-016: renaming units preserves observed witnesses.
+
+- REQ-REDUCE-017: saved nonmonotone supersets do not invalidate validated seeds.
+
+- REQ-REDUCE-018: graph commitments and RLE have canonical encodings.
