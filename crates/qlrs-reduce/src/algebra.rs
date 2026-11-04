@@ -158,3 +158,35 @@ impl FastPredicate for ContributionTable {
         self.constant.checked_sub(*self.prefix.get(end)?)
     }
 }
+
+#[cfg(test)]
+mod tests {
+    #![allow(clippy::unwrap_used)]
+    use super::*;
+    #[test]
+    fn req_reduce_022_shared_prerequisites_are_counted_once_and_overflow_falls_back() {
+        let mut table = ContributionTable {
+            units: vec![0, 1, 2],
+            values: vec![10, -4, 7],
+            prefix: vec![0, 10, 6, 13],
+            constant: 100,
+            linear: true,
+        };
+        let empty = AliveMask::empty(3);
+        assert_eq!(
+            table.closure_prefixes(&[vec![0, 1], vec![0, 2], vec![0, 1, 2]], &empty),
+            Some(vec![100, 94, 87, 87])
+        );
+        assert_eq!(table.prefix_residual(0), Some(100));
+        assert_eq!(table.prefix_residual(3), Some(87));
+        assert_eq!(table.prefix_residual(4), None);
+        let mut negative = empty.clone();
+        negative.set(1, true);
+        table.constant = i128::MAX;
+        assert_eq!(table.residual(&negative), None);
+        table.linear = false;
+        assert_eq!(table.residual(&empty), None);
+        assert_eq!(table.prefix_residual(0), None);
+        assert_eq!(table.closure_prefixes(&[], &empty), None);
+    }
+}

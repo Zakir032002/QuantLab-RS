@@ -70,6 +70,10 @@ fn main() {
     let seeds: &[u64] = if quick { &[3] } else { &[1, 2, 3] };
     let base = std::env::temp_dir().join(format!("qlrs-part2-gate-{}", std::process::id()));
     std::fs::create_dir(&base).unwrap();
+    let pools: Vec<_> = [1, 2, 8]
+        .into_iter()
+        .map(|threads| (threads, rayon_pool(threads)))
+        .collect();
     let mut total = 0;
     let mut failures = 0;
     let mut genuine = 0;
@@ -98,8 +102,7 @@ fn main() {
                     let minimum = exhaustive(&trace, &original, key, &digest);
                     let mut required = 0;
                     let mut context = 0;
-                    for threads in [1, 2, 8] {
-                        let pool = rayon_pool(threads);
+                    for (threads, pool) in &pools {
                         let start = Instant::now();
                         let result = pool
                             .install(|| {
@@ -116,7 +119,7 @@ fn main() {
                             })
                             .unwrap();
                         let elapsed = start.elapsed().as_nanos();
-                        if threads == 8 {
+                        if *threads == 8 {
                             ns8 = elapsed;
                         }
                         kept = result.retained_events;

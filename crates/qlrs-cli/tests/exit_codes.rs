@@ -163,3 +163,50 @@ fn req_cli_002_limits_preserve_verified_output_without_minimality_claim() {
     }
     std::fs::remove_dir_all(temp).unwrap();
 }
+
+#[test]
+fn req_cli_003_reference_algorithm_and_certificate_recheck() {
+    let dir = std::env::temp_dir().join(format!("qlrs-cli-p2-{}", std::process::id()));
+    std::fs::create_dir(&dir).unwrap();
+    let fixture =
+        qlrs_testkit::generate_shape("S9", 3, 1000, Some(qlrs_testkit::Defect::D06)).unwrap();
+    let trace = dir.join("trace.jsonl");
+    std::fs::write(&trace, fixture.bytes).unwrap();
+    let cli = env!("CARGO_BIN_EXE_qlrs");
+    for algorithm in ["sbr", "ddmin-closures"] {
+        let bundle = dir.join(algorithm);
+        let result = Command::new(cli)
+            .arg("reduce")
+            .arg(&trace)
+            .arg("--output")
+            .arg(&bundle)
+            .args([
+                "--algorithm",
+                algorithm,
+                "--time-limit-ms",
+                "30000",
+                "--max-calls",
+                "10000",
+            ])
+            .output()
+            .unwrap();
+        assert!(
+            result.status.success(),
+            "{}",
+            String::from_utf8_lossy(&result.stderr)
+        );
+        let result = Command::new(cli)
+            .args(["bundle", "verify"])
+            .arg(&bundle)
+            .arg("--recheck-certificate")
+            .output()
+            .unwrap();
+        assert!(
+            result.status.success(),
+            "{}",
+            String::from_utf8_lossy(&result.stderr)
+        );
+        assert!(String::from_utf8_lossy(&result.stdout).contains("certificate_candidates_tested"));
+    }
+    std::fs::remove_dir_all(dir).unwrap();
+}

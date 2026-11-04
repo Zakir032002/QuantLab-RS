@@ -441,3 +441,98 @@ fn req_bundle_003_original_v0_writer_bundle_still_verifies() {
             .any(|bytes| bytes == b"schema_version")
     );
 }
+
+#[test]
+fn req_reduce_020_i2_keeps_other_asset_fills_only_for_required_cash_support() {
+    use qlrs_reduce::{Predicate, ReductionPredicate};
+    let trace = prepared(include_bytes!("../../../fixtures/part2/i2-cash-support.jsonl").to_vec());
+    let digest = qlrs_io::digest(&trace.source);
+    let original = Checker::check(
+        &trace.store,
+        &AliveMask::all(trace.store.units.len()),
+        None,
+        true,
+    );
+    let target = original.at_seq(15).unwrap().instance_key.clone().unwrap();
+    let reduced = qlrs_reduce::reduce(&trace.store, &digest, None, Some(15)).unwrap();
+    assert!(reduced.closure_1_minimal);
+    assert_eq!(reduced.target.instance_key, Some(target.clone()));
+    assert!(reduced.log.iter().any(|entry| !entry.result));
+    assert!(reduced.fast_probes > 0);
+    assert!(reduced.full_calls >= 4);
+    let funding = trace.store.order_index("FUND").unwrap();
+    let funding_unit = *trace.store.orders.unit.get(funding).unwrap() as usize;
+    assert!(reduced.alive.contains(funding_unit));
+    let noise = trace.store.order_index("NOISE").unwrap();
+    assert!(
+        !reduced
+            .alive
+            .contains(*trace.store.orders.unit.get(noise).unwrap() as usize)
+    );
+    let mut removed = reduced.alive.clone();
+    removed.set(funding_unit, false);
+    let mut predicate =
+        ReductionPredicate::new(&trace.store, target, &original, None, &digest).unwrap();
+    assert!(!predicate.test(&removed).unwrap().accepted);
+    let dir = std::env::temp_dir().join(format!("qlrs-funding-{}", std::process::id()));
+    qlrs_bundle::write(&dir, &trace, &reduced).unwrap();
+    qlrs_bundle::verify_with_options(&dir, true).unwrap();
+    std::fs::remove_dir_all(dir).unwrap();
+}
+
+#[test]
+fn req_reduce_021_small_window_quality_matches_exhaustive_ground_truth() {
+    use qlrs_reduce::{Predicate, ReductionPredicate};
+    let fixture = qlrs_testkit::generate_shape("S2", 3, 1000, Some(Defect::D06)).unwrap();
+    let trace = prepared(fixture.bytes);
+    let digest = qlrs_io::digest(&trace.source);
+    let original = Checker::check(
+        &trace.store,
+        &AliveMask::all(trace.store.units.len()),
+        None,
+        true,
+    );
+    let finding = original.at_seq(fixture.target_seq.unwrap()).unwrap();
+    let key = finding.instance_key.clone().unwrap();
+    let mut predicate =
+        ReductionPredicate::new(&trace.store, key, &original, None, &digest).unwrap();
+    let window = predicate.candidate_mask(&AliveMask::all(trace.store.units.len()));
+    let units: Vec<_> = window.iter().collect();
+    assert!(units.len() <= 20);
+    let pins = qlrs_reduce::pinned_units(&trace.store, finding).unwrap();
+    let cp = predicate.candidate_checkpoint(&window).unwrap();
+    let graph =
+        qlrs_reduce::UnitGraph::build_with_checkpoint(&trace.store, cp.as_ref(), &window).unwrap();
+    let mut minimum = usize::MAX;
+    for bits in 0..(1_u64 << units.len()) {
+        let mut mask = AliveMask::empty(trace.store.units.len())
+            .with_range(window.bounds().0, window.bounds().1);
+        for (index, unit) in units.iter().enumerate() {
+            if bits & (1_u64 << index) != 0 {
+                mask.set(*unit, true);
+            }
+        }
+        if pins.iter().any(|unit| !mask.contains(unit))
+            || graph
+                .prerequisites(&mask.iter().collect::<Vec<_>>())
+                .iter()
+                .any(|unit| !mask.contains(*unit))
+        {
+            continue;
+        }
+        if predicate.test(&mask).unwrap().accepted {
+            minimum = minimum.min(
+                (0..trace.store.len())
+                    .filter(|event| mask.contains_event(&trace.store, *event))
+                    .count(),
+            );
+        }
+    }
+    assert!(minimum < usize::MAX);
+    let reduced = qlrs_reduce::reduce(&trace.store, &digest, None, fixture.target_seq).unwrap();
+    assert_eq!(reduced.retained_events, minimum);
+    println!(
+        "S2 D06 seed 3: exhaustive minimum {minimum}; SBR {}",
+        reduced.retained_events
+    );
+}

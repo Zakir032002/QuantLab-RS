@@ -90,3 +90,13 @@ Every requirement maps to an executable test. CI checks the mapping.
 | REQ-REDUCE-017 | `req_reduce_017_nonmonotone_superset_is_saved_and_seed_recovers` | [test](../crates/qlrs-testkit/tests/part2.rs) |
 
 | REQ-REDUCE-018 | `req_reduce_018_graph_commitment_is_canonical_and_rle_is_exact` | [test](../crates/qlrs-reduce/src/lib.rs) |
+
+| REQ-REDUCE-019 | `req_reduce_019_speculation_commits_lowest_success_across_thread_counts` | [test](../crates/qlrs-reduce/src/lib.rs) |
+
+| REQ-REDUCE-020 | `req_reduce_020_i2_keeps_other_asset_fills_only_for_required_cash_support` | [test](../crates/qlrs-testkit/tests/part2.rs) |
+
+| REQ-REDUCE-021 | `req_reduce_021_small_window_quality_matches_exhaustive_ground_truth` | [test](../crates/qlrs-testkit/tests/part2.rs) |
+
+| REQ-REDUCE-022 | `req_reduce_022_shared_prerequisites_are_counted_once_and_overflow_falls_back` | [test](../crates/qlrs-reduce/src/algebra.rs) |
+
+| REQ-CLI-003 | `req_cli_003_reference_algorithm_and_certificate_recheck` | [test](../crates/qlrs-cli/tests/exit_codes.rs) |

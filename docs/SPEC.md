@@ -307,3 +307,13 @@ positions need no invented buy unit. Full financial replay remains authoritative
 - REQ-REDUCE-017: saved nonmonotone supersets do not invalidate validated seeds.
 
 - REQ-REDUCE-018: graph commitments and RLE have canonical encodings.
+
+- REQ-REDUCE-019: speculative batches commit the lowest success across thread counts.
+
+- REQ-REDUCE-020: I2 retains other assets only when model preconditions require them.
+
+- REQ-REDUCE-021: small-window quality agrees with exhaustive ground truth.
+
+- REQ-REDUCE-022: prefix unions deduplicate shared prerequisites and overflow falls back.
+
+- REQ-CLI-003: both algorithms and offline certificate recheck are callable.

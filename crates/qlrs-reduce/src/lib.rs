@@ -19,6 +19,7 @@ use qlrs_ledger::Ledger;
 use qlrs_schema::{AliveMask, Kind, Side, Status, SyntheticCheckpoint, TraceStore};
 use rayon::prelude::*;
 use serde::{Deserialize, Deserializer, Serialize};
+use std::sync::atomic::{AtomicBool, Ordering};
 use std::{
     collections::{BTreeSet, HashMap, VecDeque},
     time::{Duration, Instant},
@@ -397,22 +398,6 @@ fn window(
     let mut mask = AliveMask::empty(store.units.len()).with_range(cut, Some(end_seq));
     for event in first..=end {
         let kind = store.spine.kind.get(event).ok_or("invalid event")?;
-        if key.invariant_id == Invariant::I2
-            && let Some(order) = store
-                .spine
-                .unit
-                .get(event)
-                .and_then(|unit| store.units.get(*unit as usize))
-                .and_then(|unit| unit.order)
-            && store
-                .orders
-                .instrument
-                .get(order as usize)
-                .and_then(|instrument| store.header.instruments.get(*instrument as usize))
-                .is_none_or(|instrument| instrument.id != key.scope)
-        {
-            continue;
-        }
         let wanted_claim = match kind {
             Kind::CashClaim => key.invariant_id == Invariant::I1,
             Kind::PositionClaim => {
@@ -448,6 +433,7 @@ pub struct ReductionPredicate<'a> {
     contributions: ContributionTable,
     cache: HashMap<[u64; 2], Vec<Cached<CandidateResult>>, foldhash::fast::RandomState>,
     hash_state: HashState,
+    hash_context: [u64; 2],
     full_calls: u64,
     fast_probes: u64,
     commits: Vec<Commit>,
@@ -481,6 +467,37 @@ impl<'a> ReductionPredicate<'a> {
         };
         let events = UnitEvents::new(store, &initial)?;
         let contributions = ContributionTable::new(store, &initial, &target)?;
+        let mut context = blake3::Hasher::new();
+        context.update(b"qlrs-mask/v2");
+        context.update(source_digest.as_bytes());
+        context.update(
+            &u64::try_from(initial.len())
+                .unwrap_or(u64::MAX)
+                .to_le_bytes(),
+        );
+        for bound in [initial.bounds().0, initial.bounds().1] {
+            context.update(&[u8::from(bound.is_some())]);
+            context.update(&bound.unwrap_or(0).to_le_bytes());
+        }
+        let bytes = context.finalize();
+        let hash_context = [
+            u64::from_le_bytes(
+                bytes
+                    .as_bytes()
+                    .get(..8)
+                    .ok_or("invalid hash")?
+                    .try_into()
+                    .map_err(|_| "invalid hash")?,
+            ),
+            u64::from_le_bytes(
+                bytes
+                    .as_bytes()
+                    .get(8..16)
+                    .ok_or("invalid hash")?
+                    .try_into()
+                    .map_err(|_| "invalid hash")?,
+            ),
+        ];
         Ok(Self {
             store,
             target,
@@ -491,6 +508,7 @@ impl<'a> ReductionPredicate<'a> {
             contributions,
             cache: HashMap::default(),
             hash_state: HashState::default(),
+            hash_context,
             full_calls: 0,
             fast_probes: 0,
             commits: Vec::new(),
@@ -653,6 +671,9 @@ impl<'a> ReductionPredicate<'a> {
                 .all(|key| *key == self.target)
     }
     fn batch(&mut self, masks: &[AliveMask]) -> Result<Vec<bool>, String> {
+        self.batch_mode(masks, false)
+    }
+    fn batch_mode(&mut self, masks: &[AliveMask], speculative: bool) -> Result<Vec<bool>, String> {
         let canonical: Vec<_> = masks.iter().map(|mask| self.canonical(mask)).collect();
         let hashes: Vec<_> = canonical
             .iter()
@@ -663,35 +684,77 @@ impl<'a> ReductionPredicate<'a> {
             .zip(&canonical)
             .map(|(hash, units)| lookup(self.cache.get(hash), units).cloned())
             .collect();
-        let results: Vec<Result<CandidateResult, String>> = masks
+        let canceled: Vec<_> = masks.iter().map(|_| AtomicBool::new(false)).collect();
+        let results: Vec<Result<Option<CandidateResult>, String>> = masks
             .par_iter()
             .zip(&known)
-            .map(|(mask, cached)| {
-                if let Some(value) = cached {
-                    return Ok(value.clone());
+            .enumerate()
+            .map(|(index, (mask, cached))| {
+                if speculative
+                    && canceled
+                        .get(index)
+                        .is_some_and(|flag| flag.load(Ordering::Relaxed))
+                {
+                    return Ok(None);
                 }
-                self.classify(mask)
+                let value = if let Some(value) = cached {
+                    value.clone()
+                } else {
+                    self.classify(mask)?
+                };
+                if speculative && value.accepted {
+                    for flag in canceled.get(index.saturating_add(1)..).unwrap_or_default() {
+                        flag.store(true, Ordering::Relaxed);
+                    }
+                }
+                Ok(Some(value))
             })
             .collect();
+        let values = results;
+        let cutoff = if speculative {
+            values
+                .iter()
+                .position(|value| {
+                    value
+                        .as_ref()
+                        .ok()
+                        .and_then(|value| value.as_ref())
+                        .is_some_and(|value| value.accepted)
+                })
+                .map_or(masks.len(), |index| index.saturating_add(1))
+        } else {
+            masks.len()
+        };
+        // Deterministic conservative reservation, independent of which higher
+        // probes finished before cancellation. Discard their outcomes and cache
+        // effects; only the prefix through the lowest success is observable.
+        self.full_calls = self.full_calls.saturating_add(
+            u64::try_from(known.iter().filter(|cached| cached.is_none()).count())
+                .unwrap_or(u64::MAX),
+        );
         let mut out = Vec::with_capacity(masks.len());
-        for ((((mask, units), hash), cached), result) in masks
+        for (index, ((((mask, units), hash), cached), value)) in masks
             .iter()
             .zip(canonical)
             .zip(hashes)
             .zip(known)
-            .zip(results)
+            .zip(values)
+            .enumerate()
         {
-            let value = result?;
+            if index >= cutoff {
+                out.push(false);
+                continue;
+            }
+            let value = value?.ok_or("a lower speculative probe was incorrectly canceled")?;
             let accepted = value.accepted;
             if cached.is_none() {
-                self.full_calls = self.full_calls.saturating_add(1);
                 self.cache
                     .entry(hash)
                     .or_default()
                     .push(Cached { units, value });
             }
             self.log.push(log_entry(
-                mask_hash(mask),
+                contextual_hash(hash, self.hash_context),
                 self.store.units.len(),
                 mask,
                 accepted,
@@ -718,7 +781,8 @@ struct CandidateResult {
 impl Predicate for ReductionPredicate<'_> {
     fn test(&mut self, alive: &AliveMask) -> Result<Outcome, String> {
         let mask = self.candidate_mask(alive);
-        let hash = mask_hash(&mask);
+        let units = self.canonical(&mask);
+        let hash = contextual_hash(self.hash_state.update(&units), self.hash_context);
         let cached = self.cached(&mask).is_some();
         let accepted = self
             .batch(std::slice::from_ref(&mask))?
@@ -727,35 +791,21 @@ impl Predicate for ReductionPredicate<'_> {
             .unwrap_or(false);
         Ok(Outcome {
             accepted,
-            digest: hex(&hash),
+            digest: hash,
             cache_hit: cached,
         })
     }
 }
-fn mask_hash(mask: &AliveMask) -> [u8; 32] {
-    let mut hash = blake3::Hasher::new();
-    hash.update(&u64::try_from(mask.len()).unwrap_or(u64::MAX).to_le_bytes());
-    for bound in [mask.bounds().0, mask.bounds().1] {
-        hash.update(&[u8::from(bound.is_some())]);
-        hash.update(&bound.unwrap_or(0).to_le_bytes());
-    }
-    for word in mask.words() {
-        hash.update(&word.to_le_bytes());
-    }
-    *hash.finalize().as_bytes()
+fn contextual_hash(hash: [u64; 2], context: [u64; 2]) -> String {
+    format!(
+        "{:016x}{:016x}",
+        hash.first().copied().unwrap_or(0) ^ context.first().copied().unwrap_or(0),
+        hash.get(1).copied().unwrap_or(0) ^ context.get(1).copied().unwrap_or(0)
+    )
 }
-fn hex(hash: &[u8; 32]) -> String {
-    blake3::Hash::from(*hash).to_hex().to_string()
-}
-fn log_entry(
-    hash: [u8; 32],
-    units: usize,
-    mask: &AliveMask,
-    result: bool,
-    cached: bool,
-) -> LogEntry {
+fn log_entry(hash: String, units: usize, mask: &AliveMask, result: bool, cached: bool) -> LogEntry {
     LogEntry {
-        candidate_digest: hex(&hash),
+        candidate_digest: hash,
         units_removed: u64::try_from(units.saturating_sub(mask.count())).unwrap_or(u64::MAX),
         result,
         cache_hit: cached,
@@ -911,6 +961,29 @@ pub fn reduce_with_options(
             return Err("claim-boundary context failed exact original replay".into());
         }
         current = seed;
+    }
+    if key.invariant_id == Invariant::I2 && budget.reason().is_some() {
+        let pins = pin_window(store, &target, &current)?;
+        let graph =
+            UnitGraph::build_with_checkpoint(store, predicate.checkpoint.as_ref(), &current)?;
+        let mut roots = predicate.contributions.seed_roots();
+        roots.extend(pins.iter());
+        let mut scoped =
+            AliveMask::empty(store.units.len()).with_range(current.bounds().0, current.bounds().1);
+        for unit in graph.prerequisites(&roots) {
+            if current.contains(unit) {
+                scoped.set(unit, true);
+            }
+        }
+        if scoped != current
+            && predicate
+                .batch(std::slice::from_ref(&scoped))?
+                .first()
+                .copied()
+                .unwrap_or(false)
+        {
+            current = scoped;
+        }
     }
     predicate.record_commit(&current);
     if budget.reason().is_some() {
@@ -1583,7 +1656,7 @@ fn evaluate_batch(
         return Ok(None);
     }
     let masks = batch.get(..count).ok_or("invalid batch")?;
-    let results = predicate.batch(masks)?;
+    let results = predicate.batch_mode(masks, true)?;
     budget.calls = budget
         .calls
         .saturating_add(u64::try_from(count).unwrap_or(u64::MAX));
@@ -1879,5 +1952,49 @@ mod helper_tests {
         assert_ne!(graph_commitment(&independent, &ids).unwrap(), digest);
         assert_eq!(rle(&[0, 1, 2, 5, 8, 9]), vec![[0, 2], [5, 5], [8, 9]]);
         assert_eq!(rle(&[]), [] as [[u32; 2]; 0]);
+    }
+    #[test]
+    fn req_reduce_019_speculation_commits_lowest_success_across_thread_counts() {
+        let store = fixture();
+        let original = Checker::check(&store, &AliveMask::all(store.units.len()), None, true);
+        let key = original.at_seq(6).unwrap().instance_key.clone().unwrap();
+        let mut reference = None;
+        for threads in [1, 2, 8] {
+            let pool = rayon::ThreadPoolBuilder::new()
+                .num_threads(threads)
+                .build()
+                .unwrap();
+            let (answers, log, slots) = pool.install(|| {
+                let mut predicate =
+                    ReductionPredicate::new(&store, key.clone(), &original, None, &"0".repeat(64))
+                        .unwrap();
+                let full = predicate.initial.clone();
+                let mut small = full.clone();
+                small.set(1, false);
+                let mut empty = full.clone();
+                for unit in full.iter() {
+                    empty.set(unit, false);
+                }
+                let answers = predicate
+                    .batch_mode(&[empty, full.clone(), small.clone()], true)
+                    .unwrap();
+                assert_eq!(answers, vec![false, true, false]);
+                assert!(predicate.cached(&full).unwrap().accepted);
+                assert!(predicate.cached(&small).is_none());
+                assert_eq!(predicate.full_calls, 3);
+                assert_eq!(predicate.log.len(), 2);
+                let outcome = predicate.test(&full).unwrap();
+                assert!(outcome.cache_hit);
+                assert!(outcome.accepted);
+                assert_eq!(outcome.digest.len(), 32);
+                (answers, predicate.log, predicate.full_calls)
+            });
+            let result = (answers, log, slots);
+            if let Some(previous) = &reference {
+                assert_eq!(*previous, result);
+            } else {
+                reference = Some(result);
+            }
+        }
     }
 }
