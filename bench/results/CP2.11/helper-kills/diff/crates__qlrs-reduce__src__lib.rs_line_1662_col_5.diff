@@ -1,0 +1,45 @@
+--- crates/qlrs-reduce/src/lib.rs
++++ replace evaluate_batch -> Result<Option<AliveMask>, String> with Ok(None)
+@@ -1654,41 +1654,17 @@
+     Ok(())
+ }
+ 
+ fn evaluate_batch(
+     predicate: &mut ReductionPredicate<'_>,
+     budget: &mut Budget,
+     batch: &[AliveMask],
+ ) -> Result<Option<AliveMask>, String> {
+-    let remaining = budget.limits.max_calls.saturating_sub(budget.calls);
+-    let count = batch
+-        .len()
+-        .min(usize::try_from(remaining).unwrap_or(usize::MAX));
+-    if count == 0 || budget.reason().is_some() {
+-        return Ok(None);
+-    }
+-    let masks = batch.get(..count).ok_or("invalid batch")?;
+-    let results = predicate.batch_mode(masks, true)?;
+-    budget.calls = budget
+-        .calls
+-        .saturating_add(u64::try_from(count).unwrap_or(u64::MAX));
+-    let best = results
+-        .iter()
+-        .enumerate()
+-        .filter(|(_, accepted)| **accepted)
+-        .min_by_key(|(index, _)| {
+-            predicate
+-                .events
+-                .kept(masks.get(*index).unwrap_or(&predicate.initial))
+-                .len()
+-        })
+-        .and_then(|(index, _)| masks.get(index))
+-        .cloned();
+-    Ok(best)
++    Ok(None) /* ~ changed by cargo-mutants ~ */
+ }
+ fn remove_closure(
+     current: &AliveMask,
+     graph: &UnitGraph,
+     roots: &[usize],
+     pinned: &AliveMask,
+ ) -> Option<AliveMask> {
+     let closure = graph.closure(roots);

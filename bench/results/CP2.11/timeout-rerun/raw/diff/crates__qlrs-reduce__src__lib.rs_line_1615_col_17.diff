@@ -1,0 +1,21 @@
+--- crates/qlrs-reduce/src/lib.rs
++++ replace || with && in recheck_certificate
+@@ -1607,17 +1607,17 @@
+             return Err("duplicate or invalid certificate entry".into());
+         }
+         let root = *mapping.get(&entry.root).ok_or("unknown certificate root")?;
+         let mut removed = Vec::new();
+         for range in &entry.removed_closure {
+             let first = *range.first().ok_or("invalid RLE")?;
+             let last = *range.get(1).ok_or("invalid RLE")?;
+             if first > last
+-                || u64::from(last).saturating_sub(u64::from(first))
++                && /* ~ changed by cargo-mutants ~ */ u64::from(last).saturating_sub(u64::from(first))
+                     >= u64::try_from(mapping.len()).unwrap_or(0)
+             {
+                 return Err("invalid RLE range".into());
+             }
+             for id in first..=last {
+                 removed.push(*mapping.get(&id).ok_or("unknown removed unit")?);
+             }
+         }

@@ -100,3 +100,9 @@ Every requirement maps to an executable test. CI checks the mapping.
 | REQ-REDUCE-022 | `req_reduce_022_shared_prerequisites_are_counted_once_and_overflow_falls_back` | [test](../crates/qlrs-reduce/src/algebra.rs) |
 
 | REQ-CLI-003 | `req_cli_003_reference_algorithm_and_certificate_recheck` | [test](../crates/qlrs-cli/tests/exit_codes.rs) |
+
+| REQ-GATE-003 | `req_gate_003_sparse_required_evidence_can_exceed_thirty_two_events` | [part2.rs](../crates/qlrs-testkit/tests/part2.rs) |
+
+| REQ-REDUCE-023 | `req_reduce_023_cache_requires_fixed_bounds_and_public_masks_are_normalized` | [lib.rs](../crates/qlrs-reduce/src/lib.rs) |
+
+| REQ-CHECK-015 | `req_check_015_witness_scope_and_unsupported_tail_findings_are_separate` | [part2.rs](../crates/qlrs-testkit/tests/part2.rs) |

@@ -536,3 +536,87 @@ fn req_reduce_021_small_window_quality_matches_exhaustive_ground_truth() {
         reduced.retained_events
     );
 }
+
+#[test]
+fn req_gate_003_sparse_required_evidence_can_exceed_thirty_two_events() {
+    let fixture = qlrs_testkit::generate_shape("S4", 45, 4000, Some(Defect::D03)).unwrap();
+    let trace = prepared(fixture.bytes);
+    let result = qlrs_reduce::reduce_with_limits(
+        &trace.store,
+        &qlrs_io::digest(&trace.source),
+        None,
+        fixture.target_seq,
+        qlrs_reduce::ReductionLimits {
+            max_calls: 200,
+            time_limit: std::time::Duration::from_secs(5),
+        },
+    )
+    .unwrap();
+    assert!(result.closure_1_minimal);
+    assert!(result.retained_events > 32);
+    assert!(result.predicate_calls <= 200);
+    assert!(result.certificate.candidates_tested > 0);
+    let key = result.target.instance_key.as_ref().unwrap();
+    let replay =
+        Checker::check_witness(&trace.store, &result.alive, result.checkpoint.as_ref(), key);
+    assert!(replay.keys().any(|actual| actual == key));
+}
+
+#[test]
+fn req_check_015_witness_scope_and_unsupported_tail_findings_are_separate() {
+    let fixture = generate_rich(
+        GeneratorConfig::profile("interleaved", 64, 3).unwrap(),
+        Some((Defect::D06, 32)),
+    )
+    .unwrap();
+    // Instrument and currency names may coincide; invariant identity must still
+    // distinguish their findings. A second instrument supplies another scope.
+    let text = String::from_utf8(fixture.bytes)
+        .unwrap()
+        .replace("\"X2\"", "\"INR\"");
+    let mut trace = prepared(text.into_bytes());
+    *trace.store.cash_claims.raw.last_mut().unwrap() += 100;
+    *trace.store.cash_claims.text.last_mut().unwrap() = qlrs_schema::NONE;
+    let other = trace
+        .store
+        .position_claims
+        .instrument
+        .iter()
+        .rposition(|id| *id == 0)
+        .unwrap();
+    *trace.store.position_claims.raw.get_mut(other).unwrap() += 1000;
+    *trace.store.position_claims.text.get_mut(other).unwrap() = qlrs_schema::NONE;
+    let alive = AliveMask::all(trace.store.units.len());
+    let original = Checker::check(&trace.store, &alive, None, true);
+    let key = original
+        .at_seq(fixture.target_seq.unwrap())
+        .unwrap()
+        .instance_key
+        .clone()
+        .unwrap();
+    assert_eq!(key.invariant_id, Invariant::I2);
+    assert_eq!(key.scope, "INR");
+    assert_eq!(original.keys().count(), 3);
+    let scoped = Checker::check_witness(&trace.store, &alive, None, &key);
+    assert_eq!(scoped.keys().collect::<Vec<_>>(), vec![&key]);
+    trace.store.issues.push(qlrs_schema::Issue {
+        status: Status::Unsupported,
+        seq: trace.store.spine.seq.last().copied(),
+        reason: "future-event-kind".into(),
+    });
+    let full = Checker::check(&trace.store, &alive, None, false);
+    assert_eq!(full.status, Status::Unsupported);
+    assert!(
+        full.findings
+            .iter()
+            .any(|finding| finding.status == Status::Unsupported)
+    );
+    assert!(
+        full.findings
+            .iter()
+            .all(|finding| finding.status != Status::Violation)
+    );
+    let partial = Checker::check(&trace.store, &alive, None, true);
+    assert_eq!(partial.status, Status::Unsupported);
+    assert!(partial.keys().any(|finding| *finding == key));
+}

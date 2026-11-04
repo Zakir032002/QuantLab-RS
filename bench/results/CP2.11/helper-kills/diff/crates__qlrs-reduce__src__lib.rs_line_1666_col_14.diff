@@ -1,0 +1,21 @@
+--- crates/qlrs-reduce/src/lib.rs
++++ replace == with != in evaluate_batch
+@@ -1658,17 +1658,17 @@
+     predicate: &mut ReductionPredicate<'_>,
+     budget: &mut Budget,
+     batch: &[AliveMask],
+ ) -> Result<Option<AliveMask>, String> {
+     let remaining = budget.limits.max_calls.saturating_sub(budget.calls);
+     let count = batch
+         .len()
+         .min(usize::try_from(remaining).unwrap_or(usize::MAX));
+-    if count == 0 || budget.reason().is_some() {
++    if count != /* ~ changed by cargo-mutants ~ */ 0 || budget.reason().is_some() {
+         return Ok(None);
+     }
+     let masks = batch.get(..count).ok_or("invalid batch")?;
+     let results = predicate.batch_mode(masks, true)?;
+     budget.calls = budget
+         .calls
+         .saturating_add(u64::try_from(count).unwrap_or(u64::MAX));
+     let best = results

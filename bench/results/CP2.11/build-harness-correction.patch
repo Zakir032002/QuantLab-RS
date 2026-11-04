@@ -1,0 +1,24 @@
+diff --git a/crates/qlrs-bundle/build.rs b/crates/qlrs-bundle/build.rs
+index 7f1615f..044d581 100644
+--- a/crates/qlrs-bundle/build.rs
++++ b/crates/qlrs-bundle/build.rs
+@@ -19,6 +19,17 @@ fn main() {
+         .unwrap_or_else(|| "uncommitted".into());
+     println!("cargo:rustc-env=QLRS_RUSTC_VERSION={}", version.trim());
+     println!("cargo:rustc-env=QLRS_GIT_COMMIT={}", git.trim());
+-    println!("cargo:rerun-if-changed=../../.git/HEAD");
+-    println!("cargo:rerun-if-changed=../../.git/refs");
++    println!("cargo:rerun-if-changed=build.rs");
++    // Source archives and mutation copies have no Git metadata. Watching a
++    // nonexistent path makes Cargo rebuild the bundle and its dependents on
++    // every invocation. Resolve real paths for ordinary clones/worktrees.
++    for name in ["HEAD", "refs"] {
++        if let Ok(output) = Command::new("git").args(["rev-parse", "--git-path", name]).output()
++            && output.status.success()
++            && let Ok(path) = String::from_utf8(output.stdout)
++            && std::path::Path::new(path.trim()).exists()
++        {
++            println!("cargo:rerun-if-changed={}", path.trim());
++        }
++    }
+ }

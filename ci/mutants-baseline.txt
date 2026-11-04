@@ -8,21 +8,21 @@
     "qlrs-reduce"
   ],
   "test_scope": "workspace",
-  "source_commit": "111b1dbf62cd1b4f28fa10321adc1dc4bcf4f3da",
-  "caught": 347,
-  "viable": 387,
+  "source_commit": "part2-cp2.11",
+  "caught": 359,
+  "viable": 399,
   "missed": 40,
-  "unviable": 33,
+  "unviable": 36,
   "timeout": 0,
-  "total": 420,
+  "total": 435,
   "scopes": {
     "reducer": {
-      "caught": 78,
-      "viable": 117,
-      "missed": 39,
-      "unviable": 24,
+      "caught": 190,
+      "viable": 270,
+      "missed": 80,
+      "unviable": 38,
       "timeout": 0,
-      "total": 141
+      "total": 308
     },
     "fingerprints": {
       "caught": 11,
@@ -34,12 +34,12 @@
     }
   },
   "campaign": {
-    "caught": 425,
-    "viable": 504,
-    "missed": 79,
-    "unviable": 57,
+    "caught": 549,
+    "viable": 669,
+    "missed": 120,
+    "unviable": 74,
     "timeout": 0,
-    "total": 561
+    "total": 743
   },
   "archived_legacy": {
     "tool": "cargo-mutants 27.1.0",
@@ -54,5 +54,29 @@
     "unviable": 32,
     "timeout": 0,
     "total": 347
-  }
+  },
+  "previous_part2_starting_floor": {
+    "caught": 347,
+    "viable": 387,
+    "scopes": {
+      "reducer": {
+        "caught": 78,
+        "viable": 117,
+        "missed": 39,
+        "unviable": 24,
+        "timeout": 0,
+        "total": 141
+      },
+      "fingerprints": {
+        "caught": 11,
+        "viable": 11,
+        "missed": 0,
+        "unviable": 0,
+        "timeout": 0,
+        "total": 11
+      }
+    },
+    "source_commit": "111b1dbf62cd1b4f28fa10321adc1dc4bcf4f3da"
+  },
+  "evidence": "bench/results/CP2.11/effective-outcomes.json (complete raw run and six exact-site rechecks)"
 }

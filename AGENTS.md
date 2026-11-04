@@ -19,7 +19,7 @@ cargo fmt --all --check
 cargo clippy --workspace --all-targets --locked -- -D warnings
 cargo test --workspace --locked
 cargo test --doc --workspace --locked
-cargo build --example numeric_probe --locked
+cargo build -p qlrs-num --example numeric_probe --locked
 python3 ci/numeric-oracle.py
 ```
 

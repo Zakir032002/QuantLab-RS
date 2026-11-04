@@ -317,3 +317,9 @@ positions need no invented buy unit. Full financial replay remains authoritative
 - REQ-REDUCE-022: prefix unions deduplicate shared prerequisites and overflow falls back.
 
 - REQ-CLI-003: both algorithms and offline certificate recheck are callable.
+
+- REQ-GATE-003: required sparse evidence may exceed 32 events without exhausting limits.
+
+- REQ-REDUCE-023: public masks retain fixed predicate bounds; private cache batches reject a different window.
+
+- REQ-CHECK-015: witness scope distinguishes invariants and instruments; unsupported tails retain their diagnostics and suppress unrequested prefix violations.

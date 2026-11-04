@@ -1,0 +1,6 @@
+Found 3 mutants to test
+ok       Unmutated baseline in 12s build + 0s test
+ INFO Auto-set test timeout to 60s
+MISSED   crates/qlrs-reduce/src/lib.rs:1615:17: replace || with && in recheck_certificate in 55s build + 19s test
+MISSED   crates/qlrs-reduce/src/lib.rs:1614:22: replace > with < in recheck_certificate in 1s build + 19s test
+3 mutants tested in 2m: 2 missed, 1 caught

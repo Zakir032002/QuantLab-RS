@@ -1,0 +1,41 @@
+name: Part 2 extended verification
+on:
+  workflow_dispatch:
+    inputs:
+      kani:
+        description: Run the optional bounded Kani proof on Linux
+        type: boolean
+        default: false
+  schedule:
+    - cron: '31 2 * * *'
+permissions:
+  contents: read
+jobs:
+  differential:
+    runs-on: ubuntu-24.04
+    env:
+      QLRS_DIFFERENTIAL_CASES: 100000
+    steps:
+      - uses: actions/checkout@v4
+      - run: rustup toolchain install 1.99.1 --profile minimal
+      - run: cargo test --locked -p qlrs-testkit --test differential_part2 -- --nocapture
+  gate:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - run: rustup toolchain install 1.99.1 --profile minimal
+      - run: cargo run --release --locked -p qlrs-testkit --example part2_gate > gate-part2.jsonl
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: part2-gate
+          path: gate-part2.jsonl
+  kani:
+    if: github.event_name == 'workflow_dispatch' && inputs.kani
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - run: rustup toolchain install 1.99.1 --profile minimal
+      - run: cargo install kani-verifier --version 0.68.0 --locked
+      - run: cargo kani setup
+      - run: cargo kani --manifest-path verification/prefix-sums/Cargo.toml

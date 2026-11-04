@@ -1,0 +1,3 @@
+crates/qlrs-reduce/src/lib.rs:1615:17: replace || with && in recheck_certificate
+crates/qlrs-reduce/src/lib.rs:1614:22: replace > with < in recheck_certificate
+crates/qlrs-reduce/src/lib.rs:1650:9: replace || with && in recheck_certificate

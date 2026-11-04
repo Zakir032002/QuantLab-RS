@@ -91,5 +91,42 @@ fn pipeline(c: &mut Criterion) {
         });
     });
 }
-criterion_group!(benches, numeric, pipeline);
+fn algebra(c: &mut Criterion) {
+    use qlrs_reduce::FastPredicate;
+    let fixture =
+        qlrs_testkit::generate_shape("S9", 3, 1000, Some(qlrs_testkit::Defect::D06)).unwrap();
+    let mut trace = qlrs_io::ParsedTrace::parse(fixture.bytes).unwrap();
+    qlrs_ledger::Ledger::prepare(&mut trace.store);
+    let original = qlrs_check::Checker::check(
+        &trace.store,
+        &AliveMask::all(trace.store.units.len()),
+        None,
+        true,
+    );
+    let key = original
+        .at_seq(fixture.target_seq.unwrap())
+        .unwrap()
+        .instance_key
+        .clone()
+        .unwrap();
+    let predicate = qlrs_reduce::ReductionPredicate::new(
+        &trace.store,
+        key.clone(),
+        &original,
+        None,
+        &qlrs_io::digest(&trace.source),
+    )
+    .unwrap();
+    let mask = predicate.candidate_mask(&AliveMask::all(trace.store.units.len()));
+    let table = qlrs_reduce::ContributionTable::new(&trace.store, &mask, &key).unwrap();
+    let end = table.units.len();
+    assert_eq!(
+        table.prefix_residual(end),
+        Some(key.residual_raw.parse().unwrap())
+    );
+    c.bench_function("prefix_residual", |b| {
+        b.iter(|| black_box(black_box(&table).prefix_residual(black_box(end))));
+    });
+}
+criterion_group!(benches, numeric, pipeline, algebra);
 criterion_main!(benches);

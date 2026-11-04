@@ -1,0 +1,243 @@
+{
+  "outcomes": [
+    {
+      "scenario": "Baseline",
+      "summary": "Success",
+      "log_path": "log/baseline.log",
+      "diff_path": null,
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 12.302933074,
+          "process_status": "Success",
+          "argv": [
+            "/workspace/.qlrs-tools/rustup/toolchains/1.99.1-x86_64-unknown-linux-gnu/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=qlrs-reduce@0.1.0",
+            "--locked"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 0.151437489,
+          "process_status": "Success",
+          "argv": [
+            "/workspace/.qlrs-tools/rustup/toolchains/1.99.1-x86_64-unknown-linux-gnu/bin/cargo",
+            "test",
+            "--verbose",
+            "--package=qlrs-reduce@0.1.0",
+            "--locked"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "crates/qlrs-reduce/src/lib.rs:1615:17: replace || with && in recheck_certificate",
+          "package": "qlrs-reduce",
+          "file": "crates/qlrs-reduce/src/lib.rs",
+          "function": {
+            "function_name": "recheck_certificate",
+            "return_type": "-> Result<(), String>",
+            "span": {
+              "start": {
+                "line": 1531,
+                "column": 1
+              },
+              "end": {
+                "line": 1655,
+                "column": 2
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 1615,
+              "column": 17
+            },
+            "end": {
+              "line": 1615,
+              "column": 19
+            }
+          },
+          "replacement": "&&",
+          "genre": "BinaryOperator"
+        }
+      },
+      "summary": "MissedMutant",
+      "log_path": "log/crates__qlrs-reduce__src__lib.rs_line_1615_col_17.log",
+      "diff_path": "diff/crates__qlrs-reduce__src__lib.rs_line_1615_col_17.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 55.762933964,
+          "process_status": "Success",
+          "argv": [
+            "/workspace/.qlrs-tools/rustup/toolchains/1.99.1-x86_64-unknown-linux-gnu/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--workspace",
+            "--locked"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 19.122502708,
+          "process_status": "Success",
+          "argv": [
+            "/workspace/.qlrs-tools/rustup/toolchains/1.99.1-x86_64-unknown-linux-gnu/bin/cargo",
+            "test",
+            "--verbose",
+            "--workspace",
+            "--locked"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "crates/qlrs-reduce/src/lib.rs:1614:22: replace > with < in recheck_certificate",
+          "package": "qlrs-reduce",
+          "file": "crates/qlrs-reduce/src/lib.rs",
+          "function": {
+            "function_name": "recheck_certificate",
+            "return_type": "-> Result<(), String>",
+            "span": {
+              "start": {
+                "line": 1531,
+                "column": 1
+              },
+              "end": {
+                "line": 1655,
+                "column": 2
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 1614,
+              "column": 22
+            },
+            "end": {
+              "line": 1614,
+              "column": 23
+            }
+          },
+          "replacement": "<",
+          "genre": "BinaryOperator"
+        }
+      },
+      "summary": "MissedMutant",
+      "log_path": "log/crates__qlrs-reduce__src__lib.rs_line_1614_col_22.log",
+      "diff_path": "diff/crates__qlrs-reduce__src__lib.rs_line_1614_col_22.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 1.4682599029999999,
+          "process_status": "Success",
+          "argv": [
+            "/workspace/.qlrs-tools/rustup/toolchains/1.99.1-x86_64-unknown-linux-gnu/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--workspace",
+            "--locked"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 19.073699008,
+          "process_status": "Success",
+          "argv": [
+            "/workspace/.qlrs-tools/rustup/toolchains/1.99.1-x86_64-unknown-linux-gnu/bin/cargo",
+            "test",
+            "--verbose",
+            "--workspace",
+            "--locked"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "crates/qlrs-reduce/src/lib.rs:1650:9: replace || with && in recheck_certificate",
+          "package": "qlrs-reduce",
+          "file": "crates/qlrs-reduce/src/lib.rs",
+          "function": {
+            "function_name": "recheck_certificate",
+            "return_type": "-> Result<(), String>",
+            "span": {
+              "start": {
+                "line": 1531,
+                "column": 1
+              },
+              "end": {
+                "line": 1655,
+                "column": 2
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 1650,
+              "column": 9
+            },
+            "end": {
+              "line": 1650,
+              "column": 11
+            }
+          },
+          "replacement": "&&",
+          "genre": "BinaryOperator"
+        }
+      },
+      "summary": "CaughtMutant",
+      "log_path": "log/crates__qlrs-reduce__src__lib.rs_line_1650_col_9.log",
+      "diff_path": "diff/crates__qlrs-reduce__src__lib.rs_line_1650_col_9.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 1.481095114,
+          "process_status": "Success",
+          "argv": [
+            "/workspace/.qlrs-tools/rustup/toolchains/1.99.1-x86_64-unknown-linux-gnu/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--workspace",
+            "--locked"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 18.72545391,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/workspace/.qlrs-tools/rustup/toolchains/1.99.1-x86_64-unknown-linux-gnu/bin/cargo",
+            "test",
+            "--verbose",
+            "--workspace",
+            "--locked"
+          ]
+        }
+      ]
+    }
+  ],
+  "total_mutants": 3,
+  "missed": 2,
+  "caught": 1,
+  "timeout": 0,
+  "unviable": 0,
+  "success": 0,
+  "start_time": "2026-11-04T23:30:14.04767711Z",
+  "end_time": "2026-11-04T23:32:29.444800866Z",
+  "cargo_mutants_version": "27.1.0"
+}

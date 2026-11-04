@@ -1,0 +1,9 @@
+f5122ee1428f2a237261235fd5bc7f9f9b5df5e3f7d48ac7f235b70f9768d286  crates/qlrs-check/src/checkpoint.rs
+34032d2ca3e2e5b216027f719efaa85a52e0613b6053082d5b409383ee13032d  crates/qlrs-check/src/fingerprint.rs
+eda208e7124c3767ec4b72d84cdb3743fbc9515c1632d59c6193835dc37dda48  crates/qlrs-check/src/lib.rs
+b7a17f6ead2be80a715c9ee090d3f39d2c41192c9d2511a6c2c10120e8406dcd  crates/qlrs-check/src/lifecycle.rs
+54baa7c5b3d48e0b37b6d40fc1c7d036a18723467d2c748cc6c51f110ade0a42  crates/qlrs-num/src/lib.rs
+8d7c444e4057e89bc5aabf5c210d7e810749a9303cd66b1f361df66c7893c8b8  crates/qlrs-reduce/src/algebra.rs
+eeb0c53b1a55adf38fedd41b60460a742ec3eef9537317d3aed7a5af1940896a  crates/qlrs-reduce/src/cache.rs
+c9511c55291263a233ce4ac805b49cee357f79b06ac3db79f2bdcf0c6841290b  crates/qlrs-reduce/src/certificate.rs
+1b7c32c4df3f290ae17ae3f96f7b10ff91fea3c62ff9f8999be808b6a6c2b679  crates/qlrs-reduce/src/lib.rs

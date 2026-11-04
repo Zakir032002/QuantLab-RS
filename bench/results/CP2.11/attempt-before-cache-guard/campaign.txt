@@ -1,0 +1,28 @@
+Found 741 mutants to test
+ok       Unmutated baseline in 22s build + 4s test
+ INFO Auto-set test timeout to 60s
+MISSED   crates/qlrs-check/src/lib.rs:134:9: replace Checker::prepare with () in 7s build + 50s test
+MISSED   crates/qlrs-check/src/lib.rs:228:52: replace || with && in Checker::check_events in 22s build + 49s test
+MISSED   crates/qlrs-check/src/lib.rs:228:28: replace || with && in Checker::check_events in 9s build + 44s test
+MISSED   crates/qlrs-check/src/lib.rs:253:25: replace && with || in Checker::check_events in 4s build + 33s test
+MISSED   crates/qlrs-check/src/lib.rs:252:52: replace >= with < in Checker::check_events in 5s build + 34s test
+MISSED   crates/qlrs-check/src/lib.rs:270:46: replace || with && in Checker::check_events in 4s build + 32s test
+MISSED   crates/qlrs-check/src/lib.rs:270:63: replace == with != in Checker::check_events in 2s build + 36s test
+MISSED   crates/qlrs-check/src/lib.rs:325:56: replace < with == in Checker::check_events in 4s build + 32s test
+MISSED   crates/qlrs-check/src/lib.rs:325:56: replace < with > in Checker::check_events in 3s build + 32s test
+MISSED   crates/qlrs-check/src/lib.rs:325:56: replace < with <= in Checker::check_events in 2s build + 34s test
+MISSED   crates/qlrs-check/src/lib.rs:405:56: replace < with == in Checker::check_events in 5s build + 36s test
+MISSED   crates/qlrs-check/src/lib.rs:405:56: replace < with <= in Checker::check_events in 2s build + 35s test
+MISSED   crates/qlrs-check/src/lib.rs:483:25: replace == with != in Checker::check_events in 5s build + 34s test
+MISSED   crates/qlrs-check/src/lib.rs:529:41: replace == with != in Checker::check_events in 3s build + 34s test
+MISSED   crates/qlrs-check/src/lib.rs:604:25: replace || with && in Checker::check_events in 5s build + 34s test
+MISSED   crates/qlrs-check/src/lib.rs:707:25: replace || with && in Checker::check_events in 3s build + 34s test
+ERROR interrupted
+ERROR scenario execution internal error err=interrupted phase=Test
+ERROR interrupted
+ERROR scenario execution internal error err=interrupted phase=Test
+ERROR interrupted
+ERROR interrupted
+ERROR scenario execution internal error err=interrupted phase=Build
+ERROR scenario execution internal error err=interrupted phase=Build
+Error: interrupted

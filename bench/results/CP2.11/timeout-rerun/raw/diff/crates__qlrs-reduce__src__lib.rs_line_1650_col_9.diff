@@ -1,0 +1,21 @@
+--- crates/qlrs-reduce/src/lib.rs
++++ replace || with && in recheck_certificate
+@@ -1642,17 +1642,17 @@
+         if (entry.evaluator == "fast") != structural {
+             return Err("invalid certificate evaluator".into());
+         }
+         if entry.evaluator == "full" {
+             tested = tested.saturating_add(1);
+         }
+     }
+     if tested != certificate.candidates_tested
+-        || (certificate.complete && roots.len() != mapping.len())
++        && /* ~ changed by cargo-mutants ~ */ (certificate.complete && roots.len() != mapping.len())
+     {
+         return Err("certificate is incomplete or miscounts candidates".into());
+     }
+     Ok(())
+ }
+ 
+ fn evaluate_batch(
+     predicate: &mut ReductionPredicate<'_>,

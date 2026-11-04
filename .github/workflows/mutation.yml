@@ -1,18 +1,22 @@
 name: Mutation ratchet
 on:
   workflow_dispatch:
+  pull_request:
   schedule:
-    - cron: '17 3 * * 1'
+    - cron: '17 3 * * *'
 permissions:
   contents: read
 jobs:
   mutate:
+    if: github.event_name != 'pull_request'
     runs-on: ubuntu-24.04
     timeout-minutes: 120
     env:
       PROPTEST_RNG_SEED: 42
       RUST_TEST_THREADS: 2
       CARGO_BUILD_JOBS: 1
+      CARGO_PROFILE_TEST_OPT_LEVEL: 0
+      CARGO_PROFILE_TEST_DEBUG: 0
       RAYON_NUM_THREADS: 1
     steps:
       - uses: actions/checkout@v4
@@ -22,7 +26,7 @@ jobs:
         shell: bash
         run: |
           set +e
-          cargo mutants -p qlrs-num -p qlrs-check -p qlrs-reduce --copy-target true --test-workspace true --jobs 4 --timeout 60 --no-shuffle --cargo-arg=--locked
+          cargo mutants -p qlrs-num -p qlrs-check -p qlrs-reduce --copy-target true --test-workspace true --jobs 4 --no-shuffle --cargo-arg=--locked
           result=$?
           set -e
           test "$result" -eq 0 || test "$result" -eq 2
@@ -31,4 +35,41 @@ jobs:
         if: always()
         with:
           name: mutation-results
+          path: mutants.out/
+
+  changed-lines:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-24.04
+    env:
+      RUST_TEST_THREADS: 2
+      RAYON_NUM_THREADS: 1
+      CARGO_BUILD_JOBS: 1
+      CARGO_PROFILE_TEST_OPT_LEVEL: 0
+      CARGO_PROFILE_TEST_DEBUG: 0
+      BASE_SHA: ${{ github.event.pull_request.base.sha }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - run: rustup toolchain install 1.99.1 --profile minimal
+      - run: cargo install cargo-mutants --version 27.1.0 --locked
+      - name: Enumerate and run changed Rust lines
+        shell: bash
+        run: |
+          git diff "$BASE_SHA" HEAD -- '*.rs' > /tmp/qlrs-mutation.diff
+          cargo mutants -p qlrs-num -p qlrs-check -p qlrs-reduce --in-diff /tmp/qlrs-mutation.diff --list --json > /tmp/qlrs-mutants.json
+          if python3 -c 'import json; assert not json.load(open("/tmp/qlrs-mutants.json"))'; then
+            echo 'No production mutations intersect the diff.'
+            exit 0
+          fi
+          set +e
+          cargo mutants -p qlrs-num -p qlrs-check -p qlrs-reduce --in-diff /tmp/qlrs-mutation.diff --copy-target true --test-workspace true --jobs 4 --no-shuffle --cargo-arg=--locked
+          result=$?
+          set -e
+          test "$result" -eq 0 || test "$result" -eq 2
+          python3 ci/mutation-diff.py mutants.out/outcomes.json
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: mutation-diff-results
           path: mutants.out/

@@ -1,0 +1,11 @@
+{
+  "changed_utc": "2026-11-04T22:26:48.666776+00:00",
+  "reason": "Cargo verbose output confirms missing .git/HEAD forced every bundle rebuild in source copies",
+  "completed_mutants_before_change": 26,
+  "before_sha256": "63737a3d789347cd1857aa35596669912938ab289eb42423082f691e4e5a3cf4",
+  "after_sha256": "c4c0bbead01eb8d8e21ad01e538f9c264806db44edc32927381ef9d0b5b2a796",
+  "worker_copies_updated": 4,
+  "enumerated_core_mutation_sources_unchanged": true,
+  "tests_unchanged": true,
+  "effect": "Only Cargo rebuild invalidation; embedded values and runtime code are unchanged."
+}

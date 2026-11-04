@@ -1,0 +1,121 @@
+crates/qlrs-check/src/lib.rs:134:9: replace Checker::prepare with ()
+crates/qlrs-check/src/lib.rs:228:28: replace || with && in Checker::check_events
+crates/qlrs-check/src/lib.rs:228:52: replace || with && in Checker::check_events
+crates/qlrs-check/src/lib.rs:253:25: replace && with || in Checker::check_events
+crates/qlrs-check/src/lib.rs:252:52: replace >= with < in Checker::check_events
+crates/qlrs-check/src/lib.rs:270:46: replace || with && in Checker::check_events
+crates/qlrs-check/src/lib.rs:270:63: replace == with != in Checker::check_events
+crates/qlrs-check/src/lib.rs:325:56: replace < with == in Checker::check_events
+crates/qlrs-check/src/lib.rs:325:56: replace < with > in Checker::check_events
+crates/qlrs-check/src/lib.rs:325:56: replace < with <= in Checker::check_events
+crates/qlrs-check/src/lib.rs:405:56: replace < with == in Checker::check_events
+crates/qlrs-check/src/lib.rs:405:56: replace < with <= in Checker::check_events
+crates/qlrs-check/src/lib.rs:483:25: replace == with != in Checker::check_events
+crates/qlrs-check/src/lib.rs:529:41: replace == with != in Checker::check_events
+crates/qlrs-check/src/lib.rs:604:25: replace || with && in Checker::check_events
+crates/qlrs-check/src/lib.rs:707:25: replace || with && in Checker::check_events
+crates/qlrs-check/src/lib.rs:708:50: replace == with != in Checker::check_events
+crates/qlrs-check/src/lib.rs:854:45: replace != with == in finish
+crates/qlrs-check/src/lib.rs:895:25: replace && with || in witness_report
+crates/qlrs-check/src/lib.rs:894:25: replace && with || in witness_report
+crates/qlrs-check/src/lib.rs:949:33: replace > with >= in counts_pattern
+crates/qlrs-check/src/lib.rs:971:61: replace && with || in relation
+crates/qlrs-check/src/lib.rs:1044:57: replace == with != in relation
+crates/qlrs-check/src/lib.rs:1050:13: replace == with != in relation
+crates/qlrs-check/src/checkpoint.rs:57:47: replace != with == in Checker::checkpoint_at_claim
+crates/qlrs-check/src/checkpoint.rs:61:46: replace > with < in Checker::checkpoint_at_claim
+crates/qlrs-check/src/checkpoint.rs:118:40: replace == with != in Checker::checkpoint_at_claim
+crates/qlrs-check/src/checkpoint.rs:130:56: replace < with == in Checker::checkpoint_at_claim
+crates/qlrs-check/src/checkpoint.rs:130:56: replace < with > in Checker::checkpoint_at_claim
+crates/qlrs-check/src/checkpoint.rs:130:56: replace < with <= in Checker::checkpoint_at_claim
+crates/qlrs-check/src/checkpoint.rs:170:57: replace == with != in Checker::checkpoint_at_claim
+crates/qlrs-check/src/lifecycle.rs:51:36: delete ! in Progress::observe
+crates/qlrs-num/src/lib.rs:303:21: replace < with <= in <impl fmt::Display for Fixed>::fmt
+crates/qlrs-num/src/lib.rs:332:13: replace < with <= in rescale_raw
+crates/qlrs-num/src/lib.rs:381:9: delete match arm 36 in divide_power
+crates/qlrs-num/src/lib.rs:464:22: replace | with ^ in wide_product
+crates/qlrs-num/src/lib.rs:494:19: replace < with <= in wide_mul_rescale
+crates/qlrs-num/src/lib.rs:494:38: replace < with <= in wide_mul_rescale
+crates/qlrs-num/src/lib.rs:524:38: replace < with <= in wide_mul_add
+crates/qlrs-num/src/lib.rs:524:57: replace < with <= in wide_mul_add
+crates/qlrs-num/src/lib.rs:525:37: replace < with <= in wide_mul_add
+crates/qlrs-num/src/lib.rs:583:38: replace | with ^ in wide_div
+crates/qlrs-num/src/lib.rs:587:47: replace - with / in wide_div
+crates/qlrs-reduce/src/lib.rs:193:31: replace || with && in walk
+crates/qlrs-reduce/src/lib.rs:402:13: delete match arm Kind::CashClaim in window
+crates/qlrs-reduce/src/lib.rs:403:13: delete match arm Kind::PositionClaim in window
+crates/qlrs-reduce/src/lib.rs:405:21: replace && with || in window
+crates/qlrs-reduce/src/lib.rs:595:59: replace && with || in ReductionPredicate<'a>::classify
+crates/qlrs-reduce/src/lib.rs:595:42: replace == with != in ReductionPredicate<'a>::classify
+crates/qlrs-reduce/src/lib.rs:595:68: replace != with == in ReductionPredicate<'a>::classify
+crates/qlrs-reduce/src/lib.rs:606:29: replace && with || in ReductionPredicate<'a>::classify
+crates/qlrs-reduce/src/lib.rs:605:29: replace && with || in ReductionPredicate<'a>::classify
+crates/qlrs-reduce/src/lib.rs:604:45: replace == with != in ReductionPredicate<'a>::classify
+crates/qlrs-reduce/src/lib.rs:605:42: replace == with != in ReductionPredicate<'a>::classify
+crates/qlrs-reduce/src/lib.rs:607:33: replace == with != in ReductionPredicate<'a>::classify
+crates/qlrs-reduce/src/lib.rs:633:9: replace ReductionPredicate<'a>::record_commit with ()
+crates/qlrs-reduce/src/lib.rs:637:48: replace == with != in ReductionPredicate<'a>::record_commit
+crates/qlrs-reduce/src/lib.rs:823:22: delete ! in log_entry
+crates/qlrs-reduce/src/lib.rs:913:9: replace || with && in reduce_with_options
+crates/qlrs-reduce/src/lib.rs:915:17: replace || with && in reduce_with_options
+crates/qlrs-reduce/src/lib.rs:976:42: replace && with || in reduce_with_options
+crates/qlrs-reduce/src/lib.rs:976:25: replace == with != in reduce_with_options
+crates/qlrs-reduce/src/lib.rs:990:13: replace && with || in reduce_with_options
+crates/qlrs-reduce/src/lib.rs:989:19: replace != with == in reduce_with_options
+crates/qlrs-reduce/src/lib.rs:1014:34: replace && with || in reduce_with_options
+crates/qlrs-reduce/src/lib.rs:1014:44: replace != with == in reduce_with_options
+crates/qlrs-reduce/src/lib.rs:1031:32: delete ! in reduce_with_options
+crates/qlrs-reduce/src/lib.rs:1033:32: replace < with == in reduce_with_options
+crates/qlrs-reduce/src/lib.rs:1033:32: replace < with > in reduce_with_options
+crates/qlrs-reduce/src/lib.rs:1033:32: replace < with <= in reduce_with_options
+crates/qlrs-reduce/src/lib.rs:1049:44: delete ! in reduce_with_options
+crates/qlrs-reduce/src/lib.rs:1057:41: replace || with && in reduce_with_options
+crates/qlrs-reduce/src/lib.rs:1057:36: replace == with != in reduce_with_options
+crates/qlrs-reduce/src/lib.rs:1057:68: replace == with != in reduce_with_options
+crates/qlrs-reduce/src/lib.rs:1073:35: replace >= with < in reduce_with_options
+crates/qlrs-reduce/src/lib.rs:1079:33: replace && with || in reduce_with_options
+crates/qlrs-reduce/src/lib.rs:1079:23: replace != with == in reduce_with_options
+crates/qlrs-reduce/src/lib.rs:1085:28: delete ! in reduce_with_options
+crates/qlrs-reduce/src/lib.rs:1105:26: replace && with || in reduce_with_options
+crates/qlrs-reduce/src/lib.rs:1105:19: replace < with == in reduce_with_options
+crates/qlrs-reduce/src/lib.rs:1105:19: replace < with > in reduce_with_options
+crates/qlrs-reduce/src/lib.rs:1105:19: replace < with <= in reduce_with_options
+crates/qlrs-reduce/src/lib.rs:1119:66: replace != with == in reduce_with_options
+crates/qlrs-reduce/src/lib.rs:1137:44: replace == with != in reduce_with_options
+crates/qlrs-reduce/src/lib.rs:1142:26: replace == with != in reduce_with_options
+crates/qlrs-reduce/src/lib.rs:1158:65: replace && with || in reduce_with_options
+crates/qlrs-reduce/src/lib.rs:1158:36: replace && with || in reduce_with_options
+crates/qlrs-reduce/src/lib.rs:1226:51: replace < with <= in reduce_with_options
+crates/qlrs-reduce/src/lib.rs:1309:22: replace && with || in reduce_with_options
+crates/qlrs-reduce/src/lib.rs:1342:19: replace && with || in finish_reduction
+crates/qlrs-reduce/src/lib.rs:1351:38: replace && with || in finish_reduction
+crates/qlrs-reduce/src/lib.rs:1539:9: replace || with && in recheck_certificate
+crates/qlrs-reduce/src/lib.rs:1540:9: replace || with && in recheck_certificate
+crates/qlrs-reduce/src/lib.rs:1558:9: replace || with && in recheck_certificate
+crates/qlrs-reduce/src/lib.rs:1585:9: replace || with && in recheck_certificate
+crates/qlrs-reduce/src/lib.rs:1581:9: replace || with && in recheck_certificate
+crates/qlrs-reduce/src/lib.rs:1606:38: replace || with && in recheck_certificate
+crates/qlrs-reduce/src/algebra.rs:109:9: replace ContributionTable::seed_roots -> Vec<usize> with vec![0]
+crates/qlrs-reduce/src/cache.rs:9:20: replace ^ with | in mix
+crates/qlrs-reduce/src/cache.rs:8:5: replace mix -> u64 with 1
+crates/qlrs-reduce/src/cache.rs:9:29: replace >> with << in mix
+crates/qlrs-reduce/src/cache.rs:9:20: replace ^ with & in mix
+crates/qlrs-reduce/src/cache.rs:10:20: replace ^ with | in mix
+crates/qlrs-reduce/src/cache.rs:10:20: replace ^ with & in mix
+crates/qlrs-reduce/src/cache.rs:10:29: replace >> with << in mix
+crates/qlrs-reduce/src/cache.rs:11:11: replace ^ with | in mix
+crates/qlrs-reduce/src/cache.rs:11:11: replace ^ with & in mix
+crates/qlrs-reduce/src/cache.rs:11:20: replace >> with << in mix
+crates/qlrs-reduce/src/cache.rs:16:18: replace ^= with |= in HashState::toggle
+crates/qlrs-reduce/src/cache.rs:16:18: replace ^= with &= in HashState::toggle
+crates/qlrs-reduce/src/cache.rs:19:19: replace ^= with |= in HashState::toggle
+crates/qlrs-reduce/src/cache.rs:19:19: replace ^= with &= in HashState::toggle
+crates/qlrs-reduce/src/cache.rs:19:42: replace ^ with | in HashState::toggle
+crates/qlrs-reduce/src/cache.rs:19:42: replace ^ with & in HashState::toggle
+crates/qlrs-reduce/src/cache.rs:29:46: replace match guard left == right with true in HashState::update
+crates/qlrs-reduce/src/cache.rs:29:46: replace match guard left == right with false in HashState::update
+crates/qlrs-reduce/src/cache.rs:33:46: replace match guard left < right with true in HashState::update
+crates/qlrs-reduce/src/cache.rs:33:46: replace match guard left < right with false in HashState::update
+crates/qlrs-reduce/src/cache.rs:33:51: replace < with == in HashState::update
+crates/qlrs-reduce/src/cache.rs:33:51: replace < with > in HashState::update
+crates/qlrs-reduce/src/cache.rs:33:51: replace < with <= in HashState::update

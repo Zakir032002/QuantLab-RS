@@ -670,10 +670,20 @@ impl<'a> ReductionPredicate<'a> {
                 .filter(|key| key.invariant_id == Invariant::I3)
                 .all(|key| *key == self.target)
     }
+    fn validate_candidates(&self, masks: &[AliveMask]) -> Result<(), String> {
+        if masks
+            .iter()
+            .any(|mask| mask.bounds() != self.initial.bounds())
+        {
+            return Err("candidate changes the fixed observation window".into());
+        }
+        Ok(())
+    }
     fn batch(&mut self, masks: &[AliveMask]) -> Result<Vec<bool>, String> {
         self.batch_mode(masks, false)
     }
     fn batch_mode(&mut self, masks: &[AliveMask], speculative: bool) -> Result<Vec<bool>, String> {
+        self.validate_candidates(masks)?;
         let canonical: Vec<_> = masks.iter().map(|mask| self.canonical(mask)).collect();
         let hashes: Vec<_> = canonical
             .iter()
@@ -781,6 +791,7 @@ struct CandidateResult {
 impl Predicate for ReductionPredicate<'_> {
     fn test(&mut self, alive: &AliveMask) -> Result<Outcome, String> {
         let mask = self.candidate_mask(alive);
+        self.validate_candidates(std::slice::from_ref(&mask))?;
         let units = self.canonical(&mask);
         let hash = contextual_hash(self.hash_state.update(&units), self.hash_context);
         let cached = self.cached(&mask).is_some();
@@ -1996,5 +2007,25 @@ mod helper_tests {
                 reference = Some(result);
             }
         }
+    }
+    #[test]
+    fn req_reduce_023_cache_requires_fixed_bounds_and_public_masks_are_normalized() {
+        let store = fixture();
+        let original = Checker::check(&store, &AliveMask::all(store.units.len()), None, true);
+        let key = original.at_seq(6).unwrap().instance_key.clone().unwrap();
+        let mut predicate =
+            ReductionPredicate::new(&store, key, &original, None, &"0".repeat(64)).unwrap();
+        let full = predicate.initial.clone();
+        assert!(predicate.test(&full).unwrap().accepted);
+        let clipped = full.clone().with_range(Some(5), Some(6));
+        // Public candidates are normalized to the predicate's fixed window.
+        assert_eq!(predicate.candidate_mask(&clipped), full);
+        assert!(predicate.test(&clipped).unwrap().accepted);
+        // Internal batches bypass that normalization, so enforce the cache's
+        // fixed-window precondition before looking up canonical unit IDs.
+        assert!(predicate.batch(std::slice::from_ref(&clipped)).is_err());
+        let cached = predicate.test(&full).unwrap();
+        assert!(cached.accepted);
+        assert!(cached.cache_hit);
     }
 }

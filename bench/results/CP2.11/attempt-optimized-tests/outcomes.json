@@ -1,0 +1,959 @@
+{
+  "outcomes": [
+    {
+      "scenario": "Baseline",
+      "summary": "Success",
+      "log_path": "log/baseline.log",
+      "diff_path": null,
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 23.730989018,
+          "process_status": "Success",
+          "argv": [
+            "/workspace/.qlrs-tools/rustup/toolchains/1.99.1-x86_64-unknown-linux-gnu/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--package=qlrs-check@0.1.0",
+            "--package=qlrs-num@0.1.0",
+            "--package=qlrs-reduce@0.1.0",
+            "--locked"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 1.555388376,
+          "process_status": "Success",
+          "argv": [
+            "/workspace/.qlrs-tools/rustup/toolchains/1.99.1-x86_64-unknown-linux-gnu/bin/cargo",
+            "test",
+            "--verbose",
+            "--package=qlrs-check@0.1.0",
+            "--package=qlrs-num@0.1.0",
+            "--package=qlrs-reduce@0.1.0",
+            "--locked"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "crates/qlrs-check/src/lib.rs:109:9: replace Report::keys -> impl Iterator<Item =&InstanceKey> with ::std::iter::once(Box::leak(Box::new(Default::default())))",
+          "package": "qlrs-check",
+          "file": "crates/qlrs-check/src/lib.rs",
+          "function": {
+            "function_name": "Report::keys",
+            "return_type": "-> impl Iterator<Item =&InstanceKey>",
+            "span": {
+              "start": {
+                "line": 107,
+                "column": 5
+              },
+              "end": {
+                "line": 110,
+                "column": 6
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 109,
+              "column": 9
+            },
+            "end": {
+              "line": 109,
+              "column": 69
+            }
+          },
+          "replacement": "::std::iter::once(Box::leak(Box::new(Default::default())))",
+          "genre": "FnValue"
+        }
+      },
+      "summary": "Unviable",
+      "log_path": "log/crates__qlrs-check__src__lib.rs_line_109_col_9_001.log",
+      "diff_path": "diff/crates__qlrs-check__src__lib.rs_line_109_col_9_001.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 128.961991295,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/workspace/.qlrs-tools/rustup/toolchains/1.99.1-x86_64-unknown-linux-gnu/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--workspace",
+            "--locked"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "crates/qlrs-check/src/lib.rs:35:9: replace Invariant::name -> &'static str with \"\"",
+          "package": "qlrs-check",
+          "file": "crates/qlrs-check/src/lib.rs",
+          "function": {
+            "function_name": "Invariant::name",
+            "return_type": "-> &'static str",
+            "span": {
+              "start": {
+                "line": 32,
+                "column": 5
+              },
+              "end": {
+                "line": 40,
+                "column": 6
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 35,
+              "column": 9
+            },
+            "end": {
+              "line": 39,
+              "column": 10
+            }
+          },
+          "replacement": "\"\"",
+          "genre": "FnValue"
+        }
+      },
+      "summary": "CaughtMutant",
+      "log_path": "log/crates__qlrs-check__src__lib.rs_line_35_col_9.log",
+      "diff_path": "diff/crates__qlrs-check__src__lib.rs_line_35_col_9.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 198.472009507,
+          "process_status": "Success",
+          "argv": [
+            "/workspace/.qlrs-tools/rustup/toolchains/1.99.1-x86_64-unknown-linux-gnu/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--workspace",
+            "--locked"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 10.174842382,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/workspace/.qlrs-tools/rustup/toolchains/1.99.1-x86_64-unknown-linux-gnu/bin/cargo",
+            "test",
+            "--verbose",
+            "--workspace",
+            "--locked"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "crates/qlrs-check/src/lib.rs:114:9: replace Report::at_seq -> Option<&Finding> with Some(Box::leak(Box::new(Default::default())))",
+          "package": "qlrs-check",
+          "file": "crates/qlrs-check/src/lib.rs",
+          "function": {
+            "function_name": "Report::at_seq",
+            "return_type": "-> Option<&Finding>",
+            "span": {
+              "start": {
+                "line": 111,
+                "column": 5
+              },
+              "end": {
+                "line": 117,
+                "column": 6
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 114,
+              "column": 9
+            },
+            "end": {
+              "line": 116,
+              "column": 80
+            }
+          },
+          "replacement": "Some(Box::leak(Box::new(Default::default())))",
+          "genre": "FnValue"
+        }
+      },
+      "summary": "Unviable",
+      "log_path": "log/crates__qlrs-check__src__lib.rs_line_114_col_9_001.log",
+      "diff_path": "diff/crates__qlrs-check__src__lib.rs_line_114_col_9_001.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.782105767,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/workspace/.qlrs-tools/rustup/toolchains/1.99.1-x86_64-unknown-linux-gnu/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--workspace",
+            "--locked"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "crates/qlrs-check/src/lib.rs:116:53: replace && with || in Report::at_seq",
+          "package": "qlrs-check",
+          "file": "crates/qlrs-check/src/lib.rs",
+          "function": {
+            "function_name": "Report::at_seq",
+            "return_type": "-> Option<&Finding>",
+            "span": {
+              "start": {
+                "line": 111,
+                "column": 5
+              },
+              "end": {
+                "line": 117,
+                "column": 6
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 116,
+              "column": 53
+            },
+            "end": {
+              "line": 116,
+              "column": 55
+            }
+          },
+          "replacement": "||",
+          "genre": "BinaryOperator"
+        }
+      },
+      "summary": "CaughtMutant",
+      "log_path": "log/crates__qlrs-check__src__lib.rs_line_116_col_53.log",
+      "diff_path": "diff/crates__qlrs-check__src__lib.rs_line_116_col_53.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 101.043176434,
+          "process_status": "Success",
+          "argv": [
+            "/workspace/.qlrs-tools/rustup/toolchains/1.99.1-x86_64-unknown-linux-gnu/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--workspace",
+            "--locked"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 7.320916835,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/workspace/.qlrs-tools/rustup/toolchains/1.99.1-x86_64-unknown-linux-gnu/bin/cargo",
+            "test",
+            "--verbose",
+            "--workspace",
+            "--locked"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "crates/qlrs-check/src/lib.rs:109:9: replace Report::keys -> impl Iterator<Item =&InstanceKey> with ::std::iter::empty()",
+          "package": "qlrs-check",
+          "file": "crates/qlrs-check/src/lib.rs",
+          "function": {
+            "function_name": "Report::keys",
+            "return_type": "-> impl Iterator<Item =&InstanceKey>",
+            "span": {
+              "start": {
+                "line": 107,
+                "column": 5
+              },
+              "end": {
+                "line": 110,
+                "column": 6
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 109,
+              "column": 9
+            },
+            "end": {
+              "line": 109,
+              "column": 69
+            }
+          },
+          "replacement": "::std::iter::empty()",
+          "genre": "FnValue"
+        }
+      },
+      "summary": "CaughtMutant",
+      "log_path": "log/crates__qlrs-check__src__lib.rs_line_109_col_9.log",
+      "diff_path": "diff/crates__qlrs-check__src__lib.rs_line_109_col_9.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 289.168626184,
+          "process_status": "Success",
+          "argv": [
+            "/workspace/.qlrs-tools/rustup/toolchains/1.99.1-x86_64-unknown-linux-gnu/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--workspace",
+            "--locked"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 9.112223855,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/workspace/.qlrs-tools/rustup/toolchains/1.99.1-x86_64-unknown-linux-gnu/bin/cargo",
+            "test",
+            "--verbose",
+            "--workspace",
+            "--locked"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "crates/qlrs-check/src/lib.rs:35:9: replace Invariant::name -> &'static str with \"xyzzy\"",
+          "package": "qlrs-check",
+          "file": "crates/qlrs-check/src/lib.rs",
+          "function": {
+            "function_name": "Invariant::name",
+            "return_type": "-> &'static str",
+            "span": {
+              "start": {
+                "line": 32,
+                "column": 5
+              },
+              "end": {
+                "line": 40,
+                "column": 6
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 35,
+              "column": 9
+            },
+            "end": {
+              "line": 39,
+              "column": 10
+            }
+          },
+          "replacement": "\"xyzzy\"",
+          "genre": "FnValue"
+        }
+      },
+      "summary": "CaughtMutant",
+      "log_path": "log/crates__qlrs-check__src__lib.rs_line_35_col_9_001.log",
+      "diff_path": "diff/crates__qlrs-check__src__lib.rs_line_35_col_9_001.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 291.178839284,
+          "process_status": "Success",
+          "argv": [
+            "/workspace/.qlrs-tools/rustup/toolchains/1.99.1-x86_64-unknown-linux-gnu/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--workspace",
+            "--locked"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 8.742202271,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/workspace/.qlrs-tools/rustup/toolchains/1.99.1-x86_64-unknown-linux-gnu/bin/cargo",
+            "test",
+            "--verbose",
+            "--workspace",
+            "--locked"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "crates/qlrs-check/src/lib.rs:116:32: replace == with != in Report::at_seq",
+          "package": "qlrs-check",
+          "file": "crates/qlrs-check/src/lib.rs",
+          "function": {
+            "function_name": "Report::at_seq",
+            "return_type": "-> Option<&Finding>",
+            "span": {
+              "start": {
+                "line": 111,
+                "column": 5
+              },
+              "end": {
+                "line": 117,
+                "column": 6
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 116,
+              "column": 32
+            },
+            "end": {
+              "line": 116,
+              "column": 34
+            }
+          },
+          "replacement": "!=",
+          "genre": "BinaryOperator"
+        }
+      },
+      "summary": "CaughtMutant",
+      "log_path": "log/crates__qlrs-check__src__lib.rs_line_116_col_32.log",
+      "diff_path": "diff/crates__qlrs-check__src__lib.rs_line_116_col_32.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 10.176158193,
+          "process_status": "Success",
+          "argv": [
+            "/workspace/.qlrs-tools/rustup/toolchains/1.99.1-x86_64-unknown-linux-gnu/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--workspace",
+            "--locked"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 10.052120396,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/workspace/.qlrs-tools/rustup/toolchains/1.99.1-x86_64-unknown-linux-gnu/bin/cargo",
+            "test",
+            "--verbose",
+            "--workspace",
+            "--locked"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "crates/qlrs-check/src/lib.rs:141:9: replace Checker::prepare_with_checkpoint -> Result<(), String> with Ok(())",
+          "package": "qlrs-check",
+          "file": "crates/qlrs-check/src/lib.rs",
+          "function": {
+            "function_name": "Checker::prepare_with_checkpoint",
+            "return_type": "-> Result<(), String>",
+            "span": {
+              "start": {
+                "line": 136,
+                "column": 5
+              },
+              "end": {
+                "line": 142,
+                "column": 6
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 141,
+              "column": 9
+            },
+            "end": {
+              "line": 141,
+              "column": 59
+            }
+          },
+          "replacement": "Ok(())",
+          "genre": "FnValue"
+        }
+      },
+      "summary": "CaughtMutant",
+      "log_path": "log/crates__qlrs-check__src__lib.rs_line_141_col_9.log",
+      "diff_path": "diff/crates__qlrs-check__src__lib.rs_line_141_col_9.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 16.215785748,
+          "process_status": "Success",
+          "argv": [
+            "/workspace/.qlrs-tools/rustup/toolchains/1.99.1-x86_64-unknown-linux-gnu/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--workspace",
+            "--locked"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 9.39219189,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/workspace/.qlrs-tools/rustup/toolchains/1.99.1-x86_64-unknown-linux-gnu/bin/cargo",
+            "test",
+            "--verbose",
+            "--workspace",
+            "--locked"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "crates/qlrs-check/src/lib.rs:146:9: replace Checker::evaluate -> Report with Default::default()",
+          "package": "qlrs-check",
+          "file": "crates/qlrs-check/src/lib.rs",
+          "function": {
+            "function_name": "Checker::evaluate",
+            "return_type": "-> Report",
+            "span": {
+              "start": {
+                "line": 143,
+                "column": 5
+              },
+              "end": {
+                "line": 147,
+                "column": 6
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 146,
+              "column": 9
+            },
+            "end": {
+              "line": 146,
+              "column": 76
+            }
+          },
+          "replacement": "Default::default()",
+          "genre": "FnValue"
+        }
+      },
+      "summary": "Unviable",
+      "log_path": "log/crates__qlrs-check__src__lib.rs_line_146_col_9.log",
+      "diff_path": "diff/crates__qlrs-check__src__lib.rs_line_146_col_9.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.382267307,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/workspace/.qlrs-tools/rustup/toolchains/1.99.1-x86_64-unknown-linux-gnu/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--workspace",
+            "--locked"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "crates/qlrs-check/src/lib.rs:159:9: replace Checker::check -> Report with Default::default()",
+          "package": "qlrs-check",
+          "file": "crates/qlrs-check/src/lib.rs",
+          "function": {
+            "function_name": "Checker::check",
+            "return_type": "-> Report",
+            "span": {
+              "start": {
+                "line": 148,
+                "column": 5
+              },
+              "end": {
+                "line": 160,
+                "column": 6
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 159,
+              "column": 9
+            },
+            "end": {
+              "line": 159,
+              "column": 84
+            }
+          },
+          "replacement": "Default::default()",
+          "genre": "FnValue"
+        }
+      },
+      "summary": "Unviable",
+      "log_path": "log/crates__qlrs-check__src__lib.rs_line_159_col_9.log",
+      "diff_path": "diff/crates__qlrs-check__src__lib.rs_line_159_col_9.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.609961558,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/workspace/.qlrs-tools/rustup/toolchains/1.99.1-x86_64-unknown-linux-gnu/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--workspace",
+            "--locked"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "crates/qlrs-check/src/lib.rs:171:9: replace Checker::check_selected -> Report with Default::default()",
+          "package": "qlrs-check",
+          "file": "crates/qlrs-check/src/lib.rs",
+          "function": {
+            "function_name": "Checker::check_selected",
+            "return_type": "-> Report",
+            "span": {
+              "start": {
+                "line": 161,
+                "column": 5
+              },
+              "end": {
+                "line": 179,
+                "column": 6
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 171,
+              "column": 9
+            },
+            "end": {
+              "line": 178,
+              "column": 10
+            }
+          },
+          "replacement": "Default::default()",
+          "genre": "FnValue"
+        }
+      },
+      "summary": "Unviable",
+      "log_path": "log/crates__qlrs-check__src__lib.rs_line_171_col_9.log",
+      "diff_path": "diff/crates__qlrs-check__src__lib.rs_line_171_col_9.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.79225551,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/workspace/.qlrs-tools/rustup/toolchains/1.99.1-x86_64-unknown-linux-gnu/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--workspace",
+            "--locked"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "crates/qlrs-check/src/lib.rs:189:9: replace Checker::check_witness -> Report with Default::default()",
+          "package": "qlrs-check",
+          "file": "crates/qlrs-check/src/lib.rs",
+          "function": {
+            "function_name": "Checker::check_witness",
+            "return_type": "-> Report",
+            "span": {
+              "start": {
+                "line": 180,
+                "column": 5
+              },
+              "end": {
+                "line": 195,
+                "column": 6
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 189,
+              "column": 9
+            },
+            "end": {
+              "line": 194,
+              "column": 10
+            }
+          },
+          "replacement": "Default::default()",
+          "genre": "FnValue"
+        }
+      },
+      "summary": "Unviable",
+      "log_path": "log/crates__qlrs-check__src__lib.rs_line_189_col_9.log",
+      "diff_path": "diff/crates__qlrs-check__src__lib.rs_line_189_col_9.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.803159602,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/workspace/.qlrs-tools/rustup/toolchains/1.99.1-x86_64-unknown-linux-gnu/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--workspace",
+            "--locked"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "crates/qlrs-check/src/lib.rs:205:9: replace Checker::check_witness_selected -> Report with Default::default()",
+          "package": "qlrs-check",
+          "file": "crates/qlrs-check/src/lib.rs",
+          "function": {
+            "function_name": "Checker::check_witness_selected",
+            "return_type": "-> Report",
+            "span": {
+              "start": {
+                "line": 196,
+                "column": 5
+              },
+              "end": {
+                "line": 211,
+                "column": 6
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 205,
+              "column": 9
+            },
+            "end": {
+              "line": 210,
+              "column": 10
+            }
+          },
+          "replacement": "Default::default()",
+          "genre": "FnValue"
+        }
+      },
+      "summary": "Unviable",
+      "log_path": "log/crates__qlrs-check__src__lib.rs_line_205_col_9.log",
+      "diff_path": "diff/crates__qlrs-check__src__lib.rs_line_205_col_9.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.659941397,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/workspace/.qlrs-tools/rustup/toolchains/1.99.1-x86_64-unknown-linux-gnu/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--workspace",
+            "--locked"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "crates/qlrs-check/src/lib.rs:222:9: replace Checker::check_events -> Report with Default::default()",
+          "package": "qlrs-check",
+          "file": "crates/qlrs-check/src/lib.rs",
+          "function": {
+            "function_name": "Checker::check_events",
+            "return_type": "-> Report",
+            "span": {
+              "start": {
+                "line": 213,
+                "column": 5
+              },
+              "end": {
+                "line": 813,
+                "column": 6
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 222,
+              "column": 9
+            },
+            "end": {
+              "line": 812,
+              "column": 32
+            }
+          },
+          "replacement": "Default::default()",
+          "genre": "FnValue"
+        }
+      },
+      "summary": "Unviable",
+      "log_path": "log/crates__qlrs-check__src__lib.rs_line_222_col_9.log",
+      "diff_path": "diff/crates__qlrs-check__src__lib.rs_line_222_col_9.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 0.534331114,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/workspace/.qlrs-tools/rustup/toolchains/1.99.1-x86_64-unknown-linux-gnu/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--workspace",
+            "--locked"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": {
+        "Mutant": {
+          "name": "crates/qlrs-check/src/lib.rs:116:73: replace == with != in Report::at_seq",
+          "package": "qlrs-check",
+          "file": "crates/qlrs-check/src/lib.rs",
+          "function": {
+            "function_name": "Report::at_seq",
+            "return_type": "-> Option<&Finding>",
+            "span": {
+              "start": {
+                "line": 111,
+                "column": 5
+              },
+              "end": {
+                "line": 117,
+                "column": 6
+              }
+            }
+          },
+          "span": {
+            "start": {
+              "line": 116,
+              "column": 73
+            },
+            "end": {
+              "line": 116,
+              "column": 75
+            }
+          },
+          "replacement": "!=",
+          "genre": "BinaryOperator"
+        }
+      },
+      "summary": "CaughtMutant",
+      "log_path": "log/crates__qlrs-check__src__lib.rs_line_116_col_73.log",
+      "diff_path": "diff/crates__qlrs-check__src__lib.rs_line_116_col_73.diff",
+      "phase_results": [
+        {
+          "phase": "Build",
+          "duration": 44.137119699,
+          "process_status": "Success",
+          "argv": [
+            "/workspace/.qlrs-tools/rustup/toolchains/1.99.1-x86_64-unknown-linux-gnu/bin/cargo",
+            "test",
+            "--no-run",
+            "--verbose",
+            "--workspace",
+            "--locked"
+          ]
+        },
+        {
+          "phase": "Test",
+          "duration": 9.759403588,
+          "process_status": {
+            "Failure": 101
+          },
+          "argv": [
+            "/workspace/.qlrs-tools/rustup/toolchains/1.99.1-x86_64-unknown-linux-gnu/bin/cargo",
+            "test",
+            "--verbose",
+            "--workspace",
+            "--locked"
+          ]
+        }
+      ]
+    }
+  ],
+  "total_mutants": 15,
+  "missed": 0,
+  "caught": 7,
+  "timeout": 0,
+  "unviable": 8,
+  "success": 0,
+  "start_time": "2026-11-04T22:11:11.037636577Z",
+  "end_time": null,
+  "cargo_mutants_version": "27.1.0"
+}

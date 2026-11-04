@@ -1,0 +1,98 @@
+[
+  {
+    "diff": "--- crates/qlrs-reduce/src/lib.rs\n+++ replace || with && in recheck_certificate\n@@ -1607,17 +1607,17 @@\n             return Err(\"duplicate or invalid certificate entry\".into());\n         }\n         let root = *mapping.get(&entry.root).ok_or(\"unknown certificate root\")?;\n         let mut removed = Vec::new();\n         for range in &entry.removed_closure {\n             let first = *range.first().ok_or(\"invalid RLE\")?;\n             let last = *range.get(1).ok_or(\"invalid RLE\")?;\n             if first > last\n-                || u64::from(last).saturating_sub(u64::from(first))\n+                && /* ~ changed by cargo-mutants ~ */ u64::from(last).saturating_sub(u64::from(first))\n                     >= u64::try_from(mapping.len()).unwrap_or(0)\n             {\n                 return Err(\"invalid RLE range\".into());\n             }\n             for id in first..=last {\n                 removed.push(*mapping.get(&id).ok_or(\"unknown removed unit\")?);\n             }\n         }\n",
+    "file": "crates/qlrs-reduce/src/lib.rs",
+    "function": {
+      "function_name": "recheck_certificate",
+      "return_type": "-> Result<(), String>",
+      "span": {
+        "end": {
+          "column": 2,
+          "line": 1655
+        },
+        "start": {
+          "column": 1,
+          "line": 1531
+        }
+      }
+    },
+    "genre": "BinaryOperator",
+    "name": "crates/qlrs-reduce/src/lib.rs:1615:17: replace || with && in recheck_certificate",
+    "package": "qlrs-reduce",
+    "replacement": "&&",
+    "span": {
+      "end": {
+        "column": 19,
+        "line": 1615
+      },
+      "start": {
+        "column": 17,
+        "line": 1615
+      }
+    }
+  },
+  {
+    "diff": "--- crates/qlrs-reduce/src/lib.rs\n+++ replace > with < in recheck_certificate\n@@ -1606,17 +1606,17 @@\n         if !roots.insert(entry.root) || !matches!(entry.evaluator.as_str(), \"fast\" | \"full\") {\n             return Err(\"duplicate or invalid certificate entry\".into());\n         }\n         let root = *mapping.get(&entry.root).ok_or(\"unknown certificate root\")?;\n         let mut removed = Vec::new();\n         for range in &entry.removed_closure {\n             let first = *range.first().ok_or(\"invalid RLE\")?;\n             let last = *range.get(1).ok_or(\"invalid RLE\")?;\n-            if first > last\n+            if first < /* ~ changed by cargo-mutants ~ */ last\n                 || u64::from(last).saturating_sub(u64::from(first))\n                     >= u64::try_from(mapping.len()).unwrap_or(0)\n             {\n                 return Err(\"invalid RLE range\".into());\n             }\n             for id in first..=last {\n                 removed.push(*mapping.get(&id).ok_or(\"unknown removed unit\")?);\n             }\n",
+    "file": "crates/qlrs-reduce/src/lib.rs",
+    "function": {
+      "function_name": "recheck_certificate",
+      "return_type": "-> Result<(), String>",
+      "span": {
+        "end": {
+          "column": 2,
+          "line": 1655
+        },
+        "start": {
+          "column": 1,
+          "line": 1531
+        }
+      }
+    },
+    "genre": "BinaryOperator",
+    "name": "crates/qlrs-reduce/src/lib.rs:1614:22: replace > with < in recheck_certificate",
+    "package": "qlrs-reduce",
+    "replacement": "<",
+    "span": {
+      "end": {
+        "column": 23,
+        "line": 1614
+      },
+      "start": {
+        "column": 22,
+        "line": 1614
+      }
+    }
+  },
+  {
+    "diff": "--- crates/qlrs-reduce/src/lib.rs\n+++ replace || with && in recheck_certificate\n@@ -1642,17 +1642,17 @@\n         if (entry.evaluator == \"fast\") != structural {\n             return Err(\"invalid certificate evaluator\".into());\n         }\n         if entry.evaluator == \"full\" {\n             tested = tested.saturating_add(1);\n         }\n     }\n     if tested != certificate.candidates_tested\n-        || (certificate.complete && roots.len() != mapping.len())\n+        && /* ~ changed by cargo-mutants ~ */ (certificate.complete && roots.len() != mapping.len())\n     {\n         return Err(\"certificate is incomplete or miscounts candidates\".into());\n     }\n     Ok(())\n }\n \n fn evaluate_batch(\n     predicate: &mut ReductionPredicate<'_>,\n",
+    "file": "crates/qlrs-reduce/src/lib.rs",
+    "function": {
+      "function_name": "recheck_certificate",
+      "return_type": "-> Result<(), String>",
+      "span": {
+        "end": {
+          "column": 2,
+          "line": 1655
+        },
+        "start": {
+          "column": 1,
+          "line": 1531
+        }
+      }
+    },
+    "genre": "BinaryOperator",
+    "name": "crates/qlrs-reduce/src/lib.rs:1650:9: replace || with && in recheck_certificate",
+    "package": "qlrs-reduce",
+    "replacement": "&&",
+    "span": {
+      "end": {
+        "column": 11,
+        "line": 1650
+      },
+      "start": {
+        "column": 9,
+        "line": 1650
+      }
+    }
+  }
+]

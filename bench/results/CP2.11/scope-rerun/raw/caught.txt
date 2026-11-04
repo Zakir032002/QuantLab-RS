@@ -1,0 +1,3 @@
+crates/qlrs-check/src/lib.rs:854:45: replace != with == in finish
+crates/qlrs-check/src/lib.rs:895:25: replace && with || in witness_report
+crates/qlrs-check/src/lib.rs:894:25: replace && with || in witness_report

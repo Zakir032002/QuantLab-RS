@@ -1,0 +1,22 @@
+   Compiling qlrs-reduce v0.1.0 (/workspace/QuantLab-RS/crates/qlrs-reduce)
+    Finished `test` profile [optimized + debuginfo] target(s) in 3.38s
+     Running unittests src/lib.rs (target/debug/deps/qlrs_reduce-0e18891faa17176f)
+
+running 1 test
+test helper_tests::req_reduce_023_cache_rejects_changed_observation_bounds ... FAILED
+
+failures:
+
+---- helper_tests::req_reduce_023_cache_rejects_changed_observation_bounds stdout ----
+
+thread 'helper_tests::req_reduce_023_cache_rejects_changed_observation_bounds' (3632218) panicked at crates/qlrs-reduce/src/lib.rs:2011:9:
+assertion failed: predicate.test(&clipped).is_err()
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+
+failures:
+    helper_tests::req_reduce_023_cache_rejects_changed_observation_bounds
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 6 filtered out; finished in 0.00s
+
+error: test failed, to rerun pass `-p qlrs-reduce --lib`

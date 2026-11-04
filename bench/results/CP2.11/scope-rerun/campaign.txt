@@ -1,0 +1,4 @@
+Found 3 mutants to test
+ok       Unmutated baseline in 22s build + 0s test
+ INFO Auto-set test timeout to 60s
+3 mutants tested in 5m: 3 caught

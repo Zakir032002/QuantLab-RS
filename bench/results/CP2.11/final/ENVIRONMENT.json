@@ -1,0 +1,20 @@
+{
+  "tool": "cargo-mutants 27.1.0",
+  "rust": "1.99.1",
+  "source_base_commit": "a877c7bcf0435566073b4bc22a0a4094feaedfe6",
+  "mutation_source_hashes": "mutation-source-sha256.txt",
+  "test_count_full_campaign": 81,
+  "test_count_scope_recheck": 82,
+  "env": {
+    "PROPTEST_RNG_SEED": "42",
+    "RUST_TEST_THREADS": "2",
+    "RAYON_NUM_THREADS": "1",
+    "CARGO_BUILD_JOBS": "1",
+    "CARGO_PROFILE_TEST_OPT_LEVEL": "0",
+    "CARGO_PROFILE_TEST_DEBUG": "0"
+  },
+  "test_scope": "workspace",
+  "timeout_seconds": 60,
+  "raw_timeout_count": 3,
+  "incomplete_attempts_excluded": true
+}

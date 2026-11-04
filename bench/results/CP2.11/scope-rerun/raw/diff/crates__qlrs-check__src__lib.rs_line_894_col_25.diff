@@ -1,0 +1,21 @@
+--- crates/qlrs-check/src/lib.rs
++++ replace && with || in witness_report
+@@ -886,17 +886,17 @@
+     report.findings.retain(|finding| {
+         !finding
+             .reason
+             .as_deref()
+             .is_some_and(|reason| reason.starts_with("missing-later-"))
+             && finding.instance_key.as_ref().is_none_or(|key| {
+                 key.invariant_id == Invariant::I3
+                     || (key.invariant_id == target.invariant_id
+-                        && key.account == target.account
++                        || /* ~ changed by cargo-mutants ~ */ key.account == target.account
+                         && key.scope == target.scope)
+             })
+     });
+     finish(report, true)
+ }
+ fn violation(
+     store: &TraceStore,
+     invariant: Invariant,

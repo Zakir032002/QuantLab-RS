@@ -1,0 +1,21 @@
+--- crates/qlrs-reduce/src/lib.rs
++++ replace == with != in remove_closure
+@@ -1694,17 +1694,17 @@
+     let closure = graph.closure(roots);
+     if closure.iter().any(|unit| pinned.contains(*unit)) {
+         return None;
+     }
+     let mut mask = current.clone();
+     for unit in closure {
+         mask.set(unit, false);
+     }
+-    if mask == *current { None } else { Some(mask) }
++    if mask != /* ~ changed by cargo-mutants ~ */ *current { None } else { Some(mask) }
+ }
+ /// Pin only the target event and its observed opening boundary.
+ pub fn pinned_units(store: &TraceStore, target: &Finding) -> Result<AliveMask, String> {
+     let (window, _, _) = window(store, target, None)?;
+     pin_window(store, target, &window)
+ }
+ fn pin_window(
+     store: &TraceStore,

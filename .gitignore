@@ -5,3 +5,7 @@
 *.profdata
 
 /mutants.out/
+
+/verification/prefix-sums/target/
+
+/mutants.out.old/

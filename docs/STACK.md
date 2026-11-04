@@ -38,3 +38,9 @@ https://crates.io/api/v1/crates/rayon . The direct testkit edge reuses this exac
 workspace pin; no package version was added or bumped. Raw metadata:
 bench/results/CP2.8/rayon-release.json. Rust remains 1.99.1; CP2.0 contains the
 official channel recheck.
+
+Part 2 tooling recheck, 2026-11-05 Asia/Calcutta: cargo-mutants 27.1.0
+(released 2026-06-02) and optional kani-verifier 0.68.0 (2026-09-16), neither
+yanked, verified via https://crates.io/api/v1/crates/cargo-mutants and
+https://crates.io/api/v1/crates/kani-verifier . Raw metadata is recorded with
+CP2.11. Kani is configured as an optional job; no local proof pass is claimed.

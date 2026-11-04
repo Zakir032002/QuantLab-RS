@@ -1,0 +1,505 @@
+
+*** crates/qlrs-reduce/src/lib.rs:1650:9: replace || with && in recheck_certificate
+
+*** mutation diff:
+--- crates/qlrs-reduce/src/lib.rs
++++ replace || with && in recheck_certificate
+@@ -1642,17 +1642,17 @@
+         if (entry.evaluator == "fast") != structural {
+             return Err("invalid certificate evaluator".into());
+         }
+         if entry.evaluator == "full" {
+             tested = tested.saturating_add(1);
+         }
+     }
+     if tested != certificate.candidates_tested
+-        || (certificate.complete && roots.len() != mapping.len())
++        && /* ~ changed by cargo-mutants ~ */ (certificate.complete && roots.len() != mapping.len())
+     {
+         return Err("certificate is incomplete or miscounts candidates".into());
+     }
+     Ok(())
+ }
+ 
+ fn evaluate_batch(
+     predicate: &mut ReductionPredicate<'_>,
+
+
+*** /workspace/.qlrs-tools/rustup/toolchains/1.99.1-x86_64-unknown-linux-gnu/bin/cargo test --no-run --verbose --workspace --locked
+       Fresh unicode-ident v1.0.27
+       Fresh cfg-if v1.0.5
+       Fresh proc-macro2 v1.0.107
+       Fresh find-msvc-tools v0.1.15
+       Fresh quote v1.0.47
+       Fresh shlex v2.0.1
+       Fresh cpufeatures v0.3.1
+       Fresh foldhash v0.2.0
+       Fresh syn v3.0.9
+       Fresh cc v1.11.0
+       Fresh serde_derive v1.0.229
+       Fresh crossbeam-utils v0.8.23
+       Fresh crossbeam-epoch v0.9.21
+       Fresh arrayvec v0.7.8
+       Fresh either v1.19.0
+       Fresh constant_time_eq v0.4.2
+       Fresh crossbeam-deque v0.8.8
+       Fresh zmij v1.0.23
+       Fresh blake3 v1.8.7
+       Fresh itoa v1.0.18
+       Fresh memchr v2.8.3
+       Fresh rayon-core v1.13.0
+       Fresh autocfg v1.5.1
+       Fresh rayon v1.12.0
+       Fresh rand_core v0.10.1
+       Fresh libc v0.2.191
+       Dirty qlrs-reduce v0.1.0 (/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/crates/qlrs-reduce): the file `crates/qlrs-reduce/src/lib.rs` has changed (1793835128.548184831s, 20s after last build at 1793835108.080053180s)
+   Compiling qlrs-reduce v0.1.0 (/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/crates/qlrs-reduce)
+       Fresh num-traits v0.2.19
+       Fresh regex-syntax v0.8.11
+       Fresh bitflags v2.13.2
+       Fresh linux-raw-sys v0.12.1
+       Fresh getrandom v0.4.3
+       Fresh rustix v1.1.6
+       Fresh fastrand v2.5.0
+       Fresh once_cell v1.21.4
+       Fresh tempfile v3.27.0
+       Fresh wait-timeout v0.2.1
+       Fresh quick-error v1.2.3
+       Fresh fnv v1.0.7
+       Fresh bit-vec v0.10.1
+       Fresh rusty-fork v0.3.1
+       Fresh rand v0.10.3
+       Fresh chacha20 v0.10.2
+       Fresh bit-set v0.11.1
+       Fresh rand_xorshift v0.5.0
+       Fresh core_detect v1.0.0
+       Fresh unarray v0.1.4
+       Fresh proptest v1.12.0
+       Fresh syn v2.0.119
+       Fresh utf8parse v0.2.2
+       Fresh anstyle v1.0.14
+       Fresh anstyle-parse v1.0.0
+       Fresh is_terminal_polyfill v1.70.2
+       Fresh colorchoice v1.0.5
+       Fresh anstyle-query v1.1.5
+       Fresh anstream v1.0.0
+       Fresh strsim v0.11.1
+       Fresh clap_lex v1.1.1
+       Fresh heck v0.5.0
+       Fresh clap_derive v4.6.7
+       Fresh clap_builder v4.6.7
+       Fresh zerocopy-derive v0.8.63
+       Fresh semver v1.0.28
+       Fresh clap v4.6.7
+       Fresh rustc_version v0.4.1
+       Fresh zerocopy v0.8.63
+       Fresh serde_core v1.0.229
+       Fresh derive_more-impl v2.1.1
+     Running `/workspace/.qlrs-tools/rustup/toolchains/1.99.1-x86_64-unknown-linux-gnu/bin/rustc --crate-name qlrs_reduce --edition=2024 crates/qlrs-reduce/src/lib.rs --error-format=json --json=diagnostic-rendered-ansi,artifacts,future-incompat --crate-type lib --emit=dep-info,metadata,link -C embed-bitcode=no '--warn=clippy::pedantic' '--deny=clippy::unwrap_used' --forbid=unsafe_code --warn=missing_docs '--warn=clippy::indexing_slicing' '--deny=clippy::expect_used' '--deny=clippy::cast_sign_loss' '--deny=clippy::cast_possible_truncation' --check-cfg 'cfg(docsrs,test)' --check-cfg 'cfg(feature, values())' -C metadata=e778c50d414287f9 -C extra-filename=-e0c5db1d823f5df7 --out-dir /tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps -C incremental=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/incremental -C strip=debuginfo -L dependency=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps --extern blake3=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps/libblake3-938e3c91503ace76.rmeta --extern foldhash=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps/libfoldhash-8855b892173f9bdc.rmeta --extern qlrs_check=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps/libqlrs_check-f31e458ef430fdcd.rmeta --extern qlrs_ledger=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps/libqlrs_ledger-f0cbd7a4e209fc05.rmeta --extern qlrs_num=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps/libqlrs_num-ad4092543fe3243e.rmeta --extern qlrs_schema=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps/libqlrs_schema-d6d3c64292147318.rmeta --extern rayon=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps/librayon-fa8ef5dfd05a51f2.rmeta --extern serde=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps/libserde-6e34c47f1beae965.rmeta -L native=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/build/blake3-9c0dafd5b6f91073/out -L native=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/build/blake3-9c0dafd5b6f91073/out`
+       Fresh rustversion v1.0.23
+       Fresh half v2.7.1
+       Fresh num-integer v0.1.47
+       Fresh proc-macro-error-attr3 v3.1.1
+       Fresh ciborium-io v0.2.2
+       Fresh plotters-backend v0.3.7
+       Fresh plotters-svg v0.3.7
+       Fresh num-bigint v0.4.8
+       Fresh proc-macro-error3 v3.1.1
+       Fresh ciborium-ll v0.2.2
+       Fresh rapidhash v4.5.1
+       Fresh serde v1.0.229
+       Fresh serde_json v1.0.154
+       Fresh regex-automata v0.4.18
+       Fresh itertools v0.13.0
+       Fresh either-or-both v0.3.1
+       Fresh unty-next v0.1.2
+       Fresh pastey v0.2.3
+       Fresh cast v0.3.0
+       Fresh same-file v1.0.6
+       Fresh bincode-next v3.1.1
+       Fresh criterion-plot v0.8.2
+       Fresh walkdir v2.5.0
+       Fresh gungraun-runner v0.20.0
+       Fresh regex v1.13.1
+       Fresh gungraun-macros v0.10.0
+       Fresh ciborium v0.2.2
+       Fresh plotters v0.3.7
+       Fresh gungraun-common v0.1.0
+       Fresh alloca v0.4.0
+       Fresh derive_more v2.1.1
+       Fresh page_size v0.6.0
+       Fresh tinytemplate v1.2.1
+       Fresh anes v0.1.6
+       Fresh oorandom v11.1.5
+       Fresh gungraun v0.20.0
+       Fresh criterion v0.8.2
+       Fresh qlrs-num v0.1.0 (/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/crates/qlrs-num)
+       Fresh qlrs-io v0.1.0 (/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/crates/qlrs-io)
+       Fresh qlrs-check v0.1.0 (/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/crates/qlrs-check)
+       Fresh qlrs-ledger v0.1.0 (/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/crates/qlrs-ledger)
+       Fresh qlrs-schema v0.1.0 (/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/crates/qlrs-schema)
+     Running `/workspace/.qlrs-tools/rustup/toolchains/1.99.1-x86_64-unknown-linux-gnu/bin/rustc --crate-name qlrs_reduce --edition=2024 crates/qlrs-reduce/src/lib.rs --error-format=json --json=diagnostic-rendered-ansi,artifacts,future-incompat --emit=dep-info,link -C embed-bitcode=no '--warn=clippy::pedantic' '--deny=clippy::unwrap_used' --forbid=unsafe_code --warn=missing_docs '--warn=clippy::indexing_slicing' '--deny=clippy::expect_used' '--deny=clippy::cast_sign_loss' '--deny=clippy::cast_possible_truncation' --test --check-cfg 'cfg(docsrs,test)' --check-cfg 'cfg(feature, values())' -C metadata=54d44a5e7fff47c4 -C extra-filename=-c2b3f0081f22dc55 --out-dir /tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps -C incremental=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/incremental -C strip=debuginfo -L dependency=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps --extern blake3=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps/libblake3-938e3c91503ace76.rlib --extern foldhash=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps/libfoldhash-8855b892173f9bdc.rlib --extern qlrs_check=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps/libqlrs_check-f31e458ef430fdcd.rlib --extern qlrs_ledger=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps/libqlrs_ledger-f0cbd7a4e209fc05.rlib --extern qlrs_num=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps/libqlrs_num-ad4092543fe3243e.rlib --extern qlrs_schema=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps/libqlrs_schema-d6d3c64292147318.rlib --extern rayon=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps/librayon-fa8ef5dfd05a51f2.rlib --extern serde=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps/libserde-6e34c47f1beae965.rlib -L native=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/build/blake3-9c0dafd5b6f91073/out -L native=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/build/blake3-9c0dafd5b6f91073/out`
+       Dirty qlrs-bundle v0.1.0 (/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/crates/qlrs-bundle): the dependency `qlrs-reduce` was rebuilt
+   Compiling qlrs-bundle v0.1.0 (/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/crates/qlrs-bundle)
+     Running `/workspace/.qlrs-tools/rustup/toolchains/1.99.1-x86_64-unknown-linux-gnu/bin/rustc --crate-name qlrs_bundle --edition=2024 crates/qlrs-bundle/src/lib.rs --error-format=json --json=diagnostic-rendered-ansi,artifacts,future-incompat --crate-type lib --emit=dep-info,metadata,link -C embed-bitcode=no '--warn=clippy::pedantic' '--deny=clippy::unwrap_used' --forbid=unsafe_code --warn=missing_docs '--warn=clippy::indexing_slicing' '--deny=clippy::expect_used' '--deny=clippy::cast_sign_loss' '--deny=clippy::cast_possible_truncation' --check-cfg 'cfg(docsrs,test)' --check-cfg 'cfg(feature, values())' -C metadata=bf21dd7442c7a5e0 -C extra-filename=-18607f8a34b4f64b --out-dir /tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps -C incremental=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/incremental -C strip=debuginfo -L dependency=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps --extern blake3=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps/libblake3-938e3c91503ace76.rmeta --extern qlrs_check=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps/libqlrs_check-f31e458ef430fdcd.rmeta --extern qlrs_io=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps/libqlrs_io-28d3dc834d4f6f95.rmeta --extern qlrs_reduce=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps/libqlrs_reduce-e0c5db1d823f5df7.rmeta --extern qlrs_schema=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps/libqlrs_schema-d6d3c64292147318.rmeta --extern serde=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps/libserde-6e34c47f1beae965.rmeta -L native=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/build/blake3-9c0dafd5b6f91073/out -L native=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/build/blake3-9c0dafd5b6f91073/out`
+       Dirty qlrs-testkit v0.1.0 (/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/crates/qlrs-testkit): the dependency `qlrs-reduce` was rebuilt
+   Compiling qlrs-testkit v0.1.0 (/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/crates/qlrs-testkit)
+     Running `/workspace/.qlrs-tools/rustup/toolchains/1.99.1-x86_64-unknown-linux-gnu/bin/rustc --crate-name qlrs_testkit --edition=2024 crates/qlrs-testkit/src/lib.rs --error-format=json --json=diagnostic-rendered-ansi,artifacts,future-incompat --crate-type lib --emit=dep-info,metadata,link -C embed-bitcode=no '--warn=clippy::pedantic' '--deny=clippy::unwrap_used' --deny=unsafe_code --warn=missing_docs '--warn=clippy::indexing_slicing' '--deny=clippy::expect_used' '--deny=clippy::cast_sign_loss' '--deny=clippy::cast_possible_truncation' --check-cfg 'cfg(docsrs,test)' --check-cfg 'cfg(feature, values())' -C metadata=99e7d3a8f3269fdc -C extra-filename=-b4496ea55f060d9e --out-dir /tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps -C incremental=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/incremental -C strip=debuginfo -L dependency=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps --extern qlrs_bundle=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps/libqlrs_bundle-18607f8a34b4f64b.rmeta --extern qlrs_check=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps/libqlrs_check-f31e458ef430fdcd.rmeta --extern qlrs_io=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps/libqlrs_io-28d3dc834d4f6f95.rmeta --extern qlrs_ledger=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps/libqlrs_ledger-f0cbd7a4e209fc05.rmeta --extern qlrs_num=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps/libqlrs_num-ad4092543fe3243e.rmeta --extern qlrs_reduce=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps/libqlrs_reduce-e0c5db1d823f5df7.rmeta --extern qlrs_schema=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps/libqlrs_schema-d6d3c64292147318.rmeta --extern rayon=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps/librayon-fa8ef5dfd05a51f2.rmeta -L native=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/build/blake3-9c0dafd5b6f91073/out -L native=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/build/blake3-9c0dafd5b6f91073/out`
+       Dirty qlrs-bench v0.1.0 (/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/crates/qlrs-bench): the dependency `qlrs-reduce` was rebuilt
+   Compiling qlrs-bench v0.1.0 (/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/crates/qlrs-bench)
+     Running `/workspace/.qlrs-tools/rustup/toolchains/1.99.1-x86_64-unknown-linux-gnu/bin/rustc --crate-name qlrs_bench --edition=2024 crates/qlrs-bench/src/lib.rs --error-format=json --json=diagnostic-rendered-ansi,artifacts,future-incompat --crate-type lib --emit=dep-info,metadata,link -C embed-bitcode=no '--warn=clippy::pedantic' '--deny=clippy::unwrap_used' --forbid=unsafe_code --warn=missing_docs '--warn=clippy::indexing_slicing' '--deny=clippy::expect_used' '--deny=clippy::cast_sign_loss' '--deny=clippy::cast_possible_truncation' --check-cfg 'cfg(docsrs,test)' --check-cfg 'cfg(feature, values())' -C metadata=38cb5ae3481d7251 -C extra-filename=-50c17fcdeecc1c2f --out-dir /tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps -C incremental=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/incremental -C strip=debuginfo -L dependency=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps --extern qlrs_check=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps/libqlrs_check-f31e458ef430fdcd.rmeta --extern qlrs_io=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps/libqlrs_io-28d3dc834d4f6f95.rmeta --extern qlrs_ledger=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps/libqlrs_ledger-f0cbd7a4e209fc05.rmeta --extern qlrs_num=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps/libqlrs_num-ad4092543fe3243e.rmeta --extern qlrs_reduce=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps/libqlrs_reduce-e0c5db1d823f5df7.rmeta --extern qlrs_schema=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps/libqlrs_schema-d6d3c64292147318.rmeta --extern qlrs_testkit=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps/libqlrs_testkit-b4496ea55f060d9e.rmeta -L native=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/build/blake3-9c0dafd5b6f91073/out -L native=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/build/blake3-9c0dafd5b6f91073/out`
+       Dirty qlrs-cli v0.1.0 (/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/crates/qlrs-cli): the dependency `qlrs-reduce` was rebuilt
+   Compiling qlrs-cli v0.1.0 (/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/crates/qlrs-cli)
+     Running `/workspace/.qlrs-tools/rustup/toolchains/1.99.1-x86_64-unknown-linux-gnu/bin/rustc --crate-name qlrs --edition=2024 crates/qlrs-cli/src/main.rs --error-format=json --json=diagnostic-rendered-ansi,artifacts,future-incompat --crate-type bin --emit=dep-info,link -C embed-bitcode=no '--warn=clippy::pedantic' '--deny=clippy::unwrap_used' --forbid=unsafe_code --warn=missing_docs '--warn=clippy::indexing_slicing' '--deny=clippy::expect_used' '--deny=clippy::cast_sign_loss' '--deny=clippy::cast_possible_truncation' --check-cfg 'cfg(docsrs,test)' --check-cfg 'cfg(feature, values())' -C metadata=520ac1e7037036c9 -C extra-filename=-4621100e310a82c5 --out-dir /tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps -C incremental=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/incremental -C strip=debuginfo -L dependency=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps --extern clap=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps/libclap-2693ff768bc64792.rlib --extern qlrs_bundle=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps/libqlrs_bundle-18607f8a34b4f64b.rlib --extern qlrs_check=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps/libqlrs_check-f31e458ef430fdcd.rlib --extern qlrs_io=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps/libqlrs_io-28d3dc834d4f6f95.rlib --extern qlrs_ledger=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps/libqlrs_ledger-f0cbd7a4e209fc05.rlib --extern qlrs_reduce=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps/libqlrs_reduce-e0c5db1d823f5df7.rlib --extern qlrs_schema=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps/libqlrs_schema-d6d3c64292147318.rlib -L native=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/build/blake3-9c0dafd5b6f91073/out -L native=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/build/blake3-9c0dafd5b6f91073/out`
+     Running `/workspace/.qlrs-tools/rustup/toolchains/1.99.1-x86_64-unknown-linux-gnu/bin/rustc --crate-name qlrs_bundle --edition=2024 crates/qlrs-bundle/src/lib.rs --error-format=json --json=diagnostic-rendered-ansi,artifacts,future-incompat --emit=dep-info,link -C embed-bitcode=no '--warn=clippy::pedantic' '--deny=clippy::unwrap_used' --forbid=unsafe_code --warn=missing_docs '--warn=clippy::indexing_slicing' '--deny=clippy::expect_used' '--deny=clippy::cast_sign_loss' '--deny=clippy::cast_possible_truncation' --test --check-cfg 'cfg(docsrs,test)' --check-cfg 'cfg(feature, values())' -C metadata=36575e89668e3756 -C extra-filename=-07e9f37aa9674077 --out-dir /tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps -C incremental=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/incremental -C strip=debuginfo -L dependency=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps --extern blake3=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps/libblake3-938e3c91503ace76.rlib --extern qlrs_check=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps/libqlrs_check-f31e458ef430fdcd.rlib --extern qlrs_io=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps/libqlrs_io-28d3dc834d4f6f95.rlib --extern qlrs_reduce=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps/libqlrs_reduce-e0c5db1d823f5df7.rlib --extern qlrs_schema=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps/libqlrs_schema-d6d3c64292147318.rlib --extern serde=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps/libserde-6e34c47f1beae965.rlib -L native=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/build/blake3-9c0dafd5b6f91073/out -L native=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/build/blake3-9c0dafd5b6f91073/out`
+     Running `/workspace/.qlrs-tools/rustup/toolchains/1.99.1-x86_64-unknown-linux-gnu/bin/rustc --crate-name qlrs_testkit --edition=2024 crates/qlrs-testkit/src/lib.rs --error-format=json --json=diagnostic-rendered-ansi,artifacts,future-incompat --emit=dep-info,link -C embed-bitcode=no '--warn=clippy::pedantic' '--deny=clippy::unwrap_used' --deny=unsafe_code --warn=missing_docs '--warn=clippy::indexing_slicing' '--deny=clippy::expect_used' '--deny=clippy::cast_sign_loss' '--deny=clippy::cast_possible_truncation' --test --check-cfg 'cfg(docsrs,test)' --check-cfg 'cfg(feature, values())' -C metadata=40fc6c6c856f7f36 -C extra-filename=-713444bcd5f489fd --out-dir /tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps -C incremental=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/incremental -C strip=debuginfo -L dependency=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps --extern proptest=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps/libproptest-2c0490be705847b2.rlib --extern qlrs_bundle=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps/libqlrs_bundle-18607f8a34b4f64b.rlib --extern qlrs_check=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps/libqlrs_check-f31e458ef430fdcd.rlib --extern qlrs_io=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps/libqlrs_io-28d3dc834d4f6f95.rlib --extern qlrs_ledger=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps/libqlrs_ledger-f0cbd7a4e209fc05.rlib --extern qlrs_num=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps/libqlrs_num-ad4092543fe3243e.rlib --extern qlrs_reduce=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps/libqlrs_reduce-e0c5db1d823f5df7.rlib --extern qlrs_schema=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps/libqlrs_schema-d6d3c64292147318.rlib --extern rayon=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps/librayon-fa8ef5dfd05a51f2.rlib -L native=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/build/blake3-9c0dafd5b6f91073/out -L native=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/build/blake3-9c0dafd5b6f91073/out`
+     Running `/workspace/.qlrs-tools/rustup/toolchains/1.99.1-x86_64-unknown-linux-gnu/bin/rustc --crate-name invariants --edition=2024 crates/qlrs-testkit/tests/invariants.rs --error-format=json --json=diagnostic-rendered-ansi,artifacts,future-incompat --emit=dep-info,link -C embed-bitcode=no '--warn=clippy::pedantic' '--deny=clippy::unwrap_used' --deny=unsafe_code --warn=missing_docs '--warn=clippy::indexing_slicing' '--deny=clippy::expect_used' '--deny=clippy::cast_sign_loss' '--deny=clippy::cast_possible_truncation' --test --check-cfg 'cfg(docsrs,test)' --check-cfg 'cfg(feature, values())' -C metadata=eafb84ce68cbfe68 -C extra-filename=-fe17aae79ecf4238 --out-dir /tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps -C incremental=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/incremental -C strip=debuginfo -L dependency=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps --extern proptest=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps/libproptest-2c0490be705847b2.rlib --extern qlrs_bundle=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps/libqlrs_bundle-18607f8a34b4f64b.rlib --extern qlrs_check=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps/libqlrs_check-f31e458ef430fdcd.rlib --extern qlrs_io=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps/libqlrs_io-28d3dc834d4f6f95.rlib --extern qlrs_ledger=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps/libqlrs_ledger-f0cbd7a4e209fc05.rlib --extern qlrs_num=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps/libqlrs_num-ad4092543fe3243e.rlib --extern qlrs_reduce=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps/libqlrs_reduce-e0c5db1d823f5df7.rlib --extern qlrs_schema=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps/libqlrs_schema-d6d3c64292147318.rlib --extern qlrs_testkit=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps/libqlrs_testkit-b4496ea55f060d9e.rlib --extern rayon=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps/librayon-fa8ef5dfd05a51f2.rlib -L native=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/build/blake3-9c0dafd5b6f91073/out -L native=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/build/blake3-9c0dafd5b6f91073/out`
+     Running `/workspace/.qlrs-tools/rustup/toolchains/1.99.1-x86_64-unknown-linux-gnu/bin/rustc --crate-name part2_gate --edition=2024 crates/qlrs-testkit/examples/part2_gate.rs --error-format=json --json=diagnostic-rendered-ansi,artifacts,future-incompat --crate-type bin --emit=dep-info,link -C embed-bitcode=no '--warn=clippy::pedantic' '--deny=clippy::unwrap_used' --deny=unsafe_code --warn=missing_docs '--warn=clippy::indexing_slicing' '--deny=clippy::expect_used' '--deny=clippy::cast_sign_loss' '--deny=clippy::cast_possible_truncation' --check-cfg 'cfg(docsrs,test)' --check-cfg 'cfg(feature, values())' -C metadata=3885c4f10f0a3db7 -C extra-filename=-b1d511a9ee10e2dc --out-dir /tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/examples -C incremental=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/incremental -C strip=debuginfo -L dependency=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps --extern proptest=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps/libproptest-2c0490be705847b2.rlib --extern qlrs_bundle=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps/libqlrs_bundle-18607f8a34b4f64b.rlib --extern qlrs_check=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps/libqlrs_check-f31e458ef430fdcd.rlib --extern qlrs_io=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps/libqlrs_io-28d3dc834d4f6f95.rlib --extern qlrs_ledger=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps/libqlrs_ledger-f0cbd7a4e209fc05.rlib --extern qlrs_num=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps/libqlrs_num-ad4092543fe3243e.rlib --extern qlrs_reduce=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps/libqlrs_reduce-e0c5db1d823f5df7.rlib --extern qlrs_schema=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps/libqlrs_schema-d6d3c64292147318.rlib --extern qlrs_testkit=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps/libqlrs_testkit-b4496ea55f060d9e.rlib --extern rayon=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps/librayon-fa8ef5dfd05a51f2.rlib -L native=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/build/blake3-9c0dafd5b6f91073/out -L native=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/build/blake3-9c0dafd5b6f91073/out`
+     Running `/workspace/.qlrs-tools/rustup/toolchains/1.99.1-x86_64-unknown-linux-gnu/bin/rustc --crate-name part2 --edition=2024 crates/qlrs-testkit/tests/part2.rs --error-format=json --json=diagnostic-rendered-ansi,artifacts,future-incompat --emit=dep-info,link -C embed-bitcode=no '--warn=clippy::pedantic' '--deny=clippy::unwrap_used' --deny=unsafe_code --warn=missing_docs '--warn=clippy::indexing_slicing' '--deny=clippy::expect_used' '--deny=clippy::cast_sign_loss' '--deny=clippy::cast_possible_truncation' --test --check-cfg 'cfg(docsrs,test)' --check-cfg 'cfg(feature, values())' -C metadata=632b844d8b7bd6f4 -C extra-filename=-5e0c6ae598c4bff2 --out-dir /tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps -C incremental=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/incremental -C strip=debuginfo -L dependency=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps --extern proptest=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps/libproptest-2c0490be705847b2.rlib --extern qlrs_bundle=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps/libqlrs_bundle-18607f8a34b4f64b.rlib --extern qlrs_check=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps/libqlrs_check-f31e458ef430fdcd.rlib --extern qlrs_io=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps/libqlrs_io-28d3dc834d4f6f95.rlib --extern qlrs_ledger=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps/libqlrs_ledger-f0cbd7a4e209fc05.rlib --extern qlrs_num=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps/libqlrs_num-ad4092543fe3243e.rlib --extern qlrs_reduce=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps/libqlrs_reduce-e0c5db1d823f5df7.rlib --extern qlrs_schema=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps/libqlrs_schema-d6d3c64292147318.rlib --extern qlrs_testkit=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps/libqlrs_testkit-b4496ea55f060d9e.rlib --extern rayon=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps/librayon-fa8ef5dfd05a51f2.rlib -L native=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/build/blake3-9c0dafd5b6f91073/out -L native=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/build/blake3-9c0dafd5b6f91073/out`
+     Running `/workspace/.qlrs-tools/rustup/toolchains/1.99.1-x86_64-unknown-linux-gnu/bin/rustc --crate-name part2_metrics --edition=2024 crates/qlrs-testkit/examples/part2_metrics.rs --error-format=json --json=diagnostic-rendered-ansi,artifacts,future-incompat --crate-type bin --emit=dep-info,link -C embed-bitcode=no '--warn=clippy::pedantic' '--deny=clippy::unwrap_used' --deny=unsafe_code --warn=missing_docs '--warn=clippy::indexing_slicing' '--deny=clippy::expect_used' '--deny=clippy::cast_sign_loss' '--deny=clippy::cast_possible_truncation' --check-cfg 'cfg(docsrs,test)' --check-cfg 'cfg(feature, values())' -C metadata=ee4cfa1e7e6b79b2 -C extra-filename=-e62a38a7d9909ef5 --out-dir /tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/examples -C incremental=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/incremental -C strip=debuginfo -L dependency=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps --extern proptest=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps/libproptest-2c0490be705847b2.rlib --extern qlrs_bundle=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps/libqlrs_bundle-18607f8a34b4f64b.rlib --extern qlrs_check=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps/libqlrs_check-f31e458ef430fdcd.rlib --extern qlrs_io=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps/libqlrs_io-28d3dc834d4f6f95.rlib --extern qlrs_ledger=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps/libqlrs_ledger-f0cbd7a4e209fc05.rlib --extern qlrs_num=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps/libqlrs_num-ad4092543fe3243e.rlib --extern qlrs_reduce=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps/libqlrs_reduce-e0c5db1d823f5df7.rlib --extern qlrs_schema=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps/libqlrs_schema-d6d3c64292147318.rlib --extern qlrs_testkit=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps/libqlrs_testkit-b4496ea55f060d9e.rlib --extern rayon=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps/librayon-fa8ef5dfd05a51f2.rlib -L native=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/build/blake3-9c0dafd5b6f91073/out -L native=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/build/blake3-9c0dafd5b6f91073/out`
+     Running `/workspace/.qlrs-tools/rustup/toolchains/1.99.1-x86_64-unknown-linux-gnu/bin/rustc --crate-name qlrs_bench --edition=2024 crates/qlrs-bench/src/lib.rs --error-format=json --json=diagnostic-rendered-ansi,artifacts,future-incompat --emit=dep-info,link -C embed-bitcode=no '--warn=clippy::pedantic' '--deny=clippy::unwrap_used' --forbid=unsafe_code --warn=missing_docs '--warn=clippy::indexing_slicing' '--deny=clippy::expect_used' '--deny=clippy::cast_sign_loss' '--deny=clippy::cast_possible_truncation' --test --check-cfg 'cfg(docsrs,test)' --check-cfg 'cfg(feature, values())' -C metadata=e92b1a0e1e3a4d79 -C extra-filename=-106d313ea072b924 --out-dir /tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps -C incremental=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/incremental -C strip=debuginfo -L dependency=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps --extern criterion=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps/libcriterion-21e92ba42abca448.rlib --extern gungraun=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps/libgungraun-56de61601cf2f21f.rlib --extern qlrs_check=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps/libqlrs_check-f31e458ef430fdcd.rlib --extern qlrs_io=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps/libqlrs_io-28d3dc834d4f6f95.rlib --extern qlrs_ledger=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps/libqlrs_ledger-f0cbd7a4e209fc05.rlib --extern qlrs_num=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps/libqlrs_num-ad4092543fe3243e.rlib --extern qlrs_reduce=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps/libqlrs_reduce-e0c5db1d823f5df7.rlib --extern qlrs_schema=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps/libqlrs_schema-d6d3c64292147318.rlib --extern qlrs_testkit=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps/libqlrs_testkit-b4496ea55f060d9e.rlib -L native=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/build/alloca-9a5b6b450a3a6be7/out -L native=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/build/blake3-9c0dafd5b6f91073/out -L native=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/build/blake3-9c0dafd5b6f91073/out`
+     Running `/workspace/.qlrs-tools/rustup/toolchains/1.99.1-x86_64-unknown-linux-gnu/bin/rustc --crate-name allocations --edition=2024 crates/qlrs-testkit/tests/allocations.rs --error-format=json --json=diagnostic-rendered-ansi,artifacts,future-incompat --emit=dep-info,link -C embed-bitcode=no '--warn=clippy::pedantic' '--deny=clippy::unwrap_used' --deny=unsafe_code --warn=missing_docs '--warn=clippy::indexing_slicing' '--deny=clippy::expect_used' '--deny=clippy::cast_sign_loss' '--deny=clippy::cast_possible_truncation' --test --check-cfg 'cfg(docsrs,test)' --check-cfg 'cfg(feature, values())' -C metadata=1f7690100d87ed5a -C extra-filename=-4dc1eac31bc7465f --out-dir /tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps -C incremental=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/incremental -C strip=debuginfo -L dependency=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps --extern proptest=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps/libproptest-2c0490be705847b2.rlib --extern qlrs_bundle=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps/libqlrs_bundle-18607f8a34b4f64b.rlib --extern qlrs_check=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps/libqlrs_check-f31e458ef430fdcd.rlib --extern qlrs_io=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps/libqlrs_io-28d3dc834d4f6f95.rlib --extern qlrs_ledger=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps/libqlrs_ledger-f0cbd7a4e209fc05.rlib --extern qlrs_num=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps/libqlrs_num-ad4092543fe3243e.rlib --extern qlrs_reduce=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps/libqlrs_reduce-e0c5db1d823f5df7.rlib --extern qlrs_schema=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps/libqlrs_schema-d6d3c64292147318.rlib --extern qlrs_testkit=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps/libqlrs_testkit-b4496ea55f060d9e.rlib --extern rayon=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps/librayon-fa8ef5dfd05a51f2.rlib -L native=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/build/blake3-9c0dafd5b6f91073/out -L native=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/build/blake3-9c0dafd5b6f91073/out`
+     Running `/workspace/.qlrs-tools/rustup/toolchains/1.99.1-x86_64-unknown-linux-gnu/bin/rustc --crate-name reduction --edition=2024 crates/qlrs-testkit/tests/reduction.rs --error-format=json --json=diagnostic-rendered-ansi,artifacts,future-incompat --emit=dep-info,link -C embed-bitcode=no '--warn=clippy::pedantic' '--deny=clippy::unwrap_used' --deny=unsafe_code --warn=missing_docs '--warn=clippy::indexing_slicing' '--deny=clippy::expect_used' '--deny=clippy::cast_sign_loss' '--deny=clippy::cast_possible_truncation' --test --check-cfg 'cfg(docsrs,test)' --check-cfg 'cfg(feature, values())' -C metadata=258f24c64dbaee63 -C extra-filename=-c6d7606b68671b8c --out-dir /tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps -C incremental=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/incremental -C strip=debuginfo -L dependency=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps --extern proptest=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps/libproptest-2c0490be705847b2.rlib --extern qlrs_bundle=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps/libqlrs_bundle-18607f8a34b4f64b.rlib --extern qlrs_check=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps/libqlrs_check-f31e458ef430fdcd.rlib --extern qlrs_io=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps/libqlrs_io-28d3dc834d4f6f95.rlib --extern qlrs_ledger=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps/libqlrs_ledger-f0cbd7a4e209fc05.rlib --extern qlrs_num=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps/libqlrs_num-ad4092543fe3243e.rlib --extern qlrs_reduce=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps/libqlrs_reduce-e0c5db1d823f5df7.rlib --extern qlrs_schema=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps/libqlrs_schema-d6d3c64292147318.rlib --extern qlrs_testkit=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps/libqlrs_testkit-b4496ea55f060d9e.rlib --extern rayon=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps/librayon-fa8ef5dfd05a51f2.rlib -L native=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/build/blake3-9c0dafd5b6f91073/out -L native=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/build/blake3-9c0dafd5b6f91073/out`
+     Running `/workspace/.qlrs-tools/rustup/toolchains/1.99.1-x86_64-unknown-linux-gnu/bin/rustc --crate-name part2_regressions --edition=2024 crates/qlrs-testkit/examples/part2_regressions.rs --error-format=json --json=diagnostic-rendered-ansi,artifacts,future-incompat --crate-type bin --emit=dep-info,link -C embed-bitcode=no '--warn=clippy::pedantic' '--deny=clippy::unwrap_used' --deny=unsafe_code --warn=missing_docs '--warn=clippy::indexing_slicing' '--deny=clippy::expect_used' '--deny=clippy::cast_sign_loss' '--deny=clippy::cast_possible_truncation' --check-cfg 'cfg(docsrs,test)' --check-cfg 'cfg(feature, values())' -C metadata=9e9dd8bafd5789e1 -C extra-filename=-5f35d59c1eddab12 --out-dir /tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/examples -C incremental=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/incremental -C strip=debuginfo -L dependency=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps --extern proptest=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps/libproptest-2c0490be705847b2.rlib --extern qlrs_bundle=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps/libqlrs_bundle-18607f8a34b4f64b.rlib --extern qlrs_check=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps/libqlrs_check-f31e458ef430fdcd.rlib --extern qlrs_io=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps/libqlrs_io-28d3dc834d4f6f95.rlib --extern qlrs_ledger=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps/libqlrs_ledger-f0cbd7a4e209fc05.rlib --extern qlrs_num=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps/libqlrs_num-ad4092543fe3243e.rlib --extern qlrs_reduce=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps/libqlrs_reduce-e0c5db1d823f5df7.rlib --extern qlrs_schema=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps/libqlrs_schema-d6d3c64292147318.rlib --extern qlrs_testkit=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps/libqlrs_testkit-b4496ea55f060d9e.rlib --extern rayon=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps/librayon-fa8ef5dfd05a51f2.rlib -L native=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/build/blake3-9c0dafd5b6f91073/out -L native=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/build/blake3-9c0dafd5b6f91073/out`
+     Running `/workspace/.qlrs-tools/rustup/toolchains/1.99.1-x86_64-unknown-linux-gnu/bin/rustc --crate-name corrections --edition=2024 crates/qlrs-testkit/tests/corrections.rs --error-format=json --json=diagnostic-rendered-ansi,artifacts,future-incompat --emit=dep-info,link -C embed-bitcode=no '--warn=clippy::pedantic' '--deny=clippy::unwrap_used' --deny=unsafe_code --warn=missing_docs '--warn=clippy::indexing_slicing' '--deny=clippy::expect_used' '--deny=clippy::cast_sign_loss' '--deny=clippy::cast_possible_truncation' --test --check-cfg 'cfg(docsrs,test)' --check-cfg 'cfg(feature, values())' -C metadata=a452255fa07c3e14 -C extra-filename=-d3a13bec94305158 --out-dir /tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps -C incremental=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/incremental -C strip=debuginfo -L dependency=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps --extern proptest=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps/libproptest-2c0490be705847b2.rlib --extern qlrs_bundle=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps/libqlrs_bundle-18607f8a34b4f64b.rlib --extern qlrs_check=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps/libqlrs_check-f31e458ef430fdcd.rlib --extern qlrs_io=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps/libqlrs_io-28d3dc834d4f6f95.rlib --extern qlrs_ledger=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps/libqlrs_ledger-f0cbd7a4e209fc05.rlib --extern qlrs_num=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps/libqlrs_num-ad4092543fe3243e.rlib --extern qlrs_reduce=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps/libqlrs_reduce-e0c5db1d823f5df7.rlib --extern qlrs_schema=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps/libqlrs_schema-d6d3c64292147318.rlib --extern qlrs_testkit=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps/libqlrs_testkit-b4496ea55f060d9e.rlib --extern rayon=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps/librayon-fa8ef5dfd05a51f2.rlib -L native=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/build/blake3-9c0dafd5b6f91073/out -L native=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/build/blake3-9c0dafd5b6f91073/out`
+     Running `/workspace/.qlrs-tools/rustup/toolchains/1.99.1-x86_64-unknown-linux-gnu/bin/rustc --crate-name generate --edition=2024 crates/qlrs-testkit/examples/generate.rs --error-format=json --json=diagnostic-rendered-ansi,artifacts,future-incompat --crate-type bin --emit=dep-info,link -C embed-bitcode=no '--warn=clippy::pedantic' '--deny=clippy::unwrap_used' --deny=unsafe_code --warn=missing_docs '--warn=clippy::indexing_slicing' '--deny=clippy::expect_used' '--deny=clippy::cast_sign_loss' '--deny=clippy::cast_possible_truncation' --check-cfg 'cfg(docsrs,test)' --check-cfg 'cfg(feature, values())' -C metadata=47a11fba209aa1d5 -C extra-filename=-c4a5fd43adf04cb4 --out-dir /tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/examples -C incremental=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/incremental -C strip=debuginfo -L dependency=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps --extern proptest=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps/libproptest-2c0490be705847b2.rlib --extern qlrs_bundle=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps/libqlrs_bundle-18607f8a34b4f64b.rlib --extern qlrs_check=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps/libqlrs_check-f31e458ef430fdcd.rlib --extern qlrs_io=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps/libqlrs_io-28d3dc834d4f6f95.rlib --extern qlrs_ledger=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps/libqlrs_ledger-f0cbd7a4e209fc05.rlib --extern qlrs_num=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps/libqlrs_num-ad4092543fe3243e.rlib --extern qlrs_reduce=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps/libqlrs_reduce-e0c5db1d823f5df7.rlib --extern qlrs_schema=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps/libqlrs_schema-d6d3c64292147318.rlib --extern qlrs_testkit=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps/libqlrs_testkit-b4496ea55f060d9e.rlib --extern rayon=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps/librayon-fa8ef5dfd05a51f2.rlib -L native=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/build/blake3-9c0dafd5b6f91073/out -L native=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/build/blake3-9c0dafd5b6f91073/out`
+     Running `/workspace/.qlrs-tools/rustup/toolchains/1.99.1-x86_64-unknown-linux-gnu/bin/rustc --crate-name rich_gate --edition=2024 crates/qlrs-testkit/examples/rich_gate.rs --error-format=json --json=diagnostic-rendered-ansi,artifacts,future-incompat --crate-type bin --emit=dep-info,link -C embed-bitcode=no '--warn=clippy::pedantic' '--deny=clippy::unwrap_used' --deny=unsafe_code --warn=missing_docs '--warn=clippy::indexing_slicing' '--deny=clippy::expect_used' '--deny=clippy::cast_sign_loss' '--deny=clippy::cast_possible_truncation' --check-cfg 'cfg(docsrs,test)' --check-cfg 'cfg(feature, values())' -C metadata=c34396a1d8fd3fbd -C extra-filename=-ee5bea087bc96b93 --out-dir /tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/examples -C incremental=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/incremental -C strip=debuginfo -L dependency=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps --extern proptest=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps/libproptest-2c0490be705847b2.rlib --extern qlrs_bundle=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps/libqlrs_bundle-18607f8a34b4f64b.rlib --extern qlrs_check=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps/libqlrs_check-f31e458ef430fdcd.rlib --extern qlrs_io=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps/libqlrs_io-28d3dc834d4f6f95.rlib --extern qlrs_ledger=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps/libqlrs_ledger-f0cbd7a4e209fc05.rlib --extern qlrs_num=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps/libqlrs_num-ad4092543fe3243e.rlib --extern qlrs_reduce=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps/libqlrs_reduce-e0c5db1d823f5df7.rlib --extern qlrs_schema=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps/libqlrs_schema-d6d3c64292147318.rlib --extern qlrs_testkit=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps/libqlrs_testkit-b4496ea55f060d9e.rlib --extern rayon=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps/librayon-fa8ef5dfd05a51f2.rlib -L native=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/build/blake3-9c0dafd5b6f91073/out -L native=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/build/blake3-9c0dafd5b6f91073/out`
+     Running `/workspace/.qlrs-tools/rustup/toolchains/1.99.1-x86_64-unknown-linux-gnu/bin/rustc --crate-name differential_part2 --edition=2024 crates/qlrs-testkit/tests/differential_part2.rs --error-format=json --json=diagnostic-rendered-ansi,artifacts,future-incompat --emit=dep-info,link -C embed-bitcode=no '--warn=clippy::pedantic' '--deny=clippy::unwrap_used' --deny=unsafe_code --warn=missing_docs '--warn=clippy::indexing_slicing' '--deny=clippy::expect_used' '--deny=clippy::cast_sign_loss' '--deny=clippy::cast_possible_truncation' --test --check-cfg 'cfg(docsrs,test)' --check-cfg 'cfg(feature, values())' -C metadata=23798707c5c06376 -C extra-filename=-448bd17201c1648e --out-dir /tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps -C incremental=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/incremental -C strip=debuginfo -L dependency=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps --extern proptest=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps/libproptest-2c0490be705847b2.rlib --extern qlrs_bundle=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps/libqlrs_bundle-18607f8a34b4f64b.rlib --extern qlrs_check=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps/libqlrs_check-f31e458ef430fdcd.rlib --extern qlrs_io=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps/libqlrs_io-28d3dc834d4f6f95.rlib --extern qlrs_ledger=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps/libqlrs_ledger-f0cbd7a4e209fc05.rlib --extern qlrs_num=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps/libqlrs_num-ad4092543fe3243e.rlib --extern qlrs_reduce=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps/libqlrs_reduce-e0c5db1d823f5df7.rlib --extern qlrs_schema=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps/libqlrs_schema-d6d3c64292147318.rlib --extern qlrs_testkit=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps/libqlrs_testkit-b4496ea55f060d9e.rlib --extern rayon=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps/librayon-fa8ef5dfd05a51f2.rlib -L native=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/build/blake3-9c0dafd5b6f91073/out -L native=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/build/blake3-9c0dafd5b6f91073/out`
+     Running `/workspace/.qlrs-tools/rustup/toolchains/1.99.1-x86_64-unknown-linux-gnu/bin/rustc --crate-name exit_codes --edition=2024 crates/qlrs-cli/tests/exit_codes.rs --error-format=json --json=diagnostic-rendered-ansi,artifacts,future-incompat --emit=dep-info,link -C embed-bitcode=no '--warn=clippy::pedantic' '--deny=clippy::unwrap_used' --forbid=unsafe_code --warn=missing_docs '--warn=clippy::indexing_slicing' '--deny=clippy::expect_used' '--deny=clippy::cast_sign_loss' '--deny=clippy::cast_possible_truncation' --test --check-cfg 'cfg(docsrs,test)' --check-cfg 'cfg(feature, values())' -C metadata=4d9f578424272a7d -C extra-filename=-f8cd7056586f2ae2 --out-dir /tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps -C incremental=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/incremental -C strip=debuginfo -L dependency=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps --extern clap=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps/libclap-2693ff768bc64792.rlib --extern qlrs_bundle=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps/libqlrs_bundle-18607f8a34b4f64b.rlib --extern qlrs_check=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps/libqlrs_check-f31e458ef430fdcd.rlib --extern qlrs_io=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps/libqlrs_io-28d3dc834d4f6f95.rlib --extern qlrs_ledger=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps/libqlrs_ledger-f0cbd7a4e209fc05.rlib --extern qlrs_reduce=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps/libqlrs_reduce-e0c5db1d823f5df7.rlib --extern qlrs_schema=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps/libqlrs_schema-d6d3c64292147318.rlib --extern qlrs_testkit=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps/libqlrs_testkit-b4496ea55f060d9e.rlib -L native=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/build/blake3-9c0dafd5b6f91073/out -L native=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/build/blake3-9c0dafd5b6f91073/out`
+     Running `/workspace/.qlrs-tools/rustup/toolchains/1.99.1-x86_64-unknown-linux-gnu/bin/rustc --crate-name generate_rich --edition=2024 crates/qlrs-testkit/examples/generate_rich.rs --error-format=json --json=diagnostic-rendered-ansi,artifacts,future-incompat --crate-type bin --emit=dep-info,link -C embed-bitcode=no '--warn=clippy::pedantic' '--deny=clippy::unwrap_used' --deny=unsafe_code --warn=missing_docs '--warn=clippy::indexing_slicing' '--deny=clippy::expect_used' '--deny=clippy::cast_sign_loss' '--deny=clippy::cast_possible_truncation' --check-cfg 'cfg(docsrs,test)' --check-cfg 'cfg(feature, values())' -C metadata=0a487b54fe0c20c5 -C extra-filename=-33cd340e6801e024 --out-dir /tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/examples -C incremental=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/incremental -C strip=debuginfo -L dependency=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps --extern proptest=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps/libproptest-2c0490be705847b2.rlib --extern qlrs_bundle=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps/libqlrs_bundle-18607f8a34b4f64b.rlib --extern qlrs_check=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps/libqlrs_check-f31e458ef430fdcd.rlib --extern qlrs_io=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps/libqlrs_io-28d3dc834d4f6f95.rlib --extern qlrs_ledger=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps/libqlrs_ledger-f0cbd7a4e209fc05.rlib --extern qlrs_num=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps/libqlrs_num-ad4092543fe3243e.rlib --extern qlrs_reduce=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps/libqlrs_reduce-e0c5db1d823f5df7.rlib --extern qlrs_schema=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps/libqlrs_schema-d6d3c64292147318.rlib --extern qlrs_testkit=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps/libqlrs_testkit-b4496ea55f060d9e.rlib --extern rayon=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps/librayon-fa8ef5dfd05a51f2.rlib -L native=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/build/blake3-9c0dafd5b6f91073/out -L native=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/build/blake3-9c0dafd5b6f91073/out`
+     Running `/workspace/.qlrs-tools/rustup/toolchains/1.99.1-x86_64-unknown-linux-gnu/bin/rustc --crate-name scale_gate --edition=2024 crates/qlrs-testkit/examples/scale_gate.rs --error-format=json --json=diagnostic-rendered-ansi,artifacts,future-incompat --crate-type bin --emit=dep-info,link -C embed-bitcode=no '--warn=clippy::pedantic' '--deny=clippy::unwrap_used' --deny=unsafe_code --warn=missing_docs '--warn=clippy::indexing_slicing' '--deny=clippy::expect_used' '--deny=clippy::cast_sign_loss' '--deny=clippy::cast_possible_truncation' --check-cfg 'cfg(docsrs,test)' --check-cfg 'cfg(feature, values())' -C metadata=c4c8c313231e800f -C extra-filename=-219cb8a6785c9a88 --out-dir /tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/examples -C incremental=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/incremental -C strip=debuginfo -L dependency=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps --extern proptest=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps/libproptest-2c0490be705847b2.rlib --extern qlrs_bundle=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps/libqlrs_bundle-18607f8a34b4f64b.rlib --extern qlrs_check=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps/libqlrs_check-f31e458ef430fdcd.rlib --extern qlrs_io=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps/libqlrs_io-28d3dc834d4f6f95.rlib --extern qlrs_ledger=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps/libqlrs_ledger-f0cbd7a4e209fc05.rlib --extern qlrs_num=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps/libqlrs_num-ad4092543fe3243e.rlib --extern qlrs_reduce=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps/libqlrs_reduce-e0c5db1d823f5df7.rlib --extern qlrs_schema=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps/libqlrs_schema-d6d3c64292147318.rlib --extern qlrs_testkit=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps/libqlrs_testkit-b4496ea55f060d9e.rlib --extern rayon=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps/librayon-fa8ef5dfd05a51f2.rlib -L native=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/build/blake3-9c0dafd5b6f91073/out -L native=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/build/blake3-9c0dafd5b6f91073/out`
+     Running `/workspace/.qlrs-tools/rustup/toolchains/1.99.1-x86_64-unknown-linux-gnu/bin/rustc --crate-name qlrs --edition=2024 crates/qlrs-cli/src/main.rs --error-format=json --json=diagnostic-rendered-ansi,artifacts,future-incompat --emit=dep-info,link -C embed-bitcode=no '--warn=clippy::pedantic' '--deny=clippy::unwrap_used' --forbid=unsafe_code --warn=missing_docs '--warn=clippy::indexing_slicing' '--deny=clippy::expect_used' '--deny=clippy::cast_sign_loss' '--deny=clippy::cast_possible_truncation' --test --check-cfg 'cfg(docsrs,test)' --check-cfg 'cfg(feature, values())' -C metadata=2b7be3b42c491194 -C extra-filename=-d100cc75d179a402 --out-dir /tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps -C incremental=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/incremental -C strip=debuginfo -L dependency=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps --extern clap=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps/libclap-2693ff768bc64792.rlib --extern qlrs_bundle=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps/libqlrs_bundle-18607f8a34b4f64b.rlib --extern qlrs_check=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps/libqlrs_check-f31e458ef430fdcd.rlib --extern qlrs_io=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps/libqlrs_io-28d3dc834d4f6f95.rlib --extern qlrs_ledger=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps/libqlrs_ledger-f0cbd7a4e209fc05.rlib --extern qlrs_reduce=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps/libqlrs_reduce-e0c5db1d823f5df7.rlib --extern qlrs_schema=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps/libqlrs_schema-d6d3c64292147318.rlib --extern qlrs_testkit=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps/libqlrs_testkit-b4496ea55f060d9e.rlib -L native=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/build/blake3-9c0dafd5b6f91073/out -L native=/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/build/blake3-9c0dafd5b6f91073/out`
+    Finished `test` profile [unoptimized] target(s) in 1.41s
+  Executable `/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps/qlrs_bench-106d313ea072b924`
+  Executable `/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps/qlrs_bundle-07e9f37aa9674077`
+  Executable `/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps/qlrs_check-81379021c596b05c`
+  Executable `/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps/qlrs-d100cc75d179a402`
+  Executable `/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps/exit_codes-f8cd7056586f2ae2`
+  Executable `/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps/qlrs_io-fd4cdf5d15ed700a`
+  Executable `/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps/qlrs_ledger-2ee43b7b2cd41d23`
+  Executable `/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps/qlrs_num-c705005160564658`
+  Executable `/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps/properties-76798e1a1aca2e9c`
+  Executable `/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps/qlrs_reduce-c2b3f0081f22dc55`
+  Executable `/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps/qlrs_schema-a18cc47bafda6804`
+  Executable `/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps/qlrs_testkit-713444bcd5f489fd`
+  Executable `/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps/allocations-4dc1eac31bc7465f`
+  Executable `/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps/corrections-d3a13bec94305158`
+  Executable `/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps/differential_part2-448bd17201c1648e`
+  Executable `/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps/invariants-fe17aae79ecf4238`
+  Executable `/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps/part2-5e0c6ae598c4bff2`
+  Executable `/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps/reduction-c6d7606b68671b8c`
+
+*** result: Success
+
+*** /workspace/.qlrs-tools/rustup/toolchains/1.99.1-x86_64-unknown-linux-gnu/bin/cargo test --verbose --workspace --locked
+       Fresh unicode-ident v1.0.27
+       Fresh proc-macro2 v1.0.107
+       Fresh cfg-if v1.0.5
+       Fresh find-msvc-tools v0.1.15
+       Fresh quote v1.0.47
+       Fresh shlex v2.0.1
+       Fresh cpufeatures v0.3.1
+       Fresh foldhash v0.2.0
+       Fresh syn v3.0.9
+       Fresh cc v1.11.0
+       Fresh serde_derive v1.0.229
+       Fresh crossbeam-utils v0.8.23
+       Fresh crossbeam-epoch v0.9.21
+       Fresh either v1.19.0
+       Fresh constant_time_eq v0.4.2
+       Fresh arrayvec v0.7.8
+       Fresh crossbeam-deque v0.8.8
+       Fresh blake3 v1.8.7
+       Fresh zmij v1.0.23
+       Fresh itoa v1.0.18
+       Fresh memchr v2.8.3
+       Fresh rayon-core v1.13.0
+       Fresh rayon v1.12.0
+       Fresh autocfg v1.5.1
+       Fresh rand_core v0.10.1
+       Fresh libc v0.2.191
+       Fresh num-traits v0.2.19
+       Fresh regex-syntax v0.8.11
+       Fresh getrandom v0.4.3
+       Fresh bitflags v2.13.2
+       Fresh linux-raw-sys v0.12.1
+       Fresh rustix v1.1.6
+       Fresh fastrand v2.5.0
+       Fresh once_cell v1.21.4
+       Fresh wait-timeout v0.2.1
+       Fresh quick-error v1.2.3
+       Fresh tempfile v3.27.0
+       Fresh fnv v1.0.7
+       Fresh bit-vec v0.10.1
+       Fresh rand v0.10.3
+       Fresh rand_xorshift v0.5.0
+       Fresh rusty-fork v0.3.1
+       Fresh bit-set v0.11.1
+       Fresh chacha20 v0.10.2
+       Fresh unarray v0.1.4
+       Fresh core_detect v1.0.0
+       Fresh proptest v1.12.0
+       Fresh syn v2.0.119
+       Fresh utf8parse v0.2.2
+       Fresh is_terminal_polyfill v1.70.2
+       Fresh anstyle-parse v1.0.0
+       Fresh colorchoice v1.0.5
+       Fresh anstyle-query v1.1.5
+       Fresh anstyle v1.0.14
+       Fresh strsim v0.11.1
+       Fresh anstream v1.0.0
+       Fresh clap_lex v1.1.1
+       Fresh heck v0.5.0
+       Fresh clap_builder v4.6.7
+       Fresh clap_derive v4.6.7
+       Fresh zerocopy-derive v0.8.63
+       Fresh semver v1.0.28
+       Fresh clap v4.6.7
+       Fresh serde_core v1.0.229
+       Fresh zerocopy v0.8.63
+       Fresh rustc_version v0.4.1
+       Fresh derive_more-impl v2.1.1
+       Fresh half v2.7.1
+       Fresh rustversion v1.0.23
+       Fresh num-integer v0.1.47
+       Fresh proc-macro-error-attr3 v3.1.1
+       Fresh ciborium-io v0.2.2
+       Fresh plotters-backend v0.3.7
+       Fresh plotters-svg v0.3.7
+       Fresh proc-macro-error3 v3.1.1
+       Fresh ciborium-ll v0.2.2
+       Fresh num-bigint v0.4.8
+       Fresh rapidhash v4.5.1
+       Fresh serde v1.0.229
+       Fresh serde_json v1.0.154
+       Fresh regex-automata v0.4.18
+       Fresh itertools v0.13.0
+       Fresh either-or-both v0.3.1
+       Fresh pastey v0.2.3
+       Fresh same-file v1.0.6
+       Fresh cast v0.3.0
+       Fresh unty-next v0.1.2
+       Fresh criterion-plot v0.8.2
+       Fresh walkdir v2.5.0
+       Fresh bincode-next v3.1.1
+       Fresh gungraun-runner v0.20.0
+       Fresh gungraun-macros v0.10.0
+       Fresh regex v1.13.1
+       Fresh alloca v0.4.0
+       Fresh gungraun-common v0.1.0
+       Fresh ciborium v0.2.2
+       Fresh plotters v0.3.7
+       Fresh derive_more v2.1.1
+       Fresh page_size v0.6.0
+       Fresh tinytemplate v1.2.1
+       Fresh oorandom v11.1.5
+       Fresh anes v0.1.6
+       Fresh gungraun v0.20.0
+       Fresh criterion v0.8.2
+       Fresh qlrs-num v0.1.0 (/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/crates/qlrs-num)
+       Fresh qlrs-bench v0.1.0 (/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/crates/qlrs-bench)
+       Fresh qlrs-cli v0.1.0 (/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/crates/qlrs-cli)
+       Fresh qlrs-testkit v0.1.0 (/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/crates/qlrs-testkit)
+       Fresh qlrs-bundle v0.1.0 (/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/crates/qlrs-bundle)
+       Fresh qlrs-reduce v0.1.0 (/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/crates/qlrs-reduce)
+       Fresh qlrs-io v0.1.0 (/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/crates/qlrs-io)
+       Fresh qlrs-check v0.1.0 (/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/crates/qlrs-check)
+       Fresh qlrs-ledger v0.1.0 (/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/crates/qlrs-ledger)
+       Fresh qlrs-schema v0.1.0 (/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/crates/qlrs-schema)
+    Finished `test` profile [unoptimized] target(s) in 0.07s
+     Running `/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps/qlrs_bench-106d313ea072b924`
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running `/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps/qlrs_bundle-07e9f37aa9674077`
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running `/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps/qlrs_check-81379021c596b05c`
+
+running 4 tests
+test fingerprint::tests::req_fp_001_canonical_vector_and_order_independence ... ok
+test fingerprint::tests::req_fp_003_all_fields_have_distinct_canonical_encodings ... ok
+test tests::req_fp_002_at_seq_filters_status_and_anchor ... ok
+test fingerprint::tests::req_fp_004_utf8_lengths_sign_and_zero_multiset_entries ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running `/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps/qlrs-d100cc75d179a402`
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running `/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps/exit_codes-f8cd7056586f2ae2`
+
+running 3 tests
+{"schema":"qlrs-bundle/v1","qlrs_version":"0.1.0","git_commit":"uncommitted","rustc_version":"rustc 1.99.1 (58cf8f9c3 2026-10-13)","model_profile":{"account_type":"CASH","base_currency":"INR","engine_cash_rounding":"Exact","commission_max_scale":2},"verdict":"VIOLATION","original_trace":{"blake3":"0a4266ad31e54e2731cc42d2f2e1e5772372b4c8e7c2bcd1c1e6abfcd21504bc","byte_length":17031},"checkpoint_source_digest":"0a4266ad31e54e2731cc42d2f2e1e5772372b4c8e7c2bcd1c1e6abfcd21504bc","instance_key":{"invariant_id":"I1","sub_code":"cash-conservation","account":"A","scope":"INR","anchor_claim_original_seq":54,"residual_raw":"10000","residual_scale":2},"closure_1_minimal":false,"certificate_candidates_tested":0,"full_calls":1,"stop_reason":"call-limit","minimality_guarantee":"best verified witness; minimality not certified","retained_events":5,"files":[{"path":"REPRODUCE.md","blake3":"8515acacc3cc0c4e1e2ef8b59453bd7c20b863ee10b06db8b24309796eb4c935","byte_length":568},{"path":"minimality_certificate.json","blake3":"8b32dbacd53e4a9117a6e53fead4ce15b6a509159ccf79d6fe2fa150c6bdee4a","byte_length":1037},{"path":"reduced_trace.jsonl","blake3":"562110b6755c3234d78acf369de32f29a6112286825d6b317a6f71907f39aa8f","byte_length":1284},{"path":"reduction_log.jsonl","blake3":"7ae30d915e6169de1530eb850fc466d4bee16d6ec5c724f533449d1fbbca1c94","byte_length":576},{"path":"synthetic_checkpoint.json","blake3":"fb84138e6e08158997557cf03eb8e8755c17a22cec732881a0c71fe05ac57632","byte_length":541},{"path":"violation.json","blake3":"4b3285edcc95d5b7a94d0aa7d66450eb04f780cc732f14e753a9dd73f5f8eb57","byte_length":434},{"path":"witness_roles.json","blake3":"d1c01cf327ad80863bd5abefda6e4a901212b8af1e9ba3638d147640e2d465e4","byte_length":386}]}
+{"schema":"qlrs-bundle/v1","qlrs_version":"0.1.0","git_commit":"uncommitted","rustc_version":"rustc 1.99.1 (58cf8f9c3 2026-10-13)","model_profile":{"account_type":"CASH","base_currency":"INR","engine_cash_rounding":"Exact","commission_max_scale":2},"verdict":"VIOLATION","original_trace":{"blake3":"0a4266ad31e54e2731cc42d2f2e1e5772372b4c8e7c2bcd1c1e6abfcd21504bc","byte_length":17031},"checkpoint_source_digest":"0a4266ad31e54e2731cc42d2f2e1e5772372b4c8e7c2bcd1c1e6abfcd21504bc","instance_key":{"invariant_id":"I1","sub_code":"cash-conservation","account":"A","scope":"INR","anchor_claim_original_seq":54,"residual_raw":"10000","residual_scale":2},"closure_1_minimal":false,"predicate_calls":1,"certificate_candidates_tested":0,"full_calls":1,"stop_reason":"call-limit","minimality_guarantee":"best verified witness; minimality not certified","retained_events":5,"files":[{"path":"REPRODUCE.md","blake3":"8515acacc3cc0c4e1e2ef8b59453bd7c20b863ee10b06db8b24309796eb4c935","byte_length":568},{"path":"minimality_certificate.json","blake3":"8b32dbacd53e4a9117a6e53fead4ce15b6a509159ccf79d6fe2fa150c6bdee4a","byte_length":1037},{"path":"reduced_trace.jsonl","blake3":"562110b6755c3234d78acf369de32f29a6112286825d6b317a6f71907f39aa8f","byte_length":1284},{"path":"reduction_log.jsonl","blake3":"7ae30d915e6169de1530eb850fc466d4bee16d6ec5c724f533449d1fbbca1c94","byte_length":576},{"path":"synthetic_checkpoint.json","blake3":"fb84138e6e08158997557cf03eb8e8755c17a22cec732881a0c71fe05ac57632","byte_length":541},{"path":"violation.json","blake3":"4b3285edcc95d5b7a94d0aa7d66450eb04f780cc732f14e753a9dd73f5f8eb57","byte_length":434},{"path":"witness_roles.json","blake3":"d1c01cf327ad80863bd5abefda6e4a901212b8af1e9ba3638d147640e2d465e4","byte_length":386}]}
+{"schema":"qlrs-bundle/v1","qlrs_version":"0.1.0","git_commit":"uncommitted","rustc_version":"rustc 1.99.1 (58cf8f9c3 2026-10-13)","model_profile":{"account_type":"CASH","base_currency":"INR","engine_cash_rounding":"Exact","commission_max_scale":2},"verdict":"VIOLATION","original_trace":{"blake3":"0a4266ad31e54e2731cc42d2f2e1e5772372b4c8e7c2bcd1c1e6abfcd21504bc","byte_length":17031},"checkpoint_source_digest":"0a4266ad31e54e2731cc42d2f2e1e5772372b4c8e7c2bcd1c1e6abfcd21504bc","instance_key":{"invariant_id":"I1","sub_code":"cash-conservation","account":"A","scope":"INR","anchor_claim_original_seq":54,"residual_raw":"10000","residual_scale":2},"closure_1_minimal":false,"certificate_candidates_tested":0,"full_calls":1,"stop_reason":"time-limit","minimality_guarantee":"best verified witness; minimality not certified","retained_events":5,"files":[{"path":"REPRODUCE.md","blake3":"8515acacc3cc0c4e1e2ef8b59453bd7c20b863ee10b06db8b24309796eb4c935","byte_length":568},{"path":"minimality_certificate.json","blake3":"8b32dbacd53e4a9117a6e53fead4ce15b6a509159ccf79d6fe2fa150c6bdee4a","byte_length":1037},{"path":"reduced_trace.jsonl","blake3":"562110b6755c3234d78acf369de32f29a6112286825d6b317a6f71907f39aa8f","byte_length":1284},{"path":"reduction_log.jsonl","blake3":"7ae30d915e6169de1530eb850fc466d4bee16d6ec5c724f533449d1fbbca1c94","byte_length":576},{"path":"synthetic_checkpoint.json","blake3":"fb84138e6e08158997557cf03eb8e8755c17a22cec732881a0c71fe05ac57632","byte_length":541},{"path":"violation.json","blake3":"4b3285edcc95d5b7a94d0aa7d66450eb04f780cc732f14e753a9dd73f5f8eb57","byte_length":434},{"path":"witness_roles.json","blake3":"d1c01cf327ad80863bd5abefda6e4a901212b8af1e9ba3638d147640e2d465e4","byte_length":386}]}
+test req_cli_002_limits_preserve_verified_output_without_minimality_claim ... ok
+test req_cli_001_exit_codes_and_bundle_commands ... ok
+test req_cli_003_reference_algorithm_and_certificate_recheck ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.08s
+
+     Running `/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps/qlrs_io-fd4cdf5d15ed700a`
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running `/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps/qlrs_ledger-2ee43b7b2cd41d23`
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running `/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps/qlrs_num-c705005160564658`
+
+running 7 tests
+test tests::req_num_001_decimal_grammar_and_per_value_scale ... ok
+test tests::req_num_002_signed_limits_and_checked_overflow ... ok
+test tests::req_num_003_all_rounding_modes_signed_ties ... ok
+test tests::req_num_004_wide_intermediate_can_fit_final_value ... ok
+test tests::req_num_005_compare_by_upscaling_without_overflow ... ok
+test tests::req_num_002_checked_operations_and_parser_never_panic ... ok
+test tests::req_num_006_roundtrip_100k_values ... ok
+
+test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.16s
+
+     Running `/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps/properties-76798e1a1aca2e9c`
+
+running 7 tests
+test req_num_008_parse_format_roundtrip ... ok
+test req_num_009_parser_no_panics ... ok
+test req_num_010_checked_mul_exact_product_scale ... ok
+test req_num_011_notional_fee_round_once ... ok
+test req_num_007_mul_rescale_matches_bigint ... ok
+test req_num_013_error_reason_codes ... ok
+test req_num_012_product_plus_fee_bigint_oracle ... ok
+
+test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 3.06s
+
+     Running `/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps/qlrs_reduce-c2b3f0081f22dc55`
+
+running 7 tests
+test cache::tests::req_reduce_011_cache_forced_collision_and_incremental_toggles ... ok
+test algebra::tests::req_reduce_022_shared_prerequisites_are_counted_once_and_overflow_falls_back ... ok
+test helper_tests::req_reduce_015_remove_closure_respects_dependents_pins_and_noops ... ok
+test helper_tests::req_reduce_018_graph_commitment_is_canonical_and_rle_is_exact ... ok
+test helper_tests::req_reduce_014_evaluate_batch_selects_success_and_obeys_limits ... ok
+test helper_tests::req_reduce_023_cache_requires_fixed_bounds_and_public_masks_are_normalized ... ok
+test helper_tests::req_reduce_019_speculation_commits_lowest_success_across_thread_counts ... ok
+
+test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running `/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps/qlrs_schema-a18cc47bafda6804`
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running `/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps/qlrs_testkit-713444bcd5f489fd`
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running `/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps/allocations-4dc1eac31bc7465f`
+
+running 1 test
+test req_ledger_001_zero_allocations_in_replay_loop ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running `/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps/corrections-d3a13bec94305158`
+
+running 15 tests
+test req_check_012_i2_uses_local_claim_windows_for_carried_errors ... ok
+test req_check_011_every_fill_needs_later_cash_and_same_asset_position ... ok
+test req_check_013_sparse_indices_must_be_unique_and_in_sequence_order ... ok
+test req_checkpoint_001_earlier_bad_claim_is_an_opening_boundary ... ok
+test req_checkpoint_002_open_and_terminal_orders_and_prior_trades_survive_cut ... ok
+test req_checkpoint_003_invalid_context_never_becomes_a_financial_accusation ... ok
+test req_generator_001_interleaving_sparse_claims_long_lived_and_carried_offsets ... ok
+test req_gate_001_all_eleven_defects_on_rich_profiles ... ok
+test req_generator_003_each_instrument_has_independent_buy_sell_cycles ... ok
+test req_graph_002_checkpoint_inventory_replaces_historical_buy_dependencies ... ok
+test req_reduce_005_limits_return_best_verified_uncertified_bundles ... ok
+test req_reduce_006_sparse_dense_and_incremental_patterns_match_on_all_defects ... ok
+test req_reduce_007_other_lifecycle_breaches_are_not_admitted_or_returned_on_limits ... ok
+test req_reduce_008_short_logs_read_legacy_removed_unit_lists ... ok
+test req_generator_002_rich_statuses_across_seeds ... ok
+
+test result: ok. 15 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.86s
+
+     Running `/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps/differential_part2-448bd17201c1648e`
+
+running 1 test
+test req_reduce_013_algebra_matches_full_checker_on_closed_subsets_per_shape ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.31s
+
+     Running `/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps/invariants-fe17aae79ecf4238`
+
+running 18 tests
+test req_check_001_catalogue_statuses_and_invariants ... ok
+test req_check_002_clean_generated_consistent ... ok
+test req_check_004_residual_relations_are_hints ... ok
+test req_check_005_clean_corpus_and_flat_position ... ok
+test req_check_006_unknown_event_is_unsupported_not_input_error ... ok
+test req_check_007_partial_and_status_precedence ... ok
+test req_check_008_lifecycle_subcodes_and_supported_terminal_states ... ok
+test req_check_009_unknown_fill_never_invents_a_cash_delta ... ok
+test req_check_010_trade_uniqueness_needs_known_instrument_scope ... ok
+test req_io_001_strict_unknown_fields_decimal_types_and_sequences ... ok
+test req_io_002_roundtrip_verbatim ... ok
+test req_io_003_verbatim_noncanonical_decimal_evidence ... ok
+test req_io_004_malformed_overflow_still_input_error ... ok
+test req_io_005_cash_only_header_needs_no_instruments ... ok
+test req_io_006_escaped_strings_use_owned_cold_path_and_roundtrip ... ok
+test req_io_007_overflow_is_not_a_zero_quantity_or_precision_accusation ... ok
+test req_ledger_002_replay_is_independent_of_observed_claims ... ok
+test req_check_003_all_defects_1000_injection_points ... ok
+
+test result: ok. 18 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 10.26s
+
+     Running `/tmp/cargo-mutants-QuantLab-RS-k6EDVm.tmp/target/debug/deps/part2-5e0c6ae598c4bff2`
+
+running 13 tests
+test req_bundle_003_original_v0_writer_bundle_still_verifies ... ok
+test req_check_014_violation_dominates_uncovered_tail_and_is_reducible ... ok
+test req_check_015_witness_scope_and_unsupported_tail_findings_are_separate ... ok
+test req_bundle_002_v1_roles_and_certificates_reject_false_proofs ... FAILED
+test req_gate_003_sparse_required_evidence_can_exceed_thirty_two_events ... ok
+test req_reduce_009_i2_witness_needs_only_its_instrument_and_position_claims ... ok
+test req_reduce_010_r1_d04_sizes_finish_under_existing_budgets ... ok
+test req_reduce_012_long_lived_and_second_carried_error_are_bounded ... ok
+test req_reduce_016_unit_renaming_preserves_observed_witness ... ok
+test req_reduce_017_nonmonotone_superset_is_saved_and_seed_recovers ... ok
+test req_reduce_020_i2_keeps_other_asset_fills_only_for_required_cash_support ... ok
+test req_reduce_021_small_window_quality_matches_exhaustive_ground_truth ... ok
+test req_gate_002_shapes_have_real_removals_and_recheckable_certificates ... ok
+
+failures:
+
+---- req_bundle_002_v1_roles_and_certificates_reject_false_proofs stdout ----
+
+thread 'req_bundle_002_v1_roles_and_certificates_reject_false_proofs' (1264978) panicked at crates/qlrs-testkit/tests/part2.rs:317:5:
+assertion failed: check(&bad).is_err()
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+
+failures:
+    req_bundle_002_v1_roles_and_certificates_reject_false_proofs
+
+test result: FAILED. 12 passed; 1 failed; 0 ignored; 0 measured; 0 filtered out; finished in 2.82s
+
+error: test failed, to rerun pass `-p qlrs-testkit --test part2`
+
+*** result: Failure(101)

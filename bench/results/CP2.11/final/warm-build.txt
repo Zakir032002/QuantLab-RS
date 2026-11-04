@@ -1,0 +1,133 @@
+   Compiling proc-macro2 v1.0.107
+   Compiling quote v1.0.47
+   Compiling unicode-ident v1.0.27
+   Compiling serde_core v1.0.229
+   Compiling serde v1.0.229
+   Compiling cfg-if v1.0.5
+   Compiling qlrs-num v0.1.0 (/workspace/QuantLab-RS/crates/qlrs-num)
+   Compiling shlex v2.0.1
+   Compiling syn v3.0.9
+   Compiling find-msvc-tools v0.1.15
+   Compiling cc v1.11.0
+   Compiling cpufeatures v0.3.1
+   Compiling foldhash v0.2.0
+   Compiling crossbeam-utils v0.8.23
+   Compiling crossbeam-epoch v0.9.21
+   Compiling crossbeam-deque v0.8.8
+   Compiling zmij v1.0.23
+   Compiling arrayvec v0.7.8
+   Compiling either v1.19.0
+   Compiling serde_json v1.0.154
+   Compiling rayon-core v1.13.0
+   Compiling constant_time_eq v0.4.2
+   Compiling itoa v1.0.18
+   Compiling memchr v2.8.3
+   Compiling rayon v1.12.0
+   Compiling blake3 v1.8.7
+   Compiling libc v0.2.191
+   Compiling autocfg v1.5.1
+   Compiling rand_core v0.10.1
+   Compiling qlrs-bundle v0.1.0 (/workspace/QuantLab-RS/crates/qlrs-bundle)
+   Compiling getrandom v0.4.3
+   Compiling regex-syntax v0.8.11
+   Compiling num-traits v0.2.19
+   Compiling rustix v1.1.6
+   Compiling bitflags v2.13.2
+   Compiling linux-raw-sys v0.12.1
+   Compiling fastrand v2.5.0
+   Compiling once_cell v1.21.4
+   Compiling tempfile v3.27.0
+   Compiling wait-timeout v0.2.1
+   Compiling quick-error v1.2.3
+   Compiling fnv v1.0.7
+   Compiling bit-vec v0.10.1
+   Compiling bit-set v0.11.1
+   Compiling rusty-fork v0.3.1
+   Compiling rand v0.10.3
+   Compiling chacha20 v0.10.2
+   Compiling rand_xorshift v0.5.0
+   Compiling unarray v0.1.4
+   Compiling core_detect v1.0.0
+   Compiling proptest v1.12.0
+   Compiling syn v2.0.119
+   Compiling serde_derive v1.0.229
+   Compiling utf8parse v0.2.2
+   Compiling anstyle-parse v1.0.0
+   Compiling anstyle v1.0.14
+   Compiling is_terminal_polyfill v1.70.2
+   Compiling colorchoice v1.0.5
+   Compiling anstyle-query v1.1.5
+   Compiling anstream v1.0.0
+   Compiling zerocopy v0.8.63
+   Compiling strsim v0.11.1
+   Compiling clap_lex v1.1.1
+   Compiling heck v0.5.0
+   Compiling clap_derive v4.6.7
+   Compiling qlrs-schema v0.1.0 (/workspace/QuantLab-RS/crates/qlrs-schema)
+   Compiling qlrs-ledger v0.1.0 (/workspace/QuantLab-RS/crates/qlrs-ledger)
+   Compiling qlrs-check v0.1.0 (/workspace/QuantLab-RS/crates/qlrs-check)
+   Compiling qlrs-io v0.1.0 (/workspace/QuantLab-RS/crates/qlrs-io)
+   Compiling qlrs-reduce v0.1.0 (/workspace/QuantLab-RS/crates/qlrs-reduce)
+   Compiling zerocopy-derive v0.8.63
+   Compiling qlrs-testkit v0.1.0 (/workspace/QuantLab-RS/crates/qlrs-testkit)
+   Compiling clap_builder v4.6.7
+   Compiling semver v1.0.28
+   Compiling rustversion v1.0.23
+   Compiling rustc_version v0.4.1
+   Compiling clap v4.6.7
+   Compiling derive_more-impl v2.1.1
+   Compiling gungraun-macros v0.10.0
+   Compiling num-integer v0.1.47
+   Compiling alloca v0.4.0
+   Compiling proc-macro-error-attr3 v3.1.1
+   Compiling bincode-next v3.1.1
+   Compiling gungraun-common v0.1.0
+   Compiling plotters-backend v0.3.7
+   Compiling ciborium-io v0.2.2
+   Compiling plotters-svg v0.3.7
+   Compiling derive_more v2.1.1
+   Compiling proc-macro-error3 v3.1.1
+   Compiling num-bigint v0.4.8
+   Compiling rapidhash v4.5.1
+   Compiling half v2.7.1
+   Compiling ciborium-ll v0.2.2
+   Compiling either-or-both v0.3.1
+   Compiling regex-automata v0.4.18
+   Compiling itertools v0.13.0
+   Compiling unty-next v0.1.2
+   Compiling gungraun v0.20.0
+   Compiling pastey v0.2.3
+   Compiling same-file v1.0.6
+   Compiling cast v0.3.0
+   Compiling criterion-plot v0.8.2
+   Compiling walkdir v2.5.0
+   Compiling regex v1.13.1
+   Compiling gungraun-runner v0.20.0
+   Compiling ciborium v0.2.2
+   Compiling plotters v0.3.7
+   Compiling tinytemplate v1.2.1
+   Compiling page_size v0.6.0
+   Compiling anes v0.1.6
+   Compiling oorandom v11.1.5
+   Compiling qlrs-bench v0.1.0 (/workspace/QuantLab-RS/crates/qlrs-bench)
+   Compiling criterion v0.8.2
+   Compiling qlrs-cli v0.1.0 (/workspace/QuantLab-RS/crates/qlrs-cli)
+    Finished `test` profile [unoptimized] target(s) in 1m 19s
+  Executable unittests src/lib.rs (target/debug/deps/qlrs_bench-106d313ea072b924)
+  Executable unittests src/lib.rs (target/debug/deps/qlrs_bundle-07e9f37aa9674077)
+  Executable unittests src/lib.rs (target/debug/deps/qlrs_check-81379021c596b05c)
+  Executable unittests src/main.rs (target/debug/deps/qlrs-d100cc75d179a402)
+  Executable tests/exit_codes.rs (target/debug/deps/exit_codes-f8cd7056586f2ae2)
+  Executable unittests src/lib.rs (target/debug/deps/qlrs_io-fd4cdf5d15ed700a)
+  Executable unittests src/lib.rs (target/debug/deps/qlrs_ledger-2ee43b7b2cd41d23)
+  Executable unittests src/lib.rs (target/debug/deps/qlrs_num-c705005160564658)
+  Executable tests/properties.rs (target/debug/deps/properties-76798e1a1aca2e9c)
+  Executable unittests src/lib.rs (target/debug/deps/qlrs_reduce-c2b3f0081f22dc55)
+  Executable unittests src/lib.rs (target/debug/deps/qlrs_schema-a18cc47bafda6804)
+  Executable unittests src/lib.rs (target/debug/deps/qlrs_testkit-713444bcd5f489fd)
+  Executable tests/allocations.rs (target/debug/deps/allocations-4dc1eac31bc7465f)
+  Executable tests/corrections.rs (target/debug/deps/corrections-d3a13bec94305158)
+  Executable tests/differential_part2.rs (target/debug/deps/differential_part2-448bd17201c1648e)
+  Executable tests/invariants.rs (target/debug/deps/invariants-fe17aae79ecf4238)
+  Executable tests/part2.rs (target/debug/deps/part2-5e0c6ae598c4bff2)
+  Executable tests/reduction.rs (target/debug/deps/reduction-c6d7606b68671b8c)

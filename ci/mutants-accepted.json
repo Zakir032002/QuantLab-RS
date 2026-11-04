@@ -1,0 +1,722 @@
+[
+  {
+    "id": "d5307c517319c7efd88f22011bb55ff695dc53ba68bc3e22a3bfb52e809d4150",
+    "name": "crates/qlrs-check/src/checkpoint.rs:118:40: replace == with != in Checker::checkpoint_at_claim",
+    "classification": "coverage gap",
+    "reason": "Checkpoint provenance, prefix boundary or prior-trade relevance coverage gap for this expression."
+  },
+  {
+    "id": "b9f9b9cfa7b16e85d2780fa3a91627302331c8e906cb67f90837c61c8ea5dd73",
+    "name": "crates/qlrs-check/src/checkpoint.rs:130:56: replace < with <= in Checker::checkpoint_at_claim",
+    "classification": "coverage gap",
+    "reason": "Checkpoint provenance, prefix boundary or prior-trade relevance coverage gap for this expression."
+  },
+  {
+    "id": "91abea667d70e24c06e885af5a4785f8587e4661e60b56c469ff4dca9c9a0d55",
+    "name": "crates/qlrs-check/src/checkpoint.rs:130:56: replace < with == in Checker::checkpoint_at_claim",
+    "classification": "coverage gap",
+    "reason": "Checkpoint provenance, prefix boundary or prior-trade relevance coverage gap for this expression."
+  },
+  {
+    "id": "9f033ff59051168fc7fcaadf0c338356659043a66eb98dd6503c5fb11b0a5b47",
+    "name": "crates/qlrs-check/src/checkpoint.rs:130:56: replace < with > in Checker::checkpoint_at_claim",
+    "classification": "coverage gap",
+    "reason": "Checkpoint provenance, prefix boundary or prior-trade relevance coverage gap for this expression."
+  },
+  {
+    "id": "199975ad208aa94d6882e1f365e0e513eeb77730977859827ab82cd1f36f8bd7",
+    "name": "crates/qlrs-check/src/checkpoint.rs:170:57: replace == with != in Checker::checkpoint_at_claim",
+    "classification": "coverage gap",
+    "reason": "Checkpoint provenance, prefix boundary or prior-trade relevance coverage gap for this expression."
+  },
+  {
+    "id": "97889a80286c22e024b96051068a862081f25da449ebf57b10d091a7dcd6ca62",
+    "name": "crates/qlrs-check/src/checkpoint.rs:57:47: replace != with == in Checker::checkpoint_at_claim",
+    "classification": "coverage gap",
+    "reason": "Checkpoint provenance, prefix boundary or prior-trade relevance coverage gap for this expression."
+  },
+  {
+    "id": "b2c535f6527a249f368abf0498bf0f43235cf636fe872fba355964c3af9f298c",
+    "name": "crates/qlrs-check/src/checkpoint.rs:61:46: replace > with < in Checker::checkpoint_at_claim",
+    "classification": "coverage gap",
+    "reason": "Checkpoint provenance, prefix boundary or prior-trade relevance coverage gap for this expression."
+  },
+  {
+    "id": "633f4c94c11b805a09d5e8d21e06ed63e62264a668cf97971b45bf473c287080",
+    "name": "crates/qlrs-check/src/lib.rs:1044:57: replace == with != in relation",
+    "classification": "coverage gap",
+    "reason": "Displayed hint/classification coverage gap; exact InstanceKey tests do not assert every heuristic branch."
+  },
+  {
+    "id": "697328147dd9ff2058d2bdc9504b21c5685c7603bd7a8f26e6578054f3d71707",
+    "name": "crates/qlrs-check/src/lib.rs:1050:13: replace == with != in relation",
+    "classification": "coverage gap",
+    "reason": "Displayed hint/classification coverage gap; exact InstanceKey tests do not assert every heuristic branch."
+  },
+  {
+    "id": "0e2789a9639b66e75128005858fbc492585b71b4a0cc3d8294a3baa6482ffa3e",
+    "name": "crates/qlrs-check/src/lib.rs:134:9: replace Checker::prepare with ()",
+    "classification": "coverage gap",
+    "reason": "The public alias is not tested independently of Ledger::prepare; this preparation entry point needs coverage."
+  },
+  {
+    "id": "393ed88007541c4c4804c59f480f42f24ac2bdbf5694cc66ae155acfbf09d854",
+    "name": "crates/qlrs-check/src/lib.rs:228:28: replace || with && in Checker::check_events",
+    "classification": "coverage gap",
+    "reason": "Issue-selection, opening-window or terminal-state boundary coverage gap for this exact expression."
+  },
+  {
+    "id": "33ca45d82600c50fff97f1de0550e2989c849e6e7d72f035147cce0d60aaafec",
+    "name": "crates/qlrs-check/src/lib.rs:228:52: replace || with && in Checker::check_events",
+    "classification": "coverage gap",
+    "reason": "Issue-selection, opening-window or terminal-state boundary coverage gap for this exact expression."
+  },
+  {
+    "id": "00c99667b34d365ec32230a85016120875e45ed7c4d3cca761b5201aa4fe4bb5",
+    "name": "crates/qlrs-check/src/lib.rs:252:52: replace >= with < in Checker::check_events",
+    "classification": "coverage gap",
+    "reason": "Issue-selection, opening-window or terminal-state boundary coverage gap for this exact expression."
+  },
+  {
+    "id": "335812ad0908dbc790012a7176579f1f52374fcca0dfe62953cb26ecd1889038",
+    "name": "crates/qlrs-check/src/lib.rs:253:25: replace && with || in Checker::check_events",
+    "classification": "coverage gap",
+    "reason": "Issue-selection, opening-window or terminal-state boundary coverage gap for this exact expression."
+  },
+  {
+    "id": "6df9e3943e60244a01a13db65226a6fee7bd82729072c02689f82feb2c97df43",
+    "name": "crates/qlrs-check/src/lib.rs:270:46: replace || with && in Checker::check_events",
+    "classification": "coverage gap",
+    "reason": "Issue-selection, opening-window or terminal-state boundary coverage gap for this exact expression."
+  },
+  {
+    "id": "ab450aa5fd87e1b59c8899ebc5ec144eda300ac5a0627b8b8cfe74f6d0d25e92",
+    "name": "crates/qlrs-check/src/lib.rs:270:63: replace == with != in Checker::check_events",
+    "classification": "coverage gap",
+    "reason": "Issue-selection, opening-window or terminal-state boundary coverage gap for this exact expression."
+  },
+  {
+    "id": "779bcbb7442e475cadeed075da8d78f533388591aedd2186dcdb43b1f4b24d7e",
+    "name": "crates/qlrs-check/src/lib.rs:325:56: replace < with <= in Checker::check_events",
+    "classification": "coverage gap",
+    "reason": "Issue-selection, opening-window or terminal-state boundary coverage gap for this exact expression."
+  },
+  {
+    "id": "c1676b7173285e9f3cad8f4abca4f6096c6a17f711e150e32f0d161b071153bc",
+    "name": "crates/qlrs-check/src/lib.rs:325:56: replace < with == in Checker::check_events",
+    "classification": "coverage gap",
+    "reason": "Issue-selection, opening-window or terminal-state boundary coverage gap for this exact expression."
+  },
+  {
+    "id": "3a38fda25db072a689be7cd89f90a7693b90009753eb0801b23a958eb159f6b1",
+    "name": "crates/qlrs-check/src/lib.rs:325:56: replace < with > in Checker::check_events",
+    "classification": "coverage gap",
+    "reason": "Issue-selection, opening-window or terminal-state boundary coverage gap for this exact expression."
+  },
+  {
+    "id": "a5d1d7f1770d8338160cd415db2b4ff1e3bd29ba852fd685d3a0b714d3e41948",
+    "name": "crates/qlrs-check/src/lib.rs:405:56: replace < with <= in Checker::check_events",
+    "classification": "coverage gap",
+    "reason": "Issue-selection, opening-window or terminal-state boundary coverage gap for this exact expression."
+  },
+  {
+    "id": "167025210915c7a8b2abef9bf4301ae58aefc296fc678977528bde9468250d66",
+    "name": "crates/qlrs-check/src/lib.rs:405:56: replace < with == in Checker::check_events",
+    "classification": "coverage gap",
+    "reason": "Issue-selection, opening-window or terminal-state boundary coverage gap for this exact expression."
+  },
+  {
+    "id": "6f20ed1d191d19afa86be71711e83dbd05c230eb7ba7d704281fdbe531e775fe",
+    "name": "crates/qlrs-check/src/lib.rs:483:25: replace == with != in Checker::check_events",
+    "classification": "coverage gap",
+    "reason": "Issue-selection, opening-window or terminal-state boundary coverage gap for this exact expression."
+  },
+  {
+    "id": "7d99bc113126f124338a5ac5b61fff7d3b89713d91b941cbdfc6eb03ef0ea8b0",
+    "name": "crates/qlrs-check/src/lib.rs:529:41: replace == with != in Checker::check_events",
+    "classification": "coverage gap",
+    "reason": "Issue-selection, opening-window or terminal-state boundary coverage gap for this exact expression."
+  },
+  {
+    "id": "096575a740ceb72fb27117d12f4ea53c0a25aded1ee6b5ca0cf94cb9f5d13ea6",
+    "name": "crates/qlrs-check/src/lib.rs:604:25: replace || with && in Checker::check_events",
+    "classification": "coverage gap",
+    "reason": "Issue-selection, opening-window or terminal-state boundary coverage gap for this exact expression."
+  },
+  {
+    "id": "b28e7fe1b9454accced75a5a7f591418341d8bd07b4a656462d6fe94bc8c4c93",
+    "name": "crates/qlrs-check/src/lib.rs:707:25: replace || with && in Checker::check_events",
+    "classification": "coverage gap",
+    "reason": "Issue-selection, opening-window or terminal-state boundary coverage gap for this exact expression."
+  },
+  {
+    "id": "3b254057ea41799b709d3891534e9e3f31942deffe6ffcf9336703b92c530b18",
+    "name": "crates/qlrs-check/src/lib.rs:708:50: replace == with != in Checker::check_events",
+    "classification": "coverage gap",
+    "reason": "Issue-selection, opening-window or terminal-state boundary coverage gap for this exact expression."
+  },
+  {
+    "id": "1eb3102e4f6877f8d72a7510a08da4a0cbd7ea14beb3565a548d173c3982a418",
+    "name": "crates/qlrs-check/src/lib.rs:949:33: replace > with >= in counts_pattern",
+    "classification": "equivalent output",
+    "reason": "Added zero-count entries are discarded by fingerprint_bytes; REQ-FP-004 verifies zero-multiset invariance."
+  },
+  {
+    "id": "efe4d55f2c46f9ff21b015cc32eadd82b72e20f64ce8709538e592b5371f1f17",
+    "name": "crates/qlrs-check/src/lib.rs:971:61: replace && with || in relation",
+    "classification": "coverage gap",
+    "reason": "Displayed hint/classification coverage gap; exact InstanceKey tests do not assert every heuristic branch."
+  },
+  {
+    "id": "d9d02aa53b92389fe2b47438925d0f030b562c3590e0ab1c90b44b896bd3b879",
+    "name": "crates/qlrs-check/src/lifecycle.rs:51:36: delete ! in Progress::observe",
+    "classification": "coverage gap",
+    "reason": "Follow-up events after a fully filled order are not independently distinguished by the catalogue cases."
+  },
+  {
+    "id": "232aa0231585fee251a01ea82b9e95bafb392fe12917a313bd40547d6965481b",
+    "name": "crates/qlrs-num/src/lib.rs:303:21: replace < with <= in <impl fmt::Display for Fixed>::fmt",
+    "classification": "coverage gap",
+    "reason": "This exact expression remains untested; it is counted and not claimed equivalent."
+  },
+  {
+    "id": "9aeda97195b5c40fdd458294bb75058a258851ca4d827ea7bb0c9c482aaf3358",
+    "name": "crates/qlrs-num/src/lib.rs:332:13: replace < with <= in rescale_raw",
+    "classification": "coverage gap",
+    "reason": "This exact expression remains untested; it is counted and not claimed equivalent."
+  },
+  {
+    "id": "76440687795cfe41d48539c9d387d29bbc1ac7ea7e869696542fbaf16d315f91",
+    "name": "crates/qlrs-num/src/lib.rs:381:9: delete match arm 36 in divide_power",
+    "classification": "coverage gap",
+    "reason": "This exact expression remains untested; it is counted and not claimed equivalent."
+  },
+  {
+    "id": "9dd5eacf60f68d1600594a441471134810ff5eed96f1c5e1124eb00fc67a428c",
+    "name": "crates/qlrs-num/src/lib.rs:464:22: replace | with ^ in wide_product",
+    "classification": "coverage gap",
+    "reason": "This exact expression remains untested; it is counted and not claimed equivalent."
+  },
+  {
+    "id": "d928d49a2a67b1018e83045f57714f26ac3169892f44bab6fb926d12f04ec36e",
+    "name": "crates/qlrs-num/src/lib.rs:494:19: replace < with <= in wide_mul_rescale",
+    "classification": "coverage gap",
+    "reason": "This exact expression remains untested; it is counted and not claimed equivalent."
+  },
+  {
+    "id": "b9adba6c2698955a8c8280b56d74c6c7d576e62b1e9c1164e0cd3a3cda0d92b3",
+    "name": "crates/qlrs-num/src/lib.rs:494:38: replace < with <= in wide_mul_rescale",
+    "classification": "coverage gap",
+    "reason": "This exact expression remains untested; it is counted and not claimed equivalent."
+  },
+  {
+    "id": "bc20c7c19802ca6e73b123225c2d2db1979909a54c84baab6a8abe9af65e8d75",
+    "name": "crates/qlrs-num/src/lib.rs:524:38: replace < with <= in wide_mul_add",
+    "classification": "coverage gap",
+    "reason": "This exact expression remains untested; it is counted and not claimed equivalent."
+  },
+  {
+    "id": "51abd319e64ec94a53d5ff5054a176b233567a4895deec0fadbaa862f58e13d1",
+    "name": "crates/qlrs-num/src/lib.rs:524:57: replace < with <= in wide_mul_add",
+    "classification": "coverage gap",
+    "reason": "This exact expression remains untested; it is counted and not claimed equivalent."
+  },
+  {
+    "id": "989763e29eb64c7a23b8e30097888550826264b4ad5397e09a2fc7005a508954",
+    "name": "crates/qlrs-num/src/lib.rs:525:37: replace < with <= in wide_mul_add",
+    "classification": "coverage gap",
+    "reason": "This exact expression remains untested; it is counted and not claimed equivalent."
+  },
+  {
+    "id": "2bacab412079aaf9881a3786d5fb63c688ca207716e06db28e36fe40e0eda292",
+    "name": "crates/qlrs-num/src/lib.rs:583:38: replace | with ^ in wide_div",
+    "classification": "coverage gap",
+    "reason": "This exact expression remains untested; it is counted and not claimed equivalent."
+  },
+  {
+    "id": "99f9e418040166d763fa4d3850f7951b68000f7a80787f2125b74b3f475e5360",
+    "name": "crates/qlrs-num/src/lib.rs:587:47: replace - with / in wide_div",
+    "classification": "coverage gap",
+    "reason": "This exact expression remains untested; it is counted and not claimed equivalent."
+  },
+  {
+    "id": "b5f68d39b473d25b44b25ca80a8ecd64d94f9e4506819c3d001ca8d0376c032e",
+    "name": "crates/qlrs-reduce/src/algebra.rs:109:9: replace ContributionTable::seed_roots -> Vec<usize> with vec![0]",
+    "classification": "coverage gap",
+    "reason": "The full-checker fallback can recover from a poorer seed; seed quality/call cost for this replacement is not independently constrained."
+  },
+  {
+    "id": "d85799b50d74a05110339d30fbf4c5782971a9a9501a6b8b2df202e519adda55",
+    "name": "crates/qlrs-reduce/src/cache.rs:10:20: replace ^ with & in mix",
+    "classification": "hash quality gap",
+    "reason": "Canonical unit-list equality protects admission, but changed mixer entropy/distribution and digest bytes are not independently constrained."
+  },
+  {
+    "id": "3f763e14d621df5721baebd2b66b674d9d3db6c6b563abf91416c6366cd11e7c",
+    "name": "crates/qlrs-reduce/src/cache.rs:10:20: replace ^ with | in mix",
+    "classification": "hash quality gap",
+    "reason": "Canonical unit-list equality protects admission, but changed mixer entropy/distribution and digest bytes are not independently constrained."
+  },
+  {
+    "id": "a170397de3e8c98b107a1dfc91b03bc5cdcc635f22de5969b017bf192dd3bfbd",
+    "name": "crates/qlrs-reduce/src/cache.rs:10:29: replace >> with << in mix",
+    "classification": "hash quality gap",
+    "reason": "Canonical unit-list equality protects admission, but changed mixer entropy/distribution and digest bytes are not independently constrained."
+  },
+  {
+    "id": "f13d40eeaa354b9123114b0a853e16571efa91f666d1bf600427780a8def5c3a",
+    "name": "crates/qlrs-reduce/src/cache.rs:11:11: replace ^ with & in mix",
+    "classification": "hash quality gap",
+    "reason": "Canonical unit-list equality protects admission, but changed mixer entropy/distribution and digest bytes are not independently constrained."
+  },
+  {
+    "id": "8a4d32b06877a05690b7796f296b25d84b000cef2b77e71ad3b67ea1f7407057",
+    "name": "crates/qlrs-reduce/src/cache.rs:11:11: replace ^ with | in mix",
+    "classification": "hash quality gap",
+    "reason": "Canonical unit-list equality protects admission, but changed mixer entropy/distribution and digest bytes are not independently constrained."
+  },
+  {
+    "id": "926c0ae62a76fae1f0f3451e9f2b7f1ca5bbabc00322eccfa714358e26c628a3",
+    "name": "crates/qlrs-reduce/src/cache.rs:11:20: replace >> with << in mix",
+    "classification": "hash quality gap",
+    "reason": "Canonical unit-list equality protects admission, but changed mixer entropy/distribution and digest bytes are not independently constrained."
+  },
+  {
+    "id": "3cd94cccfd9124f501be581981cf7e6d023589be55190beeed5d42bd60778c58",
+    "name": "crates/qlrs-reduce/src/cache.rs:16:18: replace ^= with &= in HashState::toggle",
+    "classification": "hash update gap",
+    "reason": "The other hash word and canonical equality protect admission; per-word entropy/history is not independently asserted."
+  },
+  {
+    "id": "b378e4e52ef8179474bd2771c80dd37b05cedb34de5d656063d0f5db7cb1a878",
+    "name": "crates/qlrs-reduce/src/cache.rs:16:18: replace ^= with |= in HashState::toggle",
+    "classification": "hash update gap",
+    "reason": "The other hash word and canonical equality protect admission; per-word entropy/history is not independently asserted."
+  },
+  {
+    "id": "26468593224acc05e926fa0943b775b950f3338b6362c6cd1e986b9f6eacda13",
+    "name": "crates/qlrs-reduce/src/cache.rs:19:19: replace ^= with &= in HashState::toggle",
+    "classification": "hash update gap",
+    "reason": "The other hash word and canonical equality protect admission; per-word entropy/history is not independently asserted."
+  },
+  {
+    "id": "0712fec264a090da990e238ace97c6e4f39d64b0b17be5f93f5a9fa6951fb598",
+    "name": "crates/qlrs-reduce/src/cache.rs:19:19: replace ^= with |= in HashState::toggle",
+    "classification": "hash update gap",
+    "reason": "The other hash word and canonical equality protect admission; per-word entropy/history is not independently asserted."
+  },
+  {
+    "id": "ce24b303de7dd993dceb64817564196cecb76ad50564744fd84a49ce95dc67d0",
+    "name": "crates/qlrs-reduce/src/cache.rs:19:42: replace ^ with & in HashState::toggle",
+    "classification": "hash update gap",
+    "reason": "The other hash word and canonical equality protect admission; per-word entropy/history is not independently asserted."
+  },
+  {
+    "id": "a0fe1dfbd08e62eeb93ba1d9f13c3dc419dbf8b82c5c6d4f67fe601730692fb8",
+    "name": "crates/qlrs-reduce/src/cache.rs:19:42: replace ^ with | in HashState::toggle",
+    "classification": "hash update gap",
+    "reason": "The other hash word and canonical equality protect admission; per-word entropy/history is not independently asserted."
+  },
+  {
+    "id": "1fc3cc0dca528363280fad1b11fa15d0b41824020a94e2bed46116af998ed9d0",
+    "name": "crates/qlrs-reduce/src/cache.rs:29:46: replace match guard left == right with false in HashState::update",
+    "classification": "hash traversal gap",
+    "reason": "Several stream orders XOR each old/new ID once and only add work; this exact replacement is retained without a blanket equivalence claim."
+  },
+  {
+    "id": "97cf4c6b39d292ab0c799085bd202fe5d8c9987c740a841cc11649e57c9bdc99",
+    "name": "crates/qlrs-reduce/src/cache.rs:29:46: replace match guard left == right with true in HashState::update",
+    "classification": "hash traversal gap",
+    "reason": "Several stream orders XOR each old/new ID once and only add work; this exact replacement is retained without a blanket equivalence claim."
+  },
+  {
+    "id": "2cc3caee1d8207c52cfc90e4c840fadd471c2ed9cceb46a10d109b5f577fc35e",
+    "name": "crates/qlrs-reduce/src/cache.rs:33:46: replace match guard left < right with false in HashState::update",
+    "classification": "hash traversal gap",
+    "reason": "Several stream orders XOR each old/new ID once and only add work; this exact replacement is retained without a blanket equivalence claim."
+  },
+  {
+    "id": "94da48aec0b954019640c250c6af9ad40008f9cf2297dea44b60f38f3c381168",
+    "name": "crates/qlrs-reduce/src/cache.rs:33:46: replace match guard left < right with true in HashState::update",
+    "classification": "hash traversal gap",
+    "reason": "Several stream orders XOR each old/new ID once and only add work; this exact replacement is retained without a blanket equivalence claim."
+  },
+  {
+    "id": "cdc5cfb49a2cd83105fd88753980808b05b1b8ec935c00d740af97c623f403e9",
+    "name": "crates/qlrs-reduce/src/cache.rs:33:51: replace < with <= in HashState::update",
+    "classification": "hash traversal gap",
+    "reason": "Several stream orders XOR each old/new ID once and only add work; this exact replacement is retained without a blanket equivalence claim."
+  },
+  {
+    "id": "031a50ea0f618883f0e05caa1f0f6d7283eb95b5932c35e862ec23b9fb653ef9",
+    "name": "crates/qlrs-reduce/src/cache.rs:33:51: replace < with == in HashState::update",
+    "classification": "hash traversal gap",
+    "reason": "Several stream orders XOR each old/new ID once and only add work; this exact replacement is retained without a blanket equivalence claim."
+  },
+  {
+    "id": "0e25fad4e11adc776af47c6f8263d544cc7c23514c696e32d033f90b843ffd32",
+    "name": "crates/qlrs-reduce/src/cache.rs:33:51: replace < with > in HashState::update",
+    "classification": "hash traversal gap",
+    "reason": "Several stream orders XOR each old/new ID once and only add work; this exact replacement is retained without a blanket equivalence claim."
+  },
+  {
+    "id": "ecab87388d2fdd139e54ff0bb5c62ae2122c74bec149012f48eb2c4e4035517a",
+    "name": "crates/qlrs-reduce/src/cache.rs:8:5: replace mix -> u64 with 1",
+    "classification": "hash quality gap",
+    "reason": "Canonical unit-list equality protects admission, but changed mixer entropy/distribution and digest bytes are not independently constrained."
+  },
+  {
+    "id": "844580fc68e36fc6be0bf795442bee08238c2f129650fe8a5c6befe4da1ed840",
+    "name": "crates/qlrs-reduce/src/cache.rs:9:20: replace ^ with & in mix",
+    "classification": "hash quality gap",
+    "reason": "Canonical unit-list equality protects admission, but changed mixer entropy/distribution and digest bytes are not independently constrained."
+  },
+  {
+    "id": "6213a6133b20ccf8369cacf55bcd3dcd527935b2ba055fd20526d3ae5ad34713",
+    "name": "crates/qlrs-reduce/src/cache.rs:9:20: replace ^ with | in mix",
+    "classification": "hash quality gap",
+    "reason": "Canonical unit-list equality protects admission, but changed mixer entropy/distribution and digest bytes are not independently constrained."
+  },
+  {
+    "id": "c5908fa9cf21b8461d7faa05804567e8392f70edc448b8668d03e0ccbc18cc79",
+    "name": "crates/qlrs-reduce/src/cache.rs:9:29: replace >> with << in mix",
+    "classification": "hash quality gap",
+    "reason": "Canonical unit-list equality protects admission, but changed mixer entropy/distribution and digest bytes are not independently constrained."
+  },
+  {
+    "id": "3c6f21cdba4bcc664b8e82a2fbf43a6598e63cbd15eabc0464d8b1d8a169555b",
+    "name": "crates/qlrs-reduce/src/lib.rs:1014:34: replace && with || in reduce_with_options",
+    "classification": "coverage gap",
+    "reason": "Seed, prefix, Gray-subset, cost or budget boundary gap; full-checker admission guards accepted witnesses but does not assert this optimization independently."
+  },
+  {
+    "id": "1a2641938ff93b59be4202237a3843da7aa3c6b7c0eab2f74e7d79aa454ca0be",
+    "name": "crates/qlrs-reduce/src/lib.rs:1014:44: replace != with == in reduce_with_options",
+    "classification": "coverage gap",
+    "reason": "Seed, prefix, Gray-subset, cost or budget boundary gap; full-checker admission guards accepted witnesses but does not assert this optimization independently."
+  },
+  {
+    "id": "8d7512b38cf0d3d8a9ab4de4bdd2389fb5892c578c9cdbe91a05b56237e8898e",
+    "name": "crates/qlrs-reduce/src/lib.rs:1031:32: delete ! in reduce_with_options",
+    "classification": "coverage gap",
+    "reason": "Seed, prefix, Gray-subset, cost or budget boundary gap; full-checker admission guards accepted witnesses but does not assert this optimization independently."
+  },
+  {
+    "id": "0a2e84e7b92b9c854b94e0396ab17fcabe625af6f929d37997a72e26dbca1608",
+    "name": "crates/qlrs-reduce/src/lib.rs:1033:32: replace < with <= in reduce_with_options",
+    "classification": "coverage gap",
+    "reason": "Seed, prefix, Gray-subset, cost or budget boundary gap; full-checker admission guards accepted witnesses but does not assert this optimization independently."
+  },
+  {
+    "id": "9b035e3296d208d76d933b1a61fd39e3f5cb2a8e0c5ab663bcb7f814f8e76245",
+    "name": "crates/qlrs-reduce/src/lib.rs:1033:32: replace < with == in reduce_with_options",
+    "classification": "coverage gap",
+    "reason": "Seed, prefix, Gray-subset, cost or budget boundary gap; full-checker admission guards accepted witnesses but does not assert this optimization independently."
+  },
+  {
+    "id": "4ab7309aba3a28152f44f797f88ea3a5e78822b23aa73e098c1ce9470fe3bee7",
+    "name": "crates/qlrs-reduce/src/lib.rs:1033:32: replace < with > in reduce_with_options",
+    "classification": "coverage gap",
+    "reason": "Seed, prefix, Gray-subset, cost or budget boundary gap; full-checker admission guards accepted witnesses but does not assert this optimization independently."
+  },
+  {
+    "id": "5dc163097a16e5da87454376a66c380d4f2ea57e4e3e6926aaea63be602fe9cc",
+    "name": "crates/qlrs-reduce/src/lib.rs:1049:44: delete ! in reduce_with_options",
+    "classification": "coverage gap",
+    "reason": "Seed, prefix, Gray-subset, cost or budget boundary gap; full-checker admission guards accepted witnesses but does not assert this optimization independently."
+  },
+  {
+    "id": "df107c772c384a2163686871bfa43ac8882e736ca0d764a5ea04cff74beaa617",
+    "name": "crates/qlrs-reduce/src/lib.rs:1057:36: replace == with != in reduce_with_options",
+    "classification": "coverage gap",
+    "reason": "Seed, prefix, Gray-subset, cost or budget boundary gap; full-checker admission guards accepted witnesses but does not assert this optimization independently."
+  },
+  {
+    "id": "782136d20e8bb2b95b00637a49697f0302df0bae813dde580ea59f5dcf1c106f",
+    "name": "crates/qlrs-reduce/src/lib.rs:1057:41: replace || with && in reduce_with_options",
+    "classification": "coverage gap",
+    "reason": "Seed, prefix, Gray-subset, cost or budget boundary gap; full-checker admission guards accepted witnesses but does not assert this optimization independently."
+  },
+  {
+    "id": "40e1a478e31276d5a8d035f72a44823758fd63ed7e7fcd782c5b901775d0e276",
+    "name": "crates/qlrs-reduce/src/lib.rs:1057:68: replace == with != in reduce_with_options",
+    "classification": "coverage gap",
+    "reason": "Seed, prefix, Gray-subset, cost or budget boundary gap; full-checker admission guards accepted witnesses but does not assert this optimization independently."
+  },
+  {
+    "id": "67c9517b77bfcd97caaac09332747641c6524a2f140bd021e178f83346347c41",
+    "name": "crates/qlrs-reduce/src/lib.rs:1073:35: replace >= with < in reduce_with_options",
+    "classification": "coverage gap",
+    "reason": "Seed, prefix, Gray-subset, cost or budget boundary gap; full-checker admission guards accepted witnesses but does not assert this optimization independently."
+  },
+  {
+    "id": "87b076c9aa2791c581a0a7f5ece727dd24d29fc1f606b23a0282f89aa286a5f2",
+    "name": "crates/qlrs-reduce/src/lib.rs:1079:23: replace != with == in reduce_with_options",
+    "classification": "coverage gap",
+    "reason": "Seed, prefix, Gray-subset, cost or budget boundary gap; full-checker admission guards accepted witnesses but does not assert this optimization independently."
+  },
+  {
+    "id": "ab0b7f1fd0eab08d93857909b223af23c3c9b687e5fe202ee3f7fea9f637ca27",
+    "name": "crates/qlrs-reduce/src/lib.rs:1079:33: replace && with || in reduce_with_options",
+    "classification": "coverage gap",
+    "reason": "Seed, prefix, Gray-subset, cost or budget boundary gap; full-checker admission guards accepted witnesses but does not assert this optimization independently."
+  },
+  {
+    "id": "8264a58ec557a8b727f74fef4df495c4b783ac3ab1d8fbdf5319f4bdcbab672a",
+    "name": "crates/qlrs-reduce/src/lib.rs:1085:28: delete ! in reduce_with_options",
+    "classification": "coverage gap",
+    "reason": "Seed, prefix, Gray-subset, cost or budget boundary gap; full-checker admission guards accepted witnesses but does not assert this optimization independently."
+  },
+  {
+    "id": "3422cdbb71ab01bf3e18afd2f9cb577fbe880be2e0074967d001f1975dd18046",
+    "name": "crates/qlrs-reduce/src/lib.rs:1105:19: replace < with <= in reduce_with_options",
+    "classification": "coverage gap",
+    "reason": "Seed, prefix, Gray-subset, cost or budget boundary gap; full-checker admission guards accepted witnesses but does not assert this optimization independently."
+  },
+  {
+    "id": "22c2f2c24a3bb5b0148b4320c9e6eaf9a82a223d0b77361b4608070b3d1ec0e2",
+    "name": "crates/qlrs-reduce/src/lib.rs:1105:19: replace < with == in reduce_with_options",
+    "classification": "coverage gap",
+    "reason": "Seed, prefix, Gray-subset, cost or budget boundary gap; full-checker admission guards accepted witnesses but does not assert this optimization independently."
+  },
+  {
+    "id": "e8acaae0c3bb05d18f697d87efa43e68e92980764e2ca9915da581e78e162e20",
+    "name": "crates/qlrs-reduce/src/lib.rs:1105:19: replace < with > in reduce_with_options",
+    "classification": "coverage gap",
+    "reason": "Seed, prefix, Gray-subset, cost or budget boundary gap; full-checker admission guards accepted witnesses but does not assert this optimization independently."
+  },
+  {
+    "id": "b13acec89f4235ab859a653704a963c0508fa9b6573cefda4a6ad6c8103c58a5",
+    "name": "crates/qlrs-reduce/src/lib.rs:1105:26: replace && with || in reduce_with_options",
+    "classification": "coverage gap",
+    "reason": "Seed, prefix, Gray-subset, cost or budget boundary gap; full-checker admission guards accepted witnesses but does not assert this optimization independently."
+  },
+  {
+    "id": "6e38d6e29df4a09b06eb9fb29eb9ecd294ce2ffcfe6e0616b0b26cafe698d734",
+    "name": "crates/qlrs-reduce/src/lib.rs:1119:66: replace != with == in reduce_with_options",
+    "classification": "coverage gap",
+    "reason": "Seed, prefix, Gray-subset, cost or budget boundary gap; full-checker admission guards accepted witnesses but does not assert this optimization independently."
+  },
+  {
+    "id": "bd33abbea6fec4c9b8e817b1c0fa1353c446387a7d2b09079aaf552c4128f383",
+    "name": "crates/qlrs-reduce/src/lib.rs:1137:44: replace == with != in reduce_with_options",
+    "classification": "coverage gap",
+    "reason": "Seed, prefix, Gray-subset, cost or budget boundary gap; full-checker admission guards accepted witnesses but does not assert this optimization independently."
+  },
+  {
+    "id": "05a38f1db38d7a756621d4acbb71e138b2a77cd3800ea899796d6793b90af6cf",
+    "name": "crates/qlrs-reduce/src/lib.rs:1142:26: replace == with != in reduce_with_options",
+    "classification": "coverage gap",
+    "reason": "Seed, prefix, Gray-subset, cost or budget boundary gap; full-checker admission guards accepted witnesses but does not assert this optimization independently."
+  },
+  {
+    "id": "aedbd853a311558b558033b2b2b5e4f89f8990d1ef409bcbf85ff9d0015eb587",
+    "name": "crates/qlrs-reduce/src/lib.rs:1158:36: replace && with || in reduce_with_options",
+    "classification": "coverage gap",
+    "reason": "Seed, prefix, Gray-subset, cost or budget boundary gap; full-checker admission guards accepted witnesses but does not assert this optimization independently."
+  },
+  {
+    "id": "85726bc9b76928f3a49ad9013a978e81be252209190e0189abf365c990d382aa",
+    "name": "crates/qlrs-reduce/src/lib.rs:1158:65: replace && with || in reduce_with_options",
+    "classification": "coverage gap",
+    "reason": "Seed, prefix, Gray-subset, cost or budget boundary gap; full-checker admission guards accepted witnesses but does not assert this optimization independently."
+  },
+  {
+    "id": "cf2d901608470e9ea1a378f8b51680aeb658a3b3163a26fe3d1f1333e332d105",
+    "name": "crates/qlrs-reduce/src/lib.rs:1226:51: replace < with <= in reduce_with_options",
+    "classification": "coverage gap",
+    "reason": "Seed, prefix, Gray-subset, cost or budget boundary gap; full-checker admission guards accepted witnesses but does not assert this optimization independently."
+  },
+  {
+    "id": "ad06e52bb4fe64f9e86eb7700b9f9d8da30831ca2f99025bb779d1aed969c6a6",
+    "name": "crates/qlrs-reduce/src/lib.rs:1309:22: replace && with || in reduce_with_options",
+    "classification": "coverage gap",
+    "reason": "Seed, prefix, Gray-subset, cost or budget boundary gap; full-checker admission guards accepted witnesses but does not assert this optimization independently."
+  },
+  {
+    "id": "89da49406ad302afc6a1ad1da2b72bd6efd50f6587c0d6b62c0da901c8595143",
+    "name": "crates/qlrs-reduce/src/lib.rs:1342:19: replace && with || in finish_reduction",
+    "classification": "coverage gap",
+    "reason": "Finalization/telemetry boundary coverage gap; no equivalence is asserted."
+  },
+  {
+    "id": "ff58ed54efbde5adf45d9b0251bc585743520791770fc80b1e42647e5922472f",
+    "name": "crates/qlrs-reduce/src/lib.rs:1351:38: replace && with || in finish_reduction",
+    "classification": "coverage gap",
+    "reason": "Finalization/telemetry boundary coverage gap; no equivalence is asserted."
+  },
+  {
+    "id": "8be565a42da0e73aa74b8f39746dbcadc08b9ccf7c15f9d00d8cc33144d5ec9d",
+    "name": "crates/qlrs-reduce/src/lib.rs:1539:9: replace || with && in recheck_certificate",
+    "classification": "coverage gap",
+    "reason": "This independent certificate metadata/boundary combination needs coverage; no equivalence is asserted."
+  },
+  {
+    "id": "848188c4ab03071848dc49fcac4dd2f6b064297bd4ed224158a564676936b248",
+    "name": "crates/qlrs-reduce/src/lib.rs:1540:9: replace || with && in recheck_certificate",
+    "classification": "coverage gap",
+    "reason": "This independent certificate metadata/boundary combination needs coverage; no equivalence is asserted."
+  },
+  {
+    "id": "2c183c2ebb5c92c3d507ac9f33747f9e56b11f01df8b6f79ed580509a6144894",
+    "name": "crates/qlrs-reduce/src/lib.rs:1558:9: replace || with && in recheck_certificate",
+    "classification": "coverage gap",
+    "reason": "This independent certificate metadata/boundary combination needs coverage; no equivalence is asserted."
+  },
+  {
+    "id": "1e5d87c5e832a049eb171e1c05d94247c51a9f50be1e82376875a78bb737809c",
+    "name": "crates/qlrs-reduce/src/lib.rs:1581:9: replace || with && in recheck_certificate",
+    "classification": "coverage gap",
+    "reason": "This independent certificate metadata/boundary combination needs coverage; no equivalence is asserted."
+  },
+  {
+    "id": "48018bff807ae397c66d8d0cf3609382b6d933b05248bf626f6f7ca69b916ab7",
+    "name": "crates/qlrs-reduce/src/lib.rs:1585:9: replace || with && in recheck_certificate",
+    "classification": "coverage gap",
+    "reason": "This independent certificate metadata/boundary combination needs coverage; no equivalence is asserted."
+  },
+  {
+    "id": "a82555cd7e9f7a31853b9fba94a192bc989d09448f0983db624e06275aaaa85d",
+    "name": "crates/qlrs-reduce/src/lib.rs:1606:38: replace || with && in recheck_certificate",
+    "classification": "coverage gap",
+    "reason": "This independent certificate metadata/boundary combination needs coverage; no equivalence is asserted."
+  },
+  {
+    "id": "1cc8d46a4b197191786641df9133c38854dd5dd3b7cda25d4458b7ee51a4ad0c",
+    "name": "crates/qlrs-reduce/src/lib.rs:1614:22: replace > with < in recheck_certificate",
+    "classification": "coverage gap",
+    "reason": "Valid multi-unit contiguous RLE ranges are not exercised here; this replacement can reject such a valid proof."
+  },
+  {
+    "id": "d02cb105be0379ef6ed587a28fa92166cc8f1fb6fcfdc818b71b7b6495923335",
+    "name": "crates/qlrs-reduce/src/lib.rs:1615:17: replace || with && in recheck_certificate",
+    "classification": "equivalent admission",
+    "reason": "An overlong range must encounter an unmapped ID. Reversed ranges remove nothing and fail the nonempty closure check. Rejection wording/work can differ."
+  },
+  {
+    "id": "d03322b37a4f8b8e64bace27ba5ce97cbea2c3f64b126055f7430956226db14b",
+    "name": "crates/qlrs-reduce/src/lib.rs:193:31: replace || with && in walk",
+    "classification": "coverage gap",
+    "reason": "Defensive traversal boundary coverage gap on arbitrary public graph data."
+  },
+  {
+    "id": "088e78ee4f14232a5fd0e04bb8c06e73803bcd8545dd35bd3c1a38978bb49657",
+    "name": "crates/qlrs-reduce/src/lib.rs:402:13: delete match arm Kind::CashClaim in window",
+    "classification": "coverage gap",
+    "reason": "Observation-window boundary coverage gap."
+  },
+  {
+    "id": "ddeceb532ab6b1582165c462ddf5d648b867de10c4d5bd1bfd752e417645604b",
+    "name": "crates/qlrs-reduce/src/lib.rs:403:13: delete match arm Kind::PositionClaim in window",
+    "classification": "coverage gap",
+    "reason": "Observation-window boundary coverage gap."
+  },
+  {
+    "id": "c10a43b94b4a55528c185aa88a8170ce7d0c6264132dfc8122954153c1ea62d9",
+    "name": "crates/qlrs-reduce/src/lib.rs:405:21: replace && with || in window",
+    "classification": "coverage gap",
+    "reason": "Observation-window boundary coverage gap."
+  },
+  {
+    "id": "b3ef96b0e2083ce545c270d6e5d127000968c7d8baee7831999734d40178d87b",
+    "name": "crates/qlrs-reduce/src/lib.rs:595:42: replace == with != in ReductionPredicate<'a>::classify",
+    "classification": "coverage gap",
+    "reason": "This exact expression remains untested; it is counted and not claimed equivalent."
+  },
+  {
+    "id": "a7cf4b0899cb1d6abfe5f16d672a47bf5b048c81315599df216e6e30c9667140",
+    "name": "crates/qlrs-reduce/src/lib.rs:595:59: replace && with || in ReductionPredicate<'a>::classify",
+    "classification": "coverage gap",
+    "reason": "This exact expression remains untested; it is counted and not claimed equivalent."
+  },
+  {
+    "id": "36003fe7f0bf26b6b5ec3b9604e115896f3823c9e188249702e8ec4374018ffa",
+    "name": "crates/qlrs-reduce/src/lib.rs:595:68: replace != with == in ReductionPredicate<'a>::classify",
+    "classification": "coverage gap",
+    "reason": "This exact expression remains untested; it is counted and not claimed equivalent."
+  },
+  {
+    "id": "0e2f894c3b8e80e9e4ab34f893b6ff99c48622d21a1598d11f113d0af1872349",
+    "name": "crates/qlrs-reduce/src/lib.rs:604:45: replace == with != in ReductionPredicate<'a>::classify",
+    "classification": "coverage gap",
+    "reason": "This exact expression remains untested; it is counted and not claimed equivalent."
+  },
+  {
+    "id": "193ed09426d43e009f4e91ab78561574adb666418bd66f6f32568eb63c9f77d4",
+    "name": "crates/qlrs-reduce/src/lib.rs:605:29: replace && with || in ReductionPredicate<'a>::classify",
+    "classification": "coverage gap",
+    "reason": "This exact expression remains untested; it is counted and not claimed equivalent."
+  },
+  {
+    "id": "c96543b0c0be796eeea276515cb224cbb52712bc1aa06166d7a38123ca070be2",
+    "name": "crates/qlrs-reduce/src/lib.rs:605:42: replace == with != in ReductionPredicate<'a>::classify",
+    "classification": "coverage gap",
+    "reason": "This exact expression remains untested; it is counted and not claimed equivalent."
+  },
+  {
+    "id": "271dd0af6075656c36d96c46d8daadaad9026134767856791a54ffd91bc87e1d",
+    "name": "crates/qlrs-reduce/src/lib.rs:606:29: replace && with || in ReductionPredicate<'a>::classify",
+    "classification": "coverage gap",
+    "reason": "This exact expression remains untested; it is counted and not claimed equivalent."
+  },
+  {
+    "id": "7e9996ef2e412cc078c826d770cd086a0315d5efeb7b78e9ac546911e84a0264",
+    "name": "crates/qlrs-reduce/src/lib.rs:607:33: replace == with != in ReductionPredicate<'a>::classify",
+    "classification": "coverage gap",
+    "reason": "This exact expression remains untested; it is counted and not claimed equivalent."
+  },
+  {
+    "id": "fcc7121cf4215939ae0d2c885729928f633918c1b48982547c197b393643d5bd",
+    "name": "crates/qlrs-reduce/src/lib.rs:633:9: replace ReductionPredicate<'a>::record_commit with ()",
+    "classification": "coverage gap",
+    "reason": "This exact expression remains untested; it is counted and not claimed equivalent."
+  },
+  {
+    "id": "f4ab3a478a8a81370aaae868de7cf1e4ae7b3525ba3cc5b470b50d44b3c3fdff",
+    "name": "crates/qlrs-reduce/src/lib.rs:637:48: replace == with != in ReductionPredicate<'a>::record_commit",
+    "classification": "coverage gap",
+    "reason": "This exact expression remains untested; it is counted and not claimed equivalent."
+  },
+  {
+    "id": "56fd8574d0378e922c9c545a536d2929eecac3295907dbe52bd49ebad0da8f42",
+    "name": "crates/qlrs-reduce/src/lib.rs:823:22: delete ! in log_entry",
+    "classification": "coverage gap",
+    "reason": "Legacy candidate telemetry gap; the v1 wire format uses StepLog."
+  },
+  {
+    "id": "c7ae3ef2b5be9394da56b574591fee1e697859008d75c18b8524aba179c29e05",
+    "name": "crates/qlrs-reduce/src/lib.rs:913:9: replace || with && in reduce_with_options",
+    "classification": "coverage gap",
+    "reason": "Seed, prefix, Gray-subset, cost or budget boundary gap; full-checker admission guards accepted witnesses but does not assert this optimization independently."
+  },
+  {
+    "id": "31b41d1f2786f7fc38818f2660576c0125ee24cd57f4189690c8088981a998db",
+    "name": "crates/qlrs-reduce/src/lib.rs:915:17: replace || with && in reduce_with_options",
+    "classification": "coverage gap",
+    "reason": "Seed, prefix, Gray-subset, cost or budget boundary gap; full-checker admission guards accepted witnesses but does not assert this optimization independently."
+  },
+  {
+    "id": "067aa63df27c7c4c6ae6a314158f11db2c796ede19adf9ad2660706118069f7b",
+    "name": "crates/qlrs-reduce/src/lib.rs:976:25: replace == with != in reduce_with_options",
+    "classification": "coverage gap",
+    "reason": "Seed, prefix, Gray-subset, cost or budget boundary gap; full-checker admission guards accepted witnesses but does not assert this optimization independently."
+  },
+  {
+    "id": "60b342bf248d1afbe70d7300fe1fb9b556db0a029daf6702ae67c69eae3ad9bb",
+    "name": "crates/qlrs-reduce/src/lib.rs:976:42: replace && with || in reduce_with_options",
+    "classification": "coverage gap",
+    "reason": "Seed, prefix, Gray-subset, cost or budget boundary gap; full-checker admission guards accepted witnesses but does not assert this optimization independently."
+  },
+  {
+    "id": "2b34975caccd2b64b1a1a62d2e0070220b2558a2ada0de1a2c0a2d1da361b9ac",
+    "name": "crates/qlrs-reduce/src/lib.rs:989:19: replace != with == in reduce_with_options",
+    "classification": "coverage gap",
+    "reason": "Seed, prefix, Gray-subset, cost or budget boundary gap; full-checker admission guards accepted witnesses but does not assert this optimization independently."
+  },
+  {
+    "id": "b3e4b8d94190ef8c428b150a879fb0ee8980720491b38e170d122f8b9354aa3c",
+    "name": "crates/qlrs-reduce/src/lib.rs:990:13: replace && with || in reduce_with_options",
+    "classification": "coverage gap",
+    "reason": "Seed, prefix, Gray-subset, cost or budget boundary gap; full-checker admission guards accepted witnesses but does not assert this optimization independently."
+  }
+]

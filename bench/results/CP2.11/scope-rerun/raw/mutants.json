@@ -1,0 +1,98 @@
+[
+  {
+    "diff": "--- crates/qlrs-check/src/lib.rs\n+++ replace != with == in finish\n@@ -846,17 +846,17 @@\n         .iter()\n         .any(|f| f.status == Status::Inconclusive)\n     {\n         Status::Inconclusive\n     } else {\n         Status::Consistent\n     };\n     if report.status == Status::Unsupported && !partial {\n-        report.findings.retain(|f| f.status != Status::Violation);\n+        report.findings.retain(|f| f.status == /* ~ changed by cargo-mutants ~ */ Status::Violation);\n     }\n     report\n }\n \n fn witness_report(\n     mut report: Report,\n     target: &InstanceKey,\n     store: &TraceStore,\n",
+    "file": "crates/qlrs-check/src/lib.rs",
+    "function": {
+      "function_name": "finish",
+      "return_type": "-> Report",
+      "span": {
+        "end": {
+          "column": 2,
+          "line": 857
+        },
+        "start": {
+          "column": 1,
+          "line": 831
+        }
+      }
+    },
+    "genre": "BinaryOperator",
+    "name": "crates/qlrs-check/src/lib.rs:854:45: replace != with == in finish",
+    "package": "qlrs-check",
+    "replacement": "==",
+    "span": {
+      "end": {
+        "column": 47,
+        "line": 854
+      },
+      "start": {
+        "column": 45,
+        "line": 854
+      }
+    }
+  },
+  {
+    "diff": "--- crates/qlrs-check/src/lib.rs\n+++ replace && with || in witness_report\n@@ -887,17 +887,17 @@\n         !finding\n             .reason\n             .as_deref()\n             .is_some_and(|reason| reason.starts_with(\"missing-later-\"))\n             && finding.instance_key.as_ref().is_none_or(|key| {\n                 key.invariant_id == Invariant::I3\n                     || (key.invariant_id == target.invariant_id\n                         && key.account == target.account\n-                        && key.scope == target.scope)\n+                        || /* ~ changed by cargo-mutants ~ */ key.scope == target.scope)\n             })\n     });\n     finish(report, true)\n }\n fn violation(\n     store: &TraceStore,\n     invariant: Invariant,\n     code: &str,\n",
+    "file": "crates/qlrs-check/src/lib.rs",
+    "function": {
+      "function_name": "witness_report",
+      "return_type": "-> Report",
+      "span": {
+        "end": {
+          "column": 2,
+          "line": 899
+        },
+        "start": {
+          "column": 1,
+          "line": 859
+        }
+      }
+    },
+    "genre": "BinaryOperator",
+    "name": "crates/qlrs-check/src/lib.rs:895:25: replace && with || in witness_report",
+    "package": "qlrs-check",
+    "replacement": "||",
+    "span": {
+      "end": {
+        "column": 27,
+        "line": 895
+      },
+      "start": {
+        "column": 25,
+        "line": 895
+      }
+    }
+  },
+  {
+    "diff": "--- crates/qlrs-check/src/lib.rs\n+++ replace && with || in witness_report\n@@ -886,17 +886,17 @@\n     report.findings.retain(|finding| {\n         !finding\n             .reason\n             .as_deref()\n             .is_some_and(|reason| reason.starts_with(\"missing-later-\"))\n             && finding.instance_key.as_ref().is_none_or(|key| {\n                 key.invariant_id == Invariant::I3\n                     || (key.invariant_id == target.invariant_id\n-                        && key.account == target.account\n+                        || /* ~ changed by cargo-mutants ~ */ key.account == target.account\n                         && key.scope == target.scope)\n             })\n     });\n     finish(report, true)\n }\n fn violation(\n     store: &TraceStore,\n     invariant: Invariant,\n",
+    "file": "crates/qlrs-check/src/lib.rs",
+    "function": {
+      "function_name": "witness_report",
+      "return_type": "-> Report",
+      "span": {
+        "end": {
+          "column": 2,
+          "line": 899
+        },
+        "start": {
+          "column": 1,
+          "line": 859
+        }
+      }
+    },
+    "genre": "BinaryOperator",
+    "name": "crates/qlrs-check/src/lib.rs:894:25: replace && with || in witness_report",
+    "package": "qlrs-check",
+    "replacement": "||",
+    "span": {
+      "end": {
+        "column": 27,
+        "line": 894
+      },
+      "start": {
+        "column": 25,
+        "line": 894
+      }
+    }
+  }
+]

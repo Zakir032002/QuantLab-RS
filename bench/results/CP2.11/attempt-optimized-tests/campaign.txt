@@ -1,0 +1,12 @@
+Found 741 mutants to test
+ok       Unmutated baseline in 23s build + 1s test
+ INFO Auto-set test timeout to 60s
+ERROR interrupted
+ERROR scenario execution internal error err=interrupted phase=Build
+ERROR interrupted
+ERROR interrupted
+ERROR interrupted
+ERROR scenario execution internal error err=interrupted phase=Build
+ERROR scenario execution internal error err=interrupted phase=Build
+ERROR scenario execution internal error err=interrupted phase=Test
+Error: interrupted

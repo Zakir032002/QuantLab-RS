@@ -1,0 +1,2 @@
+timeout_multiplier = 5.0
+minimum_test_timeout = 60.0

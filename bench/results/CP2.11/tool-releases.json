@@ -1,0 +1,18 @@
+[
+  {
+    "package": "cargo-mutants",
+    "version": "27.1.0",
+    "created_at": "2026-06-02T15:18:24.420387Z",
+    "yanked": false,
+    "url": "https://crates.io/api/v1/crates/cargo-mutants",
+    "checked_utc": "2026-11-04T22:02:16.151510+00:00"
+  },
+  {
+    "package": "kani-verifier",
+    "version": "0.68.0",
+    "created_at": "2026-09-16T03:50:19.125477Z",
+    "yanked": false,
+    "url": "https://crates.io/api/v1/crates/kani-verifier",
+    "checked_utc": "2026-11-04T22:02:16.473491+00:00"
+  }
+]

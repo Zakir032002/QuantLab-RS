@@ -1,0 +1,21 @@
+--- crates/qlrs-check/src/lib.rs
++++ replace != with == in finish
+@@ -846,17 +846,17 @@
+         .iter()
+         .any(|f| f.status == Status::Inconclusive)
+     {
+         Status::Inconclusive
+     } else {
+         Status::Consistent
+     };
+     if report.status == Status::Unsupported && !partial {
+-        report.findings.retain(|f| f.status != Status::Violation);
++        report.findings.retain(|f| f.status == /* ~ changed by cargo-mutants ~ */ Status::Violation);
+     }
+     report
+ }
+ 
+ fn witness_report(
+     mut report: Report,
+     target: &InstanceKey,
+     store: &TraceStore,

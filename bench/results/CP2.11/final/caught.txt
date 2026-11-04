@@ -1,0 +1,545 @@
+crates/qlrs-check/src/lib.rs:35:9: replace Invariant::name -> &'static str with ""
+crates/qlrs-check/src/lib.rs:116:53: replace && with || in Report::at_seq
+crates/qlrs-check/src/lib.rs:116:32: replace == with != in Report::at_seq
+crates/qlrs-check/src/lib.rs:116:73: replace == with != in Report::at_seq
+crates/qlrs-check/src/lib.rs:35:9: replace Invariant::name -> &'static str with "xyzzy"
+crates/qlrs-check/src/lib.rs:109:9: replace Report::keys -> impl Iterator<Item =&InstanceKey> with ::std::iter::empty()
+crates/qlrs-check/src/lib.rs:141:9: replace Checker::prepare_with_checkpoint -> Result<(), String> with Ok(())
+crates/qlrs-check/src/lib.rs:114:9: replace Report::at_seq -> Option<&Finding> with None
+crates/qlrs-check/src/lib.rs:228:12: delete ! in Checker::check_events
+crates/qlrs-check/src/lib.rs:228:31: delete ! in Checker::check_events
+crates/qlrs-check/src/lib.rs:228:78: replace != with == in Checker::check_events
+crates/qlrs-check/src/lib.rs:237:54: replace >= with < in Checker::check_events
+crates/qlrs-check/src/lib.rs:238:62: replace >= with < in Checker::check_events
+crates/qlrs-check/src/lib.rs:238:17: replace || with && in Checker::check_events
+crates/qlrs-check/src/lib.rs:270:86: replace && with || in Checker::check_events
+crates/qlrs-check/src/lib.rs:307:40: replace == with != in Checker::check_events
+crates/qlrs-check/src/lib.rs:270:89: delete ! in Checker::check_events
+crates/qlrs-check/src/lib.rs:348:43: replace match guard opening.seq.is_none_or(|seq| seq <= cp.cut_seq) with true in Checker::check_events
+crates/qlrs-check/src/lib.rs:348:43: replace match guard opening.seq.is_none_or(|seq| seq <= cp.cut_seq) with false in Checker::check_events
+crates/qlrs-check/src/lib.rs:348:76: replace <= with > in Checker::check_events
+crates/qlrs-check/src/lib.rs:369:40: replace == with != in Checker::check_events
+crates/qlrs-check/src/lib.rs:386:65: replace <= with > in Checker::check_events
+crates/qlrs-check/src/lib.rs:405:56: replace < with > in Checker::check_events
+crates/qlrs-check/src/lib.rs:386:29: replace && with || in Checker::check_events
+crates/qlrs-check/src/lib.rs:408:16: delete ! in Checker::check_events
+crates/qlrs-check/src/lib.rs:408:52: replace || with && in Checker::check_events
+crates/qlrs-check/src/lib.rs:408:61: replace < with == in Checker::check_events
+crates/qlrs-check/src/lib.rs:408:61: replace < with > in Checker::check_events
+crates/qlrs-check/src/lib.rs:408:61: replace < with <= in Checker::check_events
+crates/qlrs-check/src/lib.rs:427:37: replace == with != in Checker::check_events
+crates/qlrs-check/src/lib.rs:437:26: replace >= with < in Checker::check_events
+crates/qlrs-check/src/lib.rs:472:48: replace && with || in Checker::check_events
+crates/qlrs-check/src/lib.rs:456:35: replace == with != in Checker::check_events
+crates/qlrs-check/src/lib.rs:472:32: replace == with != in Checker::check_events
+crates/qlrs-check/src/lib.rs:472:64: replace == with != in Checker::check_events
+crates/qlrs-check/src/lib.rs:474:63: replace && with || in Checker::check_events
+crates/qlrs-check/src/lib.rs:474:40: replace == with != in Checker::check_events
+crates/qlrs-check/src/lib.rs:474:71: replace != with == in Checker::check_events
+crates/qlrs-check/src/lib.rs:476:27: delete ! in Checker::check_events
+crates/qlrs-check/src/lib.rs:414:54: replace >= with < in Checker::check_events
+crates/qlrs-check/src/lib.rs:478:63: replace == with != in Checker::check_events
+crates/qlrs-check/src/lib.rs:478:41: replace == with != in Checker::check_events
+crates/qlrs-check/src/lib.rs:483:41: replace && with || in Checker::check_events
+crates/qlrs-check/src/lib.rs:492:25: replace == with != in Checker::check_events
+crates/qlrs-check/src/lib.rs:502:25: replace && with || in Checker::check_events
+crates/qlrs-check/src/lib.rs:502:28: delete ! in Checker::check_events
+crates/qlrs-check/src/lib.rs:511:54: replace > with == in Checker::check_events
+crates/qlrs-check/src/lib.rs:511:54: replace > with >= in Checker::check_events
+crates/qlrs-check/src/lib.rs:511:54: replace > with < in Checker::check_events
+crates/qlrs-check/src/lib.rs:478:57: replace && with || in Checker::check_events
+crates/qlrs-check/src/lib.rs:538:44: replace == with != in Checker::check_events
+crates/qlrs-check/src/lib.rs:564:37: replace && with || in Checker::check_events
+crates/qlrs-check/src/lib.rs:564:21: replace == with != in Checker::check_events
+crates/qlrs-check/src/lib.rs:575:62: replace == with != in Checker::check_events
+crates/qlrs-check/src/lib.rs:600:21: replace == with != in Checker::check_events
+crates/qlrs-check/src/lib.rs:603:25: replace == with != in Checker::check_events
+crates/qlrs-check/src/lib.rs:604:82: replace == with != in Checker::check_events
+crates/qlrs-check/src/lib.rs:615:33: delete ! in Checker::check_events
+crates/qlrs-check/src/lib.rs:635:45: replace != with == in Checker::check_events
+crates/qlrs-check/src/lib.rs:694:21: replace == with != in Checker::check_events
+crates/qlrs-check/src/lib.rs:696:31: replace >= with < in Checker::check_events
+crates/qlrs-check/src/lib.rs:706:25: replace == with != in Checker::check_events
+crates/qlrs-check/src/lib.rs:709:33: replace && with || in Checker::check_events
+crates/qlrs-check/src/lib.rs:615:30: replace && with || in Checker::check_events
+crates/qlrs-check/src/lib.rs:709:47: replace == with != in Checker::check_events
+crates/qlrs-check/src/lib.rs:712:33: delete ! in Checker::check_events
+crates/qlrs-check/src/lib.rs:726:50: replace && with || in Checker::check_events
+crates/qlrs-check/src/lib.rs:726:45: replace != with == in Checker::check_events
+crates/qlrs-check/src/lib.rs:726:53: delete ! in Checker::check_events
+crates/qlrs-check/src/lib.rs:835:27: replace == with != in finish
+crates/qlrs-check/src/lib.rs:841:27: replace == with != in finish
+crates/qlrs-check/src/lib.rs:847:27: replace == with != in finish
+crates/qlrs-check/src/lib.rs:853:45: replace && with || in finish
+crates/qlrs-check/src/lib.rs:712:30: replace && with || in Checker::check_events
+crates/qlrs-check/src/lib.rs:853:22: replace == with != in finish
+crates/qlrs-check/src/lib.rs:868:57: replace == with != in witness_report
+crates/qlrs-check/src/lib.rs:869:41: replace != with == in witness_report
+crates/qlrs-check/src/lib.rs:877:37: delete ! in witness_report
+crates/qlrs-check/src/lib.rs:891:13: replace && with || in witness_report
+crates/qlrs-check/src/lib.rs:887:9: delete ! in witness_report
+crates/qlrs-check/src/lib.rs:893:21: replace || with && in witness_report
+crates/qlrs-check/src/lib.rs:853:48: delete ! in finish
+crates/qlrs-check/src/lib.rs:892:34: replace == with != in witness_report
+crates/qlrs-check/src/lib.rs:893:42: replace == with != in witness_report
+crates/qlrs-check/src/lib.rs:894:40: replace == with != in witness_report
+crates/qlrs-check/src/lib.rs:895:38: replace == with != in witness_report
+crates/qlrs-check/src/lib.rs:923:23: replace < with == in violation
+crates/qlrs-check/src/lib.rs:923:23: replace < with > in violation
+crates/qlrs-check/src/lib.rs:923:23: replace < with <= in violation
+crates/qlrs-check/src/lib.rs:923:29: delete - in violation
+crates/qlrs-check/src/lib.rs:923:54: replace > with == in violation
+crates/qlrs-check/src/lib.rs:923:54: replace > with < in violation
+crates/qlrs-check/src/lib.rs:923:54: replace > with >= in violation
+crates/qlrs-check/src/lib.rs:937:5: replace counts_pattern -> Vec<(Kind, u64)> with vec![]
+crates/qlrs-check/src/lib.rs:949:33: replace > with == in counts_pattern
+crates/qlrs-check/src/lib.rs:949:33: replace > with < in counts_pattern
+crates/qlrs-check/src/lib.rs:953:5: replace pattern_difference -> [u64; 8] with [0; 8]
+crates/qlrs-check/src/lib.rs:953:5: replace pattern_difference -> [u64; 8] with [1; 8]
+crates/qlrs-check/src/lib.rs:970:5: replace relation -> String with String::new()
+crates/qlrs-check/src/lib.rs:970:5: replace relation -> String with "xyzzy".into()
+crates/qlrs-check/src/lib.rs:971:38: replace == with != in relation
+crates/qlrs-check/src/lib.rs:988:39: replace && with || in relation
+crates/qlrs-check/src/lib.rs:988:34: replace != with == in relation
+crates/qlrs-check/src/lib.rs:988:51: replace == with != in relation
+crates/qlrs-check/src/lib.rs:991:44: replace == with != in relation
+crates/qlrs-check/src/lib.rs:1007:38: replace == with != in relation
+crates/qlrs-check/src/lib.rs:1010:66: replace == with != in relation
+crates/qlrs-check/src/lib.rs:1035:21: replace == with != in relation
+crates/qlrs-check/src/lib.rs:1038:49: replace == with != in relation
+crates/qlrs-check/src/checkpoint.rs:15:5: replace observed -> Result<String, String> with Ok(String::new())
+crates/qlrs-check/src/lib.rs:1059:5: replace observed_text -> String with String::new()
+crates/qlrs-check/src/checkpoint.rs:25:5: replace raw -> Result<i128, String> with Ok(0)
+crates/qlrs-check/src/checkpoint.rs:15:5: replace observed -> Result<String, String> with Ok("xyzzy".into())
+crates/qlrs-check/src/checkpoint.rs:25:5: replace raw -> Result<i128, String> with Ok(1)
+crates/qlrs-check/src/checkpoint.rs:25:5: replace raw -> Result<i128, String> with Ok(-1)
+crates/qlrs-check/src/checkpoint.rs:31:5: replace decimal -> Result<String, String> with Ok(String::new())
+crates/qlrs-check/src/checkpoint.rs:31:5: replace decimal -> Result<String, String> with Ok("xyzzy".into())
+crates/qlrs-check/src/checkpoint.rs:57:11: replace && with || in Checker::checkpoint_at_claim
+crates/qlrs-check/src/checkpoint.rs:54:12: delete ! in Checker::checkpoint_at_claim
+crates/qlrs-check/src/lib.rs:1059:5: replace observed_text -> String with "xyzzy".into()
+crates/qlrs-check/src/checkpoint.rs:61:46: replace > with == in Checker::checkpoint_at_claim
+crates/qlrs-check/src/checkpoint.rs:50:41: replace == with != in Checker::checkpoint_at_claim
+crates/qlrs-check/src/checkpoint.rs:61:46: replace > with >= in Checker::checkpoint_at_claim
+crates/qlrs-check/src/checkpoint.rs:66:63: replace <= with > in Checker::checkpoint_at_claim
+crates/qlrs-check/src/checkpoint.rs:72:40: replace == with != in Checker::checkpoint_at_claim
+crates/qlrs-check/src/checkpoint.rs:99:61: replace == with != in Checker::checkpoint_at_claim
+crates/qlrs-check/src/checkpoint.rs:136:21: replace == with != in Checker::checkpoint_at_claim
+crates/qlrs-check/src/checkpoint.rs:146:21: replace == with != in Checker::checkpoint_at_claim
+crates/qlrs-check/src/checkpoint.rs:157:22: replace == with != in Checker::checkpoint_at_claim
+crates/qlrs-check/src/checkpoint.rs:160:21: replace == with != in Checker::checkpoint_at_claim
+crates/qlrs-check/src/checkpoint.rs:194:37: replace == with != in Checker::checkpoint_at_claim
+crates/qlrs-check/src/checkpoint.rs:200:39: replace == with != in Checker::checkpoint_at_claim
+crates/qlrs-check/src/checkpoint.rs:216:31: replace == with != in Checker::checkpoint_at_claim
+crates/qlrs-check/src/checkpoint.rs:247:32: replace == with != in Checker::checkpoint_at_claim
+crates/qlrs-check/src/checkpoint.rs:252:37: replace == with != in Checker::checkpoint_at_claim
+crates/qlrs-check/src/fingerprint.rs:14:5: replace fingerprint_bytes -> Vec<u8> with vec![0]
+crates/qlrs-check/src/fingerprint.rs:14:5: replace fingerprint_bytes -> Vec<u8> with vec![]
+crates/qlrs-check/src/fingerprint.rs:14:5: replace fingerprint_bytes -> Vec<u8> with vec![1]
+crates/qlrs-check/src/fingerprint.rs:27:56: replace > with == in fingerprint_bytes
+crates/qlrs-check/src/fingerprint.rs:27:56: replace > with < in fingerprint_bytes
+crates/qlrs-check/src/fingerprint.rs:27:56: replace > with >= in fingerprint_bytes
+crates/qlrs-check/src/fingerprint.rs:32:37: replace > with == in fingerprint_bytes
+crates/qlrs-check/src/fingerprint.rs:32:37: replace > with < in fingerprint_bytes
+crates/qlrs-check/src/fingerprint.rs:32:37: replace > with >= in fingerprint_bytes
+crates/qlrs-check/src/fingerprint.rs:55:5: replace class_fingerprint -> String with String::new()
+crates/qlrs-check/src/fingerprint.rs:55:5: replace class_fingerprint -> String with "xyzzy".into()
+crates/qlrs-check/src/lifecycle.rs:47:44: replace == with != in Progress::observe
+crates/qlrs-check/src/lifecycle.rs:47:62: replace == with != in Progress::observe
+crates/qlrs-check/src/lifecycle.rs:47:54: replace && with || in Progress::observe
+crates/qlrs-check/src/lifecycle.rs:39:17: replace == with != in Progress::observe
+crates/qlrs-check/src/lifecycle.rs:51:33: replace && with || in Progress::observe
+crates/qlrs-check/src/lifecycle.rs:51:17: replace == with != in Progress::observe
+crates/qlrs-check/src/lifecycle.rs:62:5: replace terminal -> bool with true
+crates/qlrs-check/src/lifecycle.rs:68:5: replace quantity_limit -> Result<i128, NumericError> with Ok(0)
+crates/qlrs-check/src/lifecycle.rs:52:62: replace >= with < in Progress::observe
+crates/qlrs-check/src/lifecycle.rs:68:5: replace quantity_limit -> Result<i128, NumericError> with Ok(1)
+crates/qlrs-check/src/lifecycle.rs:68:5: replace quantity_limit -> Result<i128, NumericError> with Ok(-1)
+crates/qlrs-check/src/lifecycle.rs:137:9: replace ProgressTable::get_mut -> Option<&mut Progress> with None
+crates/qlrs-check/src/lifecycle.rs:137:9: replace ProgressTable::get_mut -> Option<&mut Progress> with Some(Box::leak(Box::new(Default::default())))
+crates/qlrs-num/src/lib.rs:87:9: replace Fixed::raw -> i128 with 0
+crates/qlrs-num/src/lib.rs:60:9: replace <impl fmt::Display for NumericError>::fmt -> fmt::Result with Ok(Default::default())
+crates/qlrs-num/src/lib.rs:87:9: replace Fixed::raw -> i128 with 1
+crates/qlrs-num/src/lib.rs:87:9: replace Fixed::raw -> i128 with -1
+crates/qlrs-num/src/lib.rs:93:9: replace Fixed::scale -> u8 with 0
+crates/qlrs-check/src/lifecycle.rs:62:5: replace terminal -> bool with false
+crates/qlrs-num/src/lib.rs:93:9: replace Fixed::scale -> u8 with 1
+crates/qlrs-num/src/lib.rs:110:39: replace && with || in Fixed::parse
+crates/qlrs-num/src/lib.rs:110:29: replace && with || in Fixed::parse
+crates/qlrs-num/src/lib.rs:110:21: replace == with != in Fixed::parse
+crates/qlrs-num/src/lib.rs:110:32: delete ! in Fixed::parse
+crates/qlrs-num/src/lib.rs:114:16: delete ! in Fixed::parse
+crates/qlrs-num/src/lib.rs:128:38: replace || with && in Fixed::parse
+crates/qlrs-num/src/lib.rs:128:26: replace > with == in Fixed::parse
+crates/qlrs-num/src/lib.rs:128:26: replace > with < in Fixed::parse
+crates/qlrs-num/src/lib.rs:128:26: replace > with >= in Fixed::parse
+crates/qlrs-num/src/lib.rs:128:47: replace > with == in Fixed::parse
+crates/qlrs-num/src/lib.rs:128:47: replace > with < in Fixed::parse
+crates/qlrs-num/src/lib.rs:128:47: replace > with >= in Fixed::parse
+crates/qlrs-num/src/lib.rs:135:12: delete ! in Fixed::parse
+crates/qlrs-num/src/lib.rs:135:27: replace || with && in Fixed::parse
+crates/qlrs-num/src/lib.rs:135:40: delete ! in Fixed::parse
+crates/qlrs-num/src/lib.rs:135:37: replace && with || in Fixed::parse
+crates/qlrs-num/src/lib.rs:198:18: replace > with < in Fixed::mul_add_rescale
+crates/qlrs-num/src/lib.rs:198:18: replace > with == in Fixed::mul_add_rescale
+crates/qlrs-num/src/lib.rs:235:18: replace > with == in Fixed::mul_rescale
+crates/qlrs-num/src/lib.rs:235:18: replace > with < in Fixed::mul_rescale
+crates/qlrs-num/src/lib.rs:198:18: replace > with >= in Fixed::mul_add_rescale
+crates/qlrs-num/src/lib.rs:235:18: replace > with >= in Fixed::mul_rescale
+crates/qlrs-num/src/lib.rs:253:18: replace > with < in Fixed::rescale
+crates/qlrs-num/src/lib.rs:262:23: replace == with != in Fixed::numeric_cmp
+crates/qlrs-num/src/lib.rs:273:17: replace != with == in Fixed::numeric_cmp
+crates/qlrs-num/src/lib.rs:303:9: replace <impl fmt::Display for Fixed>::fmt -> fmt::Result with Ok(Default::default())
+crates/qlrs-num/src/lib.rs:303:21: replace < with == in <impl fmt::Display for Fixed>::fmt
+crates/qlrs-num/src/lib.rs:303:21: replace < with > in <impl fmt::Display for Fixed>::fmt
+crates/qlrs-num/src/lib.rs:307:23: replace == with != in <impl fmt::Display for Fixed>::fmt
+crates/qlrs-num/src/lib.rs:253:18: replace > with == in Fixed::rescale
+crates/qlrs-num/src/lib.rs:322:11: replace >= with < in rescale_raw
+crates/qlrs-num/src/lib.rs:253:18: replace > with >= in Fixed::rescale
+crates/qlrs-num/src/lib.rs:332:13: replace < with == in rescale_raw
+crates/qlrs-num/src/lib.rs:332:13: replace < with > in rescale_raw
+crates/qlrs-num/src/lib.rs:346:9: delete match arm 1 in divide_power
+crates/qlrs-num/src/lib.rs:347:9: delete match arm 2 in divide_power
+crates/qlrs-num/src/lib.rs:348:9: delete match arm 3 in divide_power
+crates/qlrs-num/src/lib.rs:349:9: delete match arm 4 in divide_power
+crates/qlrs-num/src/lib.rs:350:9: delete match arm 5 in divide_power
+crates/qlrs-num/src/lib.rs:351:9: delete match arm 6 in divide_power
+crates/qlrs-num/src/lib.rs:352:9: delete match arm 7 in divide_power
+crates/qlrs-num/src/lib.rs:353:9: delete match arm 8 in divide_power
+crates/qlrs-num/src/lib.rs:354:9: delete match arm 9 in divide_power
+crates/qlrs-num/src/lib.rs:355:9: delete match arm 10 in divide_power
+crates/qlrs-num/src/lib.rs:356:9: delete match arm 11 in divide_power
+crates/qlrs-num/src/lib.rs:357:9: delete match arm 12 in divide_power
+crates/qlrs-num/src/lib.rs:358:9: delete match arm 13 in divide_power
+crates/qlrs-num/src/lib.rs:359:9: delete match arm 14 in divide_power
+crates/qlrs-num/src/lib.rs:360:9: delete match arm 15 in divide_power
+crates/qlrs-num/src/lib.rs:361:9: delete match arm 16 in divide_power
+crates/qlrs-num/src/lib.rs:362:9: delete match arm 17 in divide_power
+crates/qlrs-num/src/lib.rs:363:9: delete match arm 18 in divide_power
+crates/qlrs-num/src/lib.rs:364:9: delete match arm 19 in divide_power
+crates/qlrs-num/src/lib.rs:365:9: delete match arm 20 in divide_power
+crates/qlrs-num/src/lib.rs:366:9: delete match arm 21 in divide_power
+crates/qlrs-num/src/lib.rs:367:9: delete match arm 22 in divide_power
+crates/qlrs-num/src/lib.rs:368:9: delete match arm 23 in divide_power
+crates/qlrs-num/src/lib.rs:369:9: delete match arm 24 in divide_power
+crates/qlrs-num/src/lib.rs:371:9: delete match arm 26 in divide_power
+crates/qlrs-num/src/lib.rs:370:9: delete match arm 25 in divide_power
+crates/qlrs-num/src/lib.rs:372:9: delete match arm 27 in divide_power
+crates/qlrs-num/src/lib.rs:373:9: delete match arm 28 in divide_power
+crates/qlrs-num/src/lib.rs:375:9: delete match arm 30 in divide_power
+crates/qlrs-num/src/lib.rs:374:9: delete match arm 29 in divide_power
+crates/qlrs-num/src/lib.rs:377:9: delete match arm 32 in divide_power
+crates/qlrs-num/src/lib.rs:376:9: delete match arm 31 in divide_power
+crates/qlrs-num/src/lib.rs:378:9: delete match arm 33 in divide_power
+crates/qlrs-num/src/lib.rs:379:9: delete match arm 34 in divide_power
+crates/qlrs-num/src/lib.rs:380:9: delete match arm 35 in divide_power
+crates/qlrs-num/src/lib.rs:415:17: replace > with < in rounded
+crates/qlrs-num/src/lib.rs:415:17: replace > with == in rounded
+crates/qlrs-num/src/lib.rs:415:17: replace > with >= in rounded
+crates/qlrs-num/src/lib.rs:418:34: replace == with != in rounded
+crates/qlrs-num/src/lib.rs:429:21: replace || with && in rounded
+crates/qlrs-num/src/lib.rs:428:27: replace > with == in rounded
+crates/qlrs-num/src/lib.rs:428:27: replace > with >= in rounded
+crates/qlrs-num/src/lib.rs:428:27: replace > with < in rounded
+crates/qlrs-num/src/lib.rs:430:25: replace && with || in rounded
+crates/qlrs-num/src/lib.rs:429:35: replace == with != in rounded
+crates/qlrs-num/src/lib.rs:430:58: replace || with && in rounded
+crates/qlrs-num/src/lib.rs:430:38: replace == with != in rounded
+crates/qlrs-num/src/lib.rs:430:74: replace == with != in rounded
+crates/qlrs-num/src/lib.rs:430:70: replace & with | in rounded
+crates/qlrs-num/src/lib.rs:430:70: replace & with ^ in rounded
+crates/qlrs-num/src/lib.rs:438:22: replace == with != in rounded
+crates/qlrs-num/src/lib.rs:456:5: replace wide_product -> (u128, u128) with (0, 0)
+crates/qlrs-num/src/lib.rs:456:5: replace wide_product -> (u128, u128) with (0, 1)
+crates/qlrs-num/src/lib.rs:456:5: replace wide_product -> (u128, u128) with (1, 1)
+crates/qlrs-num/src/lib.rs:456:5: replace wide_product -> (u128, u128) with (1, 0)
+crates/qlrs-num/src/lib.rs:457:29: replace * with + in wide_product
+crates/qlrs-num/src/lib.rs:457:29: replace * with / in wide_product
+crates/qlrs-num/src/lib.rs:457:21: replace & with | in wide_product
+crates/qlrs-num/src/lib.rs:457:21: replace & with ^ in wide_product
+crates/qlrs-num/src/lib.rs:457:38: replace & with | in wide_product
+crates/qlrs-num/src/lib.rs:457:38: replace & with ^ in wide_product
+crates/qlrs-num/src/lib.rs:458:32: replace * with + in wide_product
+crates/qlrs-num/src/lib.rs:458:25: replace >> with << in wide_product
+crates/qlrs-num/src/lib.rs:458:32: replace * with / in wide_product
+crates/qlrs-num/src/lib.rs:458:41: replace & with ^ in wide_product
+crates/qlrs-num/src/lib.rs:458:41: replace & with | in wide_product
+crates/qlrs-num/src/lib.rs:459:33: replace * with + in wide_product
+crates/qlrs-num/src/lib.rs:459:33: replace * with / in wide_product
+crates/qlrs-num/src/lib.rs:459:25: replace & with ^ in wide_product
+crates/qlrs-num/src/lib.rs:459:25: replace & with | in wide_product
+crates/qlrs-num/src/lib.rs:459:42: replace >> with << in wide_product
+crates/qlrs-num/src/lib.rs:460:29: replace * with + in wide_product
+crates/qlrs-num/src/lib.rs:460:29: replace * with / in wide_product
+crates/qlrs-num/src/lib.rs:460:22: replace >> with << in wide_product
+crates/qlrs-num/src/lib.rs:460:38: replace >> with << in wide_product
+crates/qlrs-num/src/lib.rs:461:49: replace + with - in wide_product
+crates/qlrs-num/src/lib.rs:461:49: replace + with * in wide_product
+crates/qlrs-num/src/lib.rs:461:30: replace + with - in wide_product
+crates/qlrs-num/src/lib.rs:461:30: replace + with * in wide_product
+crates/qlrs-num/src/lib.rs:461:23: replace >> with << in wide_product
+crates/qlrs-num/src/lib.rs:461:41: replace & with | in wide_product
+crates/qlrs-num/src/lib.rs:461:41: replace & with ^ in wide_product
+crates/qlrs-num/src/lib.rs:461:60: replace & with | in wide_product
+crates/qlrs-num/src/lib.rs:461:60: replace & with ^ in wide_product
+crates/qlrs-num/src/lib.rs:463:50: replace + with - in wide_product
+crates/qlrs-num/src/lib.rs:463:50: replace + with * in wide_product
+crates/qlrs-num/src/lib.rs:463:32: replace + with * in wide_product
+crates/qlrs-num/src/lib.rs:463:32: replace + with - in wide_product
+crates/qlrs-num/src/lib.rs:463:14: replace + with - in wide_product
+crates/qlrs-num/src/lib.rs:463:14: replace + with * in wide_product
+crates/qlrs-num/src/lib.rs:463:25: replace >> with << in wide_product
+crates/qlrs-num/src/lib.rs:463:43: replace >> with << in wide_product
+crates/qlrs-num/src/lib.rs:463:60: replace >> with << in wide_product
+crates/qlrs-num/src/lib.rs:464:22: replace | with & in wide_product
+crates/qlrs-num/src/lib.rs:464:14: replace & with | in wide_product
+crates/qlrs-num/src/lib.rs:464:14: replace & with ^ in wide_product
+crates/qlrs-num/src/lib.rs:464:41: replace << with >> in wide_product
+crates/qlrs-num/src/lib.rs:464:33: replace & with | in wide_product
+crates/qlrs-num/src/lib.rs:464:33: replace & with ^ in wide_product
+crates/qlrs-num/src/lib.rs:479:14: replace >= with < in wide_mul_rescale
+crates/qlrs-num/src/lib.rs:487:20: replace != with == in wide_mul_rescale
+crates/qlrs-num/src/lib.rs:494:24: replace != with == in wide_mul_rescale
+crates/qlrs-num/src/lib.rs:494:19: replace < with == in wide_mul_rescale
+crates/qlrs-num/src/lib.rs:494:19: replace < with > in wide_mul_rescale
+crates/qlrs-num/src/lib.rs:494:38: replace < with > in wide_mul_rescale
+crates/qlrs-num/src/lib.rs:494:38: replace < with == in wide_mul_rescale
+crates/qlrs-num/src/lib.rs:524:43: replace != with == in wide_mul_add
+crates/qlrs-num/src/lib.rs:524:38: replace < with == in wide_mul_add
+crates/qlrs-num/src/lib.rs:524:38: replace < with > in wide_mul_add
+crates/qlrs-num/src/lib.rs:524:57: replace < with == in wide_mul_add
+crates/qlrs-num/src/lib.rs:524:57: replace < with > in wide_mul_add
+crates/qlrs-num/src/lib.rs:525:37: replace < with == in wide_mul_add
+crates/qlrs-num/src/lib.rs:525:37: replace < with > in wide_mul_add
+crates/qlrs-num/src/lib.rs:526:53: replace == with != in wide_mul_add
+crates/qlrs-num/src/lib.rs:528:23: replace >= with < in wide_mul_add
+crates/qlrs-num/src/lib.rs:537:13: replace != with == in wide_mul_add
+crates/qlrs-num/src/lib.rs:543:5: replace wide_scale -> Result<(u128, u128), NumericError> with Ok((0, 0))
+crates/qlrs-num/src/lib.rs:543:5: replace wide_scale -> Result<(u128, u128), NumericError> with Ok((0, 1))
+crates/qlrs-num/src/lib.rs:543:5: replace wide_scale -> Result<(u128, u128), NumericError> with Ok((1, 0))
+crates/qlrs-num/src/lib.rs:543:5: replace wide_scale -> Result<(u128, u128), NumericError> with Ok((1, 1))
+crates/qlrs-num/src/lib.rs:552:5: replace wide_add -> Result<(u128, u128), NumericError> with Ok((0, 0))
+crates/qlrs-num/src/lib.rs:552:5: replace wide_add -> Result<(u128, u128), NumericError> with Ok((0, 1))
+crates/qlrs-num/src/lib.rs:552:5: replace wide_add -> Result<(u128, u128), NumericError> with Ok((1, 0))
+crates/qlrs-num/src/lib.rs:552:5: replace wide_add -> Result<(u128, u128), NumericError> with Ok((1, 1))
+crates/qlrs-num/src/lib.rs:561:5: replace wide_sub -> Result<(u128, u128), NumericError> with Ok((0, 0))
+crates/qlrs-num/src/lib.rs:561:5: replace wide_sub -> Result<(u128, u128), NumericError> with Ok((0, 1))
+crates/qlrs-num/src/lib.rs:561:5: replace wide_sub -> Result<(u128, u128), NumericError> with Ok((1, 0))
+crates/qlrs-num/src/lib.rs:561:5: replace wide_sub -> Result<(u128, u128), NumericError> with Ok((1, 1))
+crates/qlrs-num/src/lib.rs:574:5: replace wide_div -> (u128, u128, u128) with (0, 0, 0)
+crates/qlrs-num/src/lib.rs:574:5: replace wide_div -> (u128, u128, u128) with (0, 0, 1)
+crates/qlrs-num/src/lib.rs:574:5: replace wide_div -> (u128, u128, u128) with (0, 1, 0)
+crates/qlrs-num/src/lib.rs:574:5: replace wide_div -> (u128, u128, u128) with (0, 1, 1)
+crates/qlrs-num/src/lib.rs:574:5: replace wide_div -> (u128, u128, u128) with (1, 0, 1)
+crates/qlrs-num/src/lib.rs:574:5: replace wide_div -> (u128, u128, u128) with (1, 0, 0)
+crates/qlrs-num/src/lib.rs:574:5: replace wide_div -> (u128, u128, u128) with (1, 1, 0)
+crates/qlrs-num/src/lib.rs:574:5: replace wide_div -> (u128, u128, u128) with (1, 1, 1)
+crates/qlrs-num/src/lib.rs:578:31: replace >= with < in wide_div
+crates/qlrs-num/src/lib.rs:579:33: replace & with | in wide_div
+crates/qlrs-num/src/lib.rs:579:17: replace >> with << in wide_div
+crates/qlrs-num/src/lib.rs:579:33: replace & with ^ in wide_div
+crates/qlrs-num/src/lib.rs:579:25: replace - with + in wide_div
+crates/qlrs-num/src/lib.rs:579:25: replace - with / in wide_div
+crates/qlrs-num/src/lib.rs:581:25: replace & with | in wide_div
+crates/qlrs-num/src/lib.rs:581:25: replace & with ^ in wide_div
+crates/qlrs-num/src/lib.rs:581:17: replace >> with << in wide_div
+crates/qlrs-num/src/lib.rs:583:38: replace | with & in wide_div
+crates/qlrs-num/src/lib.rs:583:32: replace << with >> in wide_div
+crates/qlrs-num/src/lib.rs:585:23: replace -= with += in wide_div
+crates/qlrs-num/src/lib.rs:584:22: replace >= with < in wide_div
+crates/qlrs-num/src/lib.rs:585:23: replace -= with /= in wide_div
+crates/qlrs-num/src/lib.rs:586:20: replace >= with < in wide_div
+crates/qlrs-num/src/lib.rs:587:29: replace |= with &= in wide_div
+crates/qlrs-num/src/lib.rs:587:39: replace << with >> in wide_div
+crates/qlrs-num/src/lib.rs:587:47: replace - with + in wide_div
+crates/qlrs-num/src/lib.rs:589:29: replace |= with &= in wide_div
+crates/qlrs-num/src/lib.rs:589:39: replace << with >> in wide_div
+crates/qlrs-reduce/src/lib.rs:59:17: replace || with && in UnitGraph::build_with_checkpoint
+crates/qlrs-reduce/src/lib.rs:59:48: replace != with == in UnitGraph::build_with_checkpoint
+crates/qlrs-reduce/src/lib.rs:81:34: replace > with == in UnitGraph::build_with_checkpoint
+crates/qlrs-reduce/src/lib.rs:58:16: delete ! in UnitGraph::build_with_checkpoint
+crates/qlrs-reduce/src/lib.rs:81:34: replace > with >= in UnitGraph::build_with_checkpoint
+crates/qlrs-reduce/src/lib.rs:81:34: replace > with < in UnitGraph::build_with_checkpoint
+crates/qlrs-reduce/src/lib.rs:86:32: replace != with == in UnitGraph::build_with_checkpoint
+crates/qlrs-reduce/src/lib.rs:95:38: replace > with == in UnitGraph::build_with_checkpoint
+crates/qlrs-reduce/src/lib.rs:150:9: replace UnitGraph::walk -> Vec<usize> with vec![]
+crates/qlrs-reduce/src/lib.rs:95:38: replace > with < in UnitGraph::build_with_checkpoint
+crates/qlrs-reduce/src/lib.rs:150:9: replace UnitGraph::walk -> Vec<usize> with vec![0]
+crates/qlrs-reduce/src/lib.rs:150:9: replace UnitGraph::walk -> Vec<usize> with vec![1]
+crates/qlrs-reduce/src/lib.rs:166:9: replace UnitGraph::closure -> Vec<usize> with vec![]
+crates/qlrs-reduce/src/lib.rs:166:9: replace UnitGraph::closure -> Vec<usize> with vec![0]
+crates/qlrs-reduce/src/lib.rs:166:9: replace UnitGraph::closure -> Vec<usize> with vec![1]
+crates/qlrs-reduce/src/lib.rs:95:38: replace > with >= in UnitGraph::build_with_checkpoint
+crates/qlrs-reduce/src/lib.rs:175:5: replace csr -> Result<(Vec<u32>, Vec<u32>), String> with Ok((vec![], vec![]))
+crates/qlrs-reduce/src/lib.rs:175:5: replace csr -> Result<(Vec<u32>, Vec<u32>), String> with Ok((vec![], vec![0]))
+crates/qlrs-reduce/src/lib.rs:175:5: replace csr -> Result<(Vec<u32>, Vec<u32>), String> with Ok((vec![], vec![1]))
+crates/qlrs-reduce/src/lib.rs:171:9: replace UnitGraph::prerequisites -> Vec<usize> with vec![]
+crates/qlrs-reduce/src/lib.rs:175:5: replace csr -> Result<(Vec<u32>, Vec<u32>), String> with Ok((vec![0], vec![]))
+crates/qlrs-reduce/src/lib.rs:175:5: replace csr -> Result<(Vec<u32>, Vec<u32>), String> with Ok((vec![0], vec![0]))
+crates/qlrs-reduce/src/lib.rs:171:9: replace UnitGraph::prerequisites -> Vec<usize> with vec![1]
+crates/qlrs-reduce/src/lib.rs:171:9: replace UnitGraph::prerequisites -> Vec<usize> with vec![0]
+crates/qlrs-reduce/src/lib.rs:175:5: replace csr -> Result<(Vec<u32>, Vec<u32>), String> with Ok((vec![0], vec![1]))
+crates/qlrs-reduce/src/lib.rs:175:5: replace csr -> Result<(Vec<u32>, Vec<u32>), String> with Ok((vec![1], vec![]))
+crates/qlrs-reduce/src/lib.rs:175:5: replace csr -> Result<(Vec<u32>, Vec<u32>), String> with Ok((vec![1], vec![1]))
+crates/qlrs-reduce/src/lib.rs:175:5: replace csr -> Result<(Vec<u32>, Vec<u32>), String> with Ok((vec![1], vec![0]))
+crates/qlrs-reduce/src/lib.rs:190:5: replace walk -> Vec<usize> with vec![]
+crates/qlrs-reduce/src/lib.rs:190:5: replace walk -> Vec<usize> with vec![0]
+crates/qlrs-reduce/src/lib.rs:190:5: replace walk -> Vec<usize> with vec![1]
+crates/qlrs-reduce/src/lib.rs:193:17: replace >= with < in walk
+crates/qlrs-reduce/src/lib.rs:285:9: replace Budget::reason -> Option<LimitReason> with None
+crates/qlrs-reduce/src/lib.rs:285:23: replace >= with < in Budget::reason
+crates/qlrs-reduce/src/lib.rs:227:5: replace removed_count -> Result<u64, D::Error> with Ok(1)
+crates/qlrs-reduce/src/lib.rs:227:5: replace removed_count -> Result<u64, D::Error> with Ok(0)
+crates/qlrs-reduce/src/lib.rs:287:40: replace >= with < in Budget::reason
+crates/qlrs-reduce/src/lib.rs:297:56: replace < with == in event_range
+crates/qlrs-reduce/src/lib.rs:297:56: replace < with <= in event_range
+crates/qlrs-reduce/src/lib.rs:297:56: replace < with > in event_range
+crates/qlrs-reduce/src/lib.rs:300:56: replace <= with > in event_range
+crates/qlrs-reduce/src/lib.rs:339:9: replace UnitEvents::kept -> Vec<usize> with vec![]
+crates/qlrs-reduce/src/lib.rs:339:9: replace UnitEvents::kept -> Vec<usize> with vec![0]
+crates/qlrs-reduce/src/lib.rs:339:9: replace UnitEvents::kept -> Vec<usize> with vec![1]
+crates/qlrs-reduce/src/lib.rs:341:16: delete ! in UnitEvents::kept
+crates/qlrs-reduce/src/lib.rs:394:56: replace < with == in window
+crates/qlrs-reduce/src/lib.rs:394:56: replace < with > in window
+crates/qlrs-reduce/src/lib.rs:374:35: replace == with != in window
+crates/qlrs-reduce/src/lib.rs:394:56: replace < with <= in window
+crates/qlrs-reduce/src/lib.rs:402:49: replace == with != in window
+crates/qlrs-reduce/src/lib.rs:404:34: replace == with != in window
+crates/qlrs-reduce/src/lib.rs:411:65: replace == with != in window
+crates/qlrs-reduce/src/lib.rs:415:12: delete ! in window
+crates/qlrs-reduce/src/lib.rs:528:9: replace ReductionPredicate<'a>::candidate_checkpoint -> Result<Option<SyntheticCheckpoint>, String> with Ok(None)
+crates/qlrs-reduce/src/lib.rs:539:49: replace == with != in ReductionPredicate<'a>::candidate_checkpoint
+crates/qlrs-reduce/src/lib.rs:586:63: replace == with != in ReductionPredicate<'a>::classify
+crates/qlrs-reduce/src/lib.rs:602:33: delete ! in ReductionPredicate<'a>::classify
+crates/qlrs-reduce/src/lib.rs:620:61: replace != with == in ReductionPredicate<'a>::classify
+crates/qlrs-reduce/src/lib.rs:649:9: replace ReductionPredicate<'a>::canonical -> Vec<u32> with vec![]
+crates/qlrs-reduce/src/lib.rs:649:9: replace ReductionPredicate<'a>::canonical -> Vec<u32> with vec![0]
+crates/qlrs-reduce/src/lib.rs:649:9: replace ReductionPredicate<'a>::canonical -> Vec<u32> with vec![1]
+crates/qlrs-reduce/src/lib.rs:657:9: replace ReductionPredicate<'a>::cached -> Option<CandidateResult> with None
+crates/qlrs-reduce/src/lib.rs:662:9: replace ReductionPredicate<'a>::admits -> bool with true
+crates/qlrs-reduce/src/lib.rs:662:9: replace ReductionPredicate<'a>::admits -> bool with false
+crates/qlrs-reduce/src/lib.rs:668:13: replace && with || in ReductionPredicate<'a>::admits
+crates/qlrs-reduce/src/lib.rs:667:13: replace && with || in ReductionPredicate<'a>::admits
+crates/qlrs-reduce/src/lib.rs:664:13: replace && with || in ReductionPredicate<'a>::admits
+crates/qlrs-reduce/src/lib.rs:663:13: replace && with || in ReductionPredicate<'a>::admits
+crates/qlrs-reduce/src/lib.rs:662:23: replace == with != in ReductionPredicate<'a>::admits
+crates/qlrs-reduce/src/lib.rs:663:45: replace == with != in ReductionPredicate<'a>::admits
+crates/qlrs-reduce/src/lib.rs:665:17: delete ! in ReductionPredicate<'a>::admits
+crates/qlrs-reduce/src/lib.rs:670:48: replace == with != in ReductionPredicate<'a>::admits
+crates/qlrs-reduce/src/lib.rs:676:39: replace != with == in ReductionPredicate<'a>::validate_candidates
+crates/qlrs-reduce/src/lib.rs:671:33: replace == with != in ReductionPredicate<'a>::admits
+crates/qlrs-reduce/src/lib.rs:683:9: replace ReductionPredicate<'a>::batch -> Result<Vec<bool>, String> with Ok(vec![])
+crates/qlrs-reduce/src/lib.rs:674:9: replace ReductionPredicate<'a>::validate_candidates -> Result<(), String> with Ok(())
+crates/qlrs-reduce/src/lib.rs:683:9: replace ReductionPredicate<'a>::batch -> Result<Vec<bool>, String> with Ok(vec![true])
+crates/qlrs-reduce/src/lib.rs:683:9: replace ReductionPredicate<'a>::batch -> Result<Vec<bool>, String> with Ok(vec![false])
+crates/qlrs-reduce/src/lib.rs:686:9: replace ReductionPredicate<'a>::batch_mode -> Result<Vec<bool>, String> with Ok(vec![])
+crates/qlrs-reduce/src/lib.rs:704:21: replace && with || in ReductionPredicate<'a>::batch_mode
+crates/qlrs-reduce/src/lib.rs:686:9: replace ReductionPredicate<'a>::batch_mode -> Result<Vec<bool>, String> with Ok(vec![true])
+crates/qlrs-reduce/src/lib.rs:686:9: replace ReductionPredicate<'a>::batch_mode -> Result<Vec<bool>, String> with Ok(vec![false])
+crates/qlrs-reduce/src/lib.rs:754:22: replace >= with < in ReductionPredicate<'a>::batch_mode
+crates/qlrs-reduce/src/lib.rs:715:32: replace && with || in ReductionPredicate<'a>::batch_mode
+crates/qlrs-reduce/src/lib.rs:811:5: replace contextual_hash -> String with String::new()
+crates/qlrs-reduce/src/lib.rs:811:5: replace contextual_hash -> String with "xyzzy".into()
+crates/qlrs-reduce/src/lib.rs:912:24: replace != with == in reduce_with_options
+crates/qlrs-reduce/src/lib.rs:914:28: replace == with != in reduce_with_options
+crates/qlrs-reduce/src/lib.rs:916:21: replace && with || in reduce_with_options
+crates/qlrs-reduce/src/lib.rs:915:36: replace == with != in reduce_with_options
+crates/qlrs-reduce/src/lib.rs:916:24: delete ! in reduce_with_options
+crates/qlrs-reduce/src/lib.rs:930:44: replace == with != in reduce_with_options
+crates/qlrs-reduce/src/lib.rs:947:8: delete ! in reduce_with_options
+crates/qlrs-reduce/src/lib.rs:971:12: delete ! in reduce_with_options
+crates/qlrs-reduce/src/lib.rs:1026:18: replace == with != in reduce_with_options
+crates/qlrs-reduce/src/lib.rs:1158:18: replace == with != in reduce_with_options
+crates/qlrs-reduce/src/lib.rs:1158:85: replace != with == in reduce_with_options
+crates/qlrs-reduce/src/lib.rs:1162:28: delete ! in reduce_with_options
+crates/qlrs-reduce/src/lib.rs:1164:24: replace <= with > in reduce_with_options
+crates/qlrs-reduce/src/lib.rs:1200:40: replace << with >> in reduce_with_options
+crates/qlrs-reduce/src/lib.rs:1204:38: replace ^ with | in reduce_with_options
+crates/qlrs-reduce/src/lib.rs:1204:38: replace ^ with & in reduce_with_options
+crates/qlrs-reduce/src/lib.rs:1206:35: replace != with == in reduce_with_options
+crates/qlrs-reduce/src/lib.rs:1210:46: replace == with != in reduce_with_options
+crates/qlrs-reduce/src/lib.rs:1204:47: replace >> with << in reduce_with_options
+crates/qlrs-reduce/src/lib.rs:1210:33: replace & with ^ in reduce_with_options
+crates/qlrs-reduce/src/lib.rs:1205:43: replace ^ with | in reduce_with_options
+crates/qlrs-reduce/src/lib.rs:1205:43: replace ^ with & in reduce_with_options
+crates/qlrs-reduce/src/lib.rs:1226:43: replace && with || in reduce_with_options
+crates/qlrs-reduce/src/lib.rs:1226:33: replace == with != in reduce_with_options
+crates/qlrs-reduce/src/lib.rs:1210:33: replace & with | in reduce_with_options
+crates/qlrs-reduce/src/lib.rs:1226:51: replace < with == in reduce_with_options
+crates/qlrs-reduce/src/lib.rs:1226:51: replace < with > in reduce_with_options
+crates/qlrs-reduce/src/lib.rs:1237:50: replace != with == in reduce_with_options
+crates/qlrs-reduce/src/lib.rs:1237:33: replace & with | in reduce_with_options
+crates/qlrs-reduce/src/lib.rs:1237:33: replace & with ^ in reduce_with_options
+crates/qlrs-reduce/src/lib.rs:1309:12: delete ! in reduce_with_options
+crates/qlrs-reduce/src/lib.rs:1237:42: replace << with >> in reduce_with_options
+crates/qlrs-reduce/src/lib.rs:1335:8: delete ! in finish_reduction
+crates/qlrs-reduce/src/lib.rs:1244:37: delete ! in reduce_with_options
+crates/qlrs-reduce/src/lib.rs:1367:5: replace compact_steps -> Result<Vec<StepLog>, String> with Ok(vec![])
+crates/qlrs-reduce/src/lib.rs:1426:55: replace == with != in build_certificate
+crates/qlrs-reduce/src/lib.rs:1440:52: replace == with != in build_certificate
+crates/qlrs-reduce/src/lib.rs:1481:36: replace == with != in build_certificate
+crates/qlrs-reduce/src/lib.rs:1486:5: replace graph_commitment -> Result<String, String> with Ok(String::new())
+crates/qlrs-reduce/src/lib.rs:1486:5: replace graph_commitment -> Result<String, String> with Ok("xyzzy".into())
+crates/qlrs-reduce/src/lib.rs:1518:50: replace == with != in graph_commitment
+crates/qlrs-reduce/src/lib.rs:1538:27: replace != with == in recheck_certificate
+crates/qlrs-reduce/src/lib.rs:1539:42: replace != with == in recheck_certificate
+crates/qlrs-reduce/src/lib.rs:1540:32: replace != with == in recheck_certificate
+crates/qlrs-reduce/src/lib.rs:1540:66: replace == with != in recheck_certificate
+crates/qlrs-reduce/src/lib.rs:1538:5: replace recheck_certificate -> Result<(), String> with Ok(())
+crates/qlrs-reduce/src/lib.rs:1557:22: replace != with == in recheck_certificate
+crates/qlrs-reduce/src/lib.rs:1558:69: replace != with == in recheck_certificate
+crates/qlrs-reduce/src/lib.rs:1568:42: replace != with == in recheck_certificate
+crates/qlrs-reduce/src/lib.rs:1580:33: replace != with == in recheck_certificate
+crates/qlrs-reduce/src/lib.rs:1585:12: delete ! in recheck_certificate
+crates/qlrs-reduce/src/lib.rs:1592:55: replace == with != in recheck_certificate
+crates/qlrs-reduce/src/lib.rs:1600:20: replace != with == in recheck_certificate
+crates/qlrs-reduce/src/lib.rs:1584:38: replace >= with < in recheck_certificate
+crates/qlrs-reduce/src/lib.rs:1606:12: delete ! in recheck_certificate
+crates/qlrs-reduce/src/lib.rs:1606:41: delete ! in recheck_certificate
+crates/qlrs-reduce/src/lib.rs:1614:22: replace > with == in recheck_certificate
+crates/qlrs-reduce/src/lib.rs:1614:22: replace > with >= in recheck_certificate
+crates/qlrs-reduce/src/lib.rs:1616:21: replace >= with < in recheck_certificate
+crates/qlrs-reduce/src/lib.rs:1630:20: replace != with == in recheck_certificate
+crates/qlrs-reduce/src/lib.rs:1638:57: replace != with == in recheck_certificate
+crates/qlrs-reduce/src/lib.rs:1642:40: replace != with == in recheck_certificate
+crates/qlrs-reduce/src/lib.rs:1642:29: replace == with != in recheck_certificate
+crates/qlrs-reduce/src/lib.rs:1645:28: replace == with != in recheck_certificate
+crates/qlrs-reduce/src/lib.rs:1649:15: replace != with == in recheck_certificate
+crates/qlrs-reduce/src/lib.rs:1650:49: replace != with == in recheck_certificate
+crates/qlrs-reduce/src/lib.rs:1650:34: replace && with || in recheck_certificate
+crates/qlrs-reduce/src/lib.rs:1638:28: replace || with && in recheck_certificate
+crates/qlrs-reduce/src/lib.rs:1662:5: replace evaluate_batch -> Result<Option<AliveMask>, String> with Ok(None)
+crates/qlrs-reduce/src/lib.rs:1666:19: replace || with && in evaluate_batch
+crates/qlrs-reduce/src/lib.rs:1666:14: replace == with != in evaluate_batch
+crates/qlrs-reduce/src/lib.rs:1694:5: replace remove_closure -> Option<AliveMask> with None
+crates/qlrs-reduce/src/lib.rs:1702:13: replace == with != in remove_closure
+crates/qlrs-reduce/src/lib.rs:1726:25: replace != with == in pin_window
+crates/qlrs-reduce/src/algebra.rs:109:9: replace ContributionTable::seed_roots -> Vec<usize> with vec![]
+crates/qlrs-reduce/src/algebra.rs:109:9: replace ContributionTable::seed_roots -> Vec<usize> with vec![1]
+crates/qlrs-reduce/src/algebra.rs:120:9: replace ContributionTable::closure_prefixes -> Option<Vec<i128>> with None
+crates/qlrs-reduce/src/algebra.rs:120:9: replace ContributionTable::closure_prefixes -> Option<Vec<i128>> with Some(vec![])
+crates/qlrs-reduce/src/algebra.rs:112:42: replace != with == in ContributionTable::seed_roots
+crates/qlrs-reduce/src/algebra.rs:120:9: replace ContributionTable::closure_prefixes -> Option<Vec<i128>> with Some(vec![0])
+crates/qlrs-reduce/src/algebra.rs:120:9: replace ContributionTable::closure_prefixes -> Option<Vec<i128>> with Some(vec![1])
+crates/qlrs-reduce/src/algebra.rs:120:9: replace ContributionTable::closure_prefixes -> Option<Vec<i128>> with Some(vec![-1])
+crates/qlrs-reduce/src/algebra.rs:145:9: replace <impl FastPredicate for ContributionTable>::residual -> Option<i128> with Some(0)
+crates/qlrs-reduce/src/algebra.rs:120:12: delete ! in ContributionTable::closure_prefixes
+crates/qlrs-reduce/src/algebra.rs:145:9: replace <impl FastPredicate for ContributionTable>::residual -> Option<i128> with Some(-1)
+crates/qlrs-reduce/src/algebra.rs:145:9: replace <impl FastPredicate for ContributionTable>::residual -> Option<i128> with Some(1)
+crates/qlrs-reduce/src/algebra.rs:145:9: replace <impl FastPredicate for ContributionTable>::residual -> Option<i128> with None
+crates/qlrs-reduce/src/algebra.rs:145:12: delete ! in <impl FastPredicate for ContributionTable>::residual
+crates/qlrs-reduce/src/algebra.rs:157:9: replace <impl FastPredicate for ContributionTable>::prefix_residual -> Option<i128> with None
+crates/qlrs-reduce/src/algebra.rs:157:9: replace <impl FastPredicate for ContributionTable>::prefix_residual -> Option<i128> with Some(0)
+crates/qlrs-reduce/src/algebra.rs:157:9: replace <impl FastPredicate for ContributionTable>::prefix_residual -> Option<i128> with Some(1)
+crates/qlrs-reduce/src/algebra.rs:157:9: replace <impl FastPredicate for ContributionTable>::prefix_residual -> Option<i128> with Some(-1)
+crates/qlrs-reduce/src/cache.rs:8:5: replace mix -> u64 with 0
+crates/qlrs-reduce/src/cache.rs:15:9: replace HashState::toggle with ()
+crates/qlrs-reduce/src/cache.rs:24:9: replace HashState::update -> [u64; 2] with [0; 2]
+crates/qlrs-reduce/src/cache.rs:24:9: replace HashState::update -> [u64; 2] with [1; 2]
+crates/qlrs-reduce/src/cache.rs:29:51: replace == with != in HashState::update
+crates/qlrs-reduce/src/cache.rs:58:5: replace lookup -> Option<&'a T> with None
+crates/qlrs-reduce/src/cache.rs:60:35: replace == with != in lookup
+crates/qlrs-reduce/src/certificate.rs:78:5: replace rle -> Vec<[u32; 2]> with vec![]
+crates/qlrs-reduce/src/certificate.rs:78:5: replace rle -> Vec<[u32; 2]> with vec![[0; 2]]
+crates/qlrs-reduce/src/certificate.rs:78:5: replace rle -> Vec<[u32; 2]> with vec![[1; 2]]
+crates/qlrs-reduce/src/certificate.rs:84:72: replace == with != in rle
