@@ -1,0 +1,19 @@
+[package]
+name = "qlrs-reduce"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+
+[lints]
+workspace = true
+
+[dependencies]
+qlrs-schema.workspace = true
+qlrs-num.workspace = true
+qlrs-ledger.workspace = true
+qlrs-check.workspace = true
+blake3.workspace = true
+rayon.workspace = true
+serde.workspace = true
+foldhash.workspace = true

@@ -1,0 +1,85 @@
+schema = "qlrs-defects/v0"
+
+[[defect]]
+id = "D01"
+mutation = "double-fee"
+status = "VIOLATION"
+invariant = "I1"
+
+[[defect]]
+id = "D02"
+mutation = "omit-fee"
+status = "VIOLATION"
+invariant = "I1"
+
+[[defect]]
+id = "D03"
+mutation = "one-share-notional"
+status = "VIOLATION"
+invariant = "I1"
+
+[[defect]]
+id = "D04"
+mutation = "sell-as-debit"
+status = "VIOLATION"
+invariant = "I1"
+
+[[defect]]
+id = "D05"
+mutation = "double-cash-fill"
+status = "VIOLATION"
+invariant = "I1"
+
+[[defect]]
+id = "D06"
+mutation = "omit-partial-position"
+status = "VIOLATION"
+invariant = "I2"
+
+[[defect]]
+id = "D07"
+mutation = "fill-after-cancel"
+status = "VIOLATION"
+invariant = "I3"
+
+[[defect]]
+id = "D08"
+mutation = "overfill"
+status = "VIOLATION"
+invariant = "I3"
+
+[[defect]]
+id = "D09"
+mutation = "fill-before-accept"
+status = "VIOLATION"
+invariant = "I3"
+
+[[defect]]
+id = "D10"
+mutation = "scale-claim-by-ten"
+status = "VIOLATION"
+invariant = "I1"
+
+[[defect]]
+id = "D11"
+mutation = "duplicate-trade"
+status = "VIOLATION"
+invariant = "I3"
+
+[[defect]]
+id = "D12"
+mutation = "second-fee-currency"
+status = "UNSUPPORTED"
+invariant = ""
+
+[[defect]]
+id = "D13"
+mutation = "short-position"
+status = "UNSUPPORTED"
+invariant = ""
+
+[[defect]]
+id = "D14"
+mutation = "inexact-exact-cash"
+status = "INCONCLUSIVE"
+invariant = ""

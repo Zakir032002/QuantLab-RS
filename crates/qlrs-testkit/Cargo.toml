@@ -1,0 +1,30 @@
+[package]
+name = "qlrs-testkit"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+
+[lints.rust]
+unsafe_code = "deny"
+missing_docs = "warn"
+
+[lints.clippy]
+pedantic = { level = "warn", priority = -1 }
+cast_possible_truncation = "deny"
+cast_sign_loss = "deny"
+unwrap_used = "deny"
+expect_used = "deny"
+indexing_slicing = "warn"
+
+[dependencies]
+qlrs-num.workspace = true
+qlrs-schema.workspace = true
+qlrs-io.workspace = true
+qlrs-ledger.workspace = true
+qlrs-check.workspace = true
+qlrs-reduce.workspace = true
+qlrs-bundle.workspace = true
+
+[dev-dependencies]
+proptest.workspace = true

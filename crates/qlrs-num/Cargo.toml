@@ -1,0 +1,14 @@
+[package]
+name = "qlrs-num"
+description = "Checked, allocation-free decimal arithmetic for QuantLab-RS"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+
+[lints]
+workspace = true
+
+[dev-dependencies]
+proptest.workspace = true
+num-bigint.workspace = true

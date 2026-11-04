@@ -1,0 +1,10 @@
+{
+  "rustc": "1.99.1",
+  "target": "x86_64-unknown-linux-gnu",
+  "max_regression_percent": 5,
+  "instructions": {
+    "decimal_parse": 1288,
+    "mul_rescale": 125,
+    "replay_1000": 35063
+  }
+}

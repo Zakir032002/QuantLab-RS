@@ -1,0 +1,25 @@
+[package]
+name = "qlrs-cli"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+
+[lints]
+workspace = true
+
+[dependencies]
+qlrs-schema.workspace = true
+qlrs-ledger.workspace = true
+qlrs-check.workspace = true
+qlrs-reduce.workspace = true
+qlrs-bundle.workspace = true
+qlrs-io.workspace = true
+clap.workspace = true
+
+[[bin]]
+name = "qlrs"
+path = "src/main.rs"
+
+[dev-dependencies]
+qlrs-testkit.workspace = true

@@ -1,0 +1,17 @@
+[package]
+name = "qlrs-check"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+
+[lints]
+workspace = true
+
+[dependencies]
+qlrs-schema.workspace = true
+qlrs-num.workspace = true
+qlrs-ledger.workspace = true
+blake3.workspace = true
+serde.workspace = true
+foldhash.workspace = true

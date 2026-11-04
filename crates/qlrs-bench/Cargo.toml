@@ -1,0 +1,32 @@
+[package]
+name = "qlrs-bench"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+
+[lints]
+workspace = true
+
+[dependencies]
+qlrs-num.workspace = true
+qlrs-schema.workspace = true
+qlrs-io.workspace = true
+qlrs-ledger.workspace = true
+qlrs-check.workspace = true
+qlrs-reduce.workspace = true
+qlrs-testkit.workspace = true
+
+[dev-dependencies]
+criterion.workspace = true
+
+[target.'cfg(target_os = "linux")'.dev-dependencies]
+gungraun.workspace = true
+
+[[bench]]
+name = "throughput"
+harness = false
+
+[[bench]]
+name = "instructions"
+harness = false

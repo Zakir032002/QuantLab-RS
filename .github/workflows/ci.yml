@@ -1,0 +1,54 @@
+name: Part 1 quality
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  quality:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-24.04, macos-15]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Pinned compiler and tools
+        run: |
+          rustup toolchain install 1.99.1 --profile minimal --component rustfmt --component clippy
+          cargo install cargo-nextest --version 0.9.151 --locked
+          cargo install cargo-deny --version 0.20.2 --locked
+          cargo install cargo-audit --version 0.22.2 --locked
+      - run: ./ci/check-all.sh
+      - run: python3 ci/catalogue.py
+  miri:
+    runs-on: ubuntu-24.04
+    env:
+      RAYON_NUM_THREADS: 1
+    steps:
+      - uses: actions/checkout@v4
+      - run: rustup toolchain install nightly-2026-11-04 --profile minimal --component miri --component rust-src
+      - name: Numeric edge paths (bulk stress runs natively in quality)
+        run: |
+          cargo +nightly-2026-11-04 miri test -p qlrs-num --lib --locked -- --skip req_num_002_checked_operations_and_parser_never_panic --skip req_num_006_roundtrip_100k_values
+          cargo +nightly-2026-11-04 miri test -p qlrs-num --test properties --locked req_num_011
+          cargo +nightly-2026-11-04 miri test -p qlrs-testkit --test allocations --locked
+  scale-and-instructions:
+    runs-on: ubuntu-24.04
+    env:
+      GUNGRAUN_ALLOW_ASLR: 'yes'
+      RAYON_NUM_THREADS: 5
+    steps:
+      - uses: actions/checkout@v4
+      - run: rustup toolchain install 1.99.1 --profile minimal
+      - run: sudo apt-get update && sudo apt-get install -y valgrind
+      - run: cargo install gungraun-runner --version 0.20.0 --locked
+      - run: cargo run -p qlrs-testkit --example scale_gate --release --locked
+      - run: cargo bench -p qlrs-bench --bench instructions --locked > instructions.txt
+      - run: python3 ci/instruction-ratchet.py instructions.txt
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: linux-instruction-results
+          path: instructions.txt

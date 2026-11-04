@@ -1,0 +1,7 @@
+/target/
+/.cargo/config.toml
+/proptest-regressions/
+*.profraw
+*.profdata
+
+/mutants.out/
