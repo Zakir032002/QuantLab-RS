@@ -1,0 +1,615 @@
+diff --git a/Cargo.lock b/Cargo.lock
+index ee338e4..e6804f6 100644
+--- a/Cargo.lock
++++ b/Cargo.lock
+@@ -878,6 +878,8 @@ dependencies = [
+ name = "qlrs-testkit"
+ version = "0.1.0"
+ dependencies = [
++ "blake3",
++ "clap",
+  "proptest",
+  "qlrs-bundle",
+  "qlrs-check",
+@@ -887,6 +889,7 @@ dependencies = [
+  "qlrs-reduce",
+  "qlrs-schema",
+  "rayon",
++ "serde",
+ ]
+ 
+ [[package]]
+diff --git a/crates/qlrs-bundle/src/lib.rs b/crates/qlrs-bundle/src/lib.rs
+index 262d3f7..4e0eb75 100644
+--- a/crates/qlrs-bundle/src/lib.rs
++++ b/crates/qlrs-bundle/src/lib.rs
+@@ -466,3 +466,9 @@ fn regular_file(dir: &Path, name: &str) -> Result<Vec<u8>, String> {
+     }
+     fs::read(path).map_err(|e| e.to_string())
+ }
++
++/// Source revision embedded when the product was built.
++#[must_use]
++pub const fn source_commit() -> &'static str {
++    env!("QLRS_GIT_COMMIT")
++}
+diff --git a/crates/qlrs-io/src/lib.rs b/crates/qlrs-io/src/lib.rs
+index 866ea46..394c586 100644
+--- a/crates/qlrs-io/src/lib.rs
++++ b/crates/qlrs-io/src/lib.rs
+@@ -49,6 +49,41 @@ pub fn digest(bytes: &[u8]) -> String {
+     blake3::hash(bytes).to_hex().to_string()
+ }
+ 
++/// Write and sync a sibling temporary file, then atomically replace the target.
++/// A failed writer leaves the previous target intact and removes its temporary.
++pub fn atomic_file<T>(
++    path: impl AsRef<Path>,
++    write: impl FnOnce(&mut fs::File) -> std::io::Result<T>,
++) -> std::io::Result<T> {
++    use std::sync::atomic::{AtomicU64, Ordering};
++    static NEXT: AtomicU64 = AtomicU64::new(0);
++    let path = path.as_ref();
++    let parent = path
++        .parent()
++        .filter(|p| !p.as_os_str().is_empty())
++        .unwrap_or(Path::new("."));
++    let temporary = parent.join(format!(
++        ".qlrs.tmp.{}.{}",
++        std::process::id(),
++        NEXT.fetch_add(1, Ordering::Relaxed)
++    ));
++    let mut file = fs::OpenOptions::new()
++        .write(true)
++        .create_new(true)
++        .open(&temporary)?;
++    let result = (|| {
++        let value = write(&mut file)?;
++        file.sync_all()?;
++        fs::rename(&temporary, path)?;
++        fs::File::open(parent)?.sync_all()?;
++        Ok(value)
++    })();
++    if result.is_err() {
++        let _ = fs::remove_file(&temporary);
++    }
++    result
++}
++
+ #[derive(Deserialize)]
+ #[serde(tag = "type", deny_unknown_fields)]
+ enum Record<'a> {
+diff --git a/crates/qlrs-testkit/Cargo.toml b/crates/qlrs-testkit/Cargo.toml
+index 577fc2d..f174d11 100644
+--- a/crates/qlrs-testkit/Cargo.toml
++++ b/crates/qlrs-testkit/Cargo.toml
+@@ -18,6 +18,9 @@ expect_used = "deny"
+ indexing_slicing = "warn"
+ 
+ [dependencies]
++blake3.workspace = true
++clap.workspace = true
++serde.workspace = true
+ rayon.workspace = true
+ qlrs-num.workspace = true
+ qlrs-schema.workspace = true
+diff --git a/crates/qlrs-testkit/fixtures/rng-v1.json b/crates/qlrs-testkit/fixtures/rng-v1.json
+new file mode 100644
+index 0000000..fbf196e
+--- /dev/null
++++ b/crates/qlrs-testkit/fixtures/rng-v1.json
+@@ -0,0 +1,65 @@
++[
++  [
++    0,
++    [
++      11091344671253066420,
++      13793997310169335082,
++      1900383378846508768,
++      7684712102626143532,
++      13521403990117723737,
++      18442103541295991498,
++      7788427924976520344,
++      9881088229871127103,
++      15781505947799885617,
++      16949938600482740797,
++      2108416074180405844,
++      1240209487116192693,
++      1967799970308132508,
++      12079539854699322239,
++      9150657576430337180,
++      5466973851375020728
++    ]
++  ],
++  [
++    1,
++    [
++      12966619160104079557,
++      9600361134598540522,
++      10590380919521690900,
++      7218738570589545383,
++      12860671823995680371,
++      2648436617965840162,
++      1310552918490157286,
++      7031611932980406429,
++      15996139959407692321,
++      10177250653276320208,
++      17202925169076741841,
++      17657558547222227110,
++      17206619296382044401,
++      12342657103067243573,
++      11066818095355039191,
++      16427605434558419749
++    ]
++  ],
++  [
++    3735928559,
++    [
++      14219364052333592195,
++      7332719151195188792,
++      6122488799882574371,
++      4799409443904522999,
++      18090429560773761838,
++      11343726250536552999,
++      17589260921017250467,
++      6105855439640220682,
++      16743107840963496603,
++      12157672247221492158,
++      7153136024419501766,
++      8214830824349766707,
++      12679362896482186555,
++      234685685150246008,
++      11869721983112566996,
++      9293124789854564265
++    ]
++  ]
++]
+diff --git a/crates/qlrs-testkit/src/bin/qlrs-gen.rs b/crates/qlrs-testkit/src/bin/qlrs-gen.rs
+new file mode 100644
+index 0000000..262615a
+--- /dev/null
++++ b/crates/qlrs-testkit/src/bin/qlrs-gen.rs
+@@ -0,0 +1,132 @@
++//! Streaming synthetic traces; buffers and open orders stay bounded.
++#![forbid(unsafe_code)]
++use clap::Parser;
++use qlrs_testkit::{
++    Defect, GeneratorConfig, generate_into, generate_rich_into, rng::Rng, shape_config,
++};
++use serde::Serialize;
++use std::{
++    fs::File,
++    io::{self, BufWriter, Write},
++    path::PathBuf,
++};
++
++#[derive(Parser)]
++struct Args {
++    #[arg(long, default_value = "s1m", value_parser = ["s1m", "s10m", "s100m"])]
++    preset: String,
++    #[arg(long, default_value_t = 1)]
++    seed: u64,
++    #[arg(long, default_value = "simple", value_parser = ["simple", "interleaved", "long-lived", "sparse", "S1", "S2", "S3", "S4", "S5", "S6", "S7", "S8", "S9"])]
++    profile: String,
++    #[arg(long)]
++    out: PathBuf,
++    #[arg(long)]
++    allow_huge: bool,
++    #[arg(long)]
++    defect: Option<String>,
++    #[arg(long, default_value = "middle", value_parser = ["early", "middle", "late"])]
++    at: String,
++}
++struct DigestWriter<'a> {
++    file: &'a mut File,
++    hash: blake3::Hasher,
++    bytes: u64,
++}
++impl Write for DigestWriter<'_> {
++    fn write(&mut self, bytes: &[u8]) -> io::Result<usize> {
++        let count = self.file.write(bytes)?;
++        let bytes = bytes
++            .get(..count)
++            .ok_or_else(|| io::Error::other("invalid write length"))?;
++        self.hash.update(bytes);
++        self.bytes = self
++            .bytes
++            .checked_add(u64::try_from(count).map_err(io::Error::other)?)
++            .ok_or_else(|| io::Error::other("byte count overflow"))?;
++        Ok(count)
++    }
++    fn flush(&mut self) -> io::Result<()> {
++        self.file.flush()
++    }
++}
++#[derive(Serialize)]
++struct Metadata<'a> {
++    generator_version: &'static str,
++    preset: &'a str,
++    profile: &'a str,
++    seed: u64,
++    requested_events: usize,
++    events: u64,
++    bytes: u64,
++    blake3: String,
++    qlrs_commit: &'static str,
++    target_seq: Option<u64>,
++}
++fn main() -> Result<(), Box<dyn std::error::Error>> {
++    let args = Args::parse();
++    let requested_events = match args.preset.as_str() {
++        "s1m" => 1_000_000,
++        "s10m" => 10_000_000,
++        _ if args.allow_huge => 100_000_000,
++        _ => return Err("s100m requires --allow-huge".into()),
++    };
++    let simple = matches!(args.profile.as_str(), "simple" | "S1");
++    let orders = requested_events / if simple { 5 } else { 4 };
++    let seed = Rng::new(args.seed).next_u64();
++    let index = match args.at.as_str() {
++        "early" => orders / 100,
++        "late" => orders - orders / 200,
++        _ => orders / 2,
++    };
++    let defect = args
++        .defect
++        .as_deref()
++        .map(|text| Defect::parse(text).ok_or("unknown defect"))
++        .transpose()?;
++    let mutation = defect.map(|defect| (defect, index));
++    let meta = qlrs_io::atomic_file(&args.out, |file| {
++        let mut writer = BufWriter::with_capacity(
++            1 << 20,
++            DigestWriter {
++                file,
++                hash: blake3::Hasher::new(),
++                bytes: 0,
++            },
++        );
++        let (target_seq, events) = if simple {
++            generate_into(orders, seed, mutation, &mut writer)
++        } else {
++            let config = if args.profile.starts_with('S') {
++                shape_config(&args.profile, seed, orders)
++            } else {
++                GeneratorConfig::profile(&args.profile, orders, seed)
++            }
++            .map_err(io::Error::other)?;
++            generate_rich_into(config, mutation, &mut writer)
++        }
++        .map_err(io::Error::other)?;
++        writer.flush()?;
++        let writer = writer
++            .into_inner()
++            .map_err(io::IntoInnerError::into_error)?;
++        Ok(Metadata {
++            generator_version: "qlrs-gen/v1",
++            preset: &args.preset,
++            profile: &args.profile,
++            seed: args.seed,
++            requested_events,
++            events,
++            bytes: writer.bytes,
++            blake3: writer.hash.finalize().to_hex().to_string(),
++            qlrs_commit: qlrs_bundle::source_commit(),
++            target_seq,
++        })
++    })?;
++    let mut meta_path = args.out.as_os_str().to_owned();
++    meta_path.push(".meta.json");
++    let bytes = qlrs_io::encode(&meta)?;
++    qlrs_io::atomic_file(PathBuf::from(meta_path), |file| file.write_all(&bytes))?;
++    io::stdout().lock().write_all(&bytes)?;
++    Ok(())
++}
+diff --git a/crates/qlrs-testkit/src/lib.rs b/crates/qlrs-testkit/src/lib.rs
+index 2964c81..107c7d3 100644
+--- a/crates/qlrs-testkit/src/lib.rs
++++ b/crates/qlrs-testkit/src/lib.rs
+@@ -82,7 +82,7 @@ pub struct Fixture {
+     pub target_seq: Option<u64>,
+ }
+ fn emit(
+-    out: &mut Vec<u8>,
++    out: &mut impl Write,
+     seq: &mut u64,
+     kind: &str,
+     fields: fmt::Arguments<'_>,
+@@ -98,6 +98,17 @@ pub fn generate(
+     seed: u64,
+     mutation: Option<(Defect, usize)>,
+ ) -> Result<Fixture, String> {
++    let mut bytes = Vec::new();
++    let (target_seq, _) = generate_into(orders, seed, mutation, &mut bytes)?;
++    Ok(Fixture { bytes, target_seq })
++}
++/// Write the existing generator directly to a sink without retaining output.
++pub fn generate_into(
++    orders: usize,
++    seed: u64,
++    mutation: Option<(Defect, usize)>,
++    mut out: impl Write,
++) -> Result<(Option<u64>, u64), String> {
+     if orders == 0 {
+         return Err("generator requires at least one order".into());
+     }
+@@ -144,7 +155,8 @@ pub fn generate(
+             generated_by_qlrs: true,
+         },
+     };
+-    let mut out = qlrs_io::encode(&header).map_err(|e| e.to_string())?;
++    out.write_all(&qlrs_io::encode(&header).map_err(|e| e.to_string())?)
++        .map_err(|e| e.to_string())?;
+     let mut seq = 0_u64;
+     let mut target_seq = None;
+     let mut cash = 100_000_000_000_000_i128;
+@@ -279,14 +291,14 @@ pub fn generate(
+             });
+         }
+     }
+-    Ok(Fixture {
+-        bytes: out,
+-        target_seq,
+-    })
++    Ok((target_seq, seq))
+ }
+ 
+ mod rich;
+-pub use rich::{GeneratorConfig, generate_rich};
++pub use rich::{GeneratorConfig, generate_rich, generate_rich_into};
+ 
+ mod shapes;
+-pub use shapes::{SHAPES, generate_shape};
++pub use shapes::{SHAPES, generate_shape, shape_config};
++
++/// Stable seed expansion and generator stream.
++pub mod rng;
+diff --git a/crates/qlrs-testkit/src/rich.rs b/crates/qlrs-testkit/src/rich.rs
+index 43fb6c7..5533e42 100644
+--- a/crates/qlrs-testkit/src/rich.rs
++++ b/crates/qlrs-testkit/src/rich.rs
+@@ -66,9 +66,9 @@ struct Order {
+     factor: i128,
+     parent: bool,
+ }
+-struct Generator {
++struct Generator<W> {
+     config: GeneratorConfig,
+-    out: Vec<u8>,
++    out: W,
+     seq: u64,
+     cash: i128,
+     positions: Vec<i128>,
+@@ -83,7 +83,7 @@ struct Generator {
+     target_seq: Option<u64>,
+     observations: usize,
+ }
+-impl Generator {
++impl<W: std::io::Write> Generator<W> {
+     fn price(&self, instrument: usize) -> i128 {
+         100 + i128::from(self.config.seed % 11) + i128::try_from(instrument).unwrap_or(0) * 17
+     }
+@@ -349,6 +349,16 @@ pub fn generate_rich(
+     config: GeneratorConfig,
+     mutation: Option<(Defect, usize)>,
+ ) -> Result<Fixture, String> {
++    let mut bytes = Vec::new();
++    let (target_seq, _) = generate_rich_into(config, mutation, &mut bytes)?;
++    Ok(Fixture { bytes, target_seq })
++}
++/// Stream rich profiles with memory bounded by active orders and instruments.
++pub fn generate_rich_into(
++    config: GeneratorConfig,
++    mutation: Option<(Defect, usize)>,
++    mut out: impl std::io::Write,
++) -> Result<(Option<u64>, u64), String> {
+     if config.orders == 0
+         || !(1..=32).contains(&config.instruments)
+         || !(1..=256).contains(&config.active_orders)
+@@ -394,11 +404,13 @@ pub fn generate_rich(
+             generated_by_qlrs: true,
+         },
+     };
++    out.write_all(&qlrs_io::encode(&header).map_err(|e| e.to_string())?)
++        .map_err(|e| e.to_string())?;
+     let count = config.instruments;
+     let fee = 1 + i128::from(config.seed % 7);
+     let mut generator = Generator {
+         config,
+-        out: qlrs_io::encode(&header).map_err(|e| e.to_string())?,
++        out,
+         seq: 0,
+         cash: 100_000_000_000_000,
+         positions: vec![0; count],
+@@ -490,8 +502,5 @@ pub fn generate_rich(
+     if mutation.is_some() && generator.target_seq.is_none() {
+         return Err("defect target was not emitted".into());
+     }
+-    Ok(Fixture {
+-        bytes: generator.out,
+-        target_seq: generator.target_seq,
+-    })
++    Ok((generator.target_seq, generator.seq))
+ }
+diff --git a/crates/qlrs-testkit/src/rng.rs b/crates/qlrs-testkit/src/rng.rs
+new file mode 100644
+index 0000000..1783069
+--- /dev/null
++++ b/crates/qlrs-testkit/src/rng.rs
+@@ -0,0 +1,32 @@
++//! Versioned SplitMix64-seeded xoshiro256** stream; no external RNG dependency.
++
++/// Reproducible generator state, independent of architecture and thread count.
++pub struct Rng([u64; 4]);
++impl Rng {
++    /// Expand a seed with `SplitMix64`.
++    #[must_use]
++    pub fn new(mut seed: u64) -> Self {
++        Self(std::array::from_fn(|_| {
++            seed = seed.wrapping_add(0x9e37_79b9_7f4a_7c15);
++            let mut value = seed;
++            value = (value ^ (value >> 30)).wrapping_mul(0xbf58_476d_1ce4_e5b9);
++            value = (value ^ (value >> 27)).wrapping_mul(0x94d0_49bb_1331_11eb);
++            value ^ (value >> 31)
++        }))
++    }
++    /// Advance xoshiro256** once.
++    #[must_use]
++    pub fn next_u64(&mut self) -> u64 {
++        let [mut lane0, mut lane1, mut lane2, mut lane3] = self.0;
++        let result = lane1.wrapping_mul(5).rotate_left(7).wrapping_mul(9);
++        let shifted = lane1 << 17;
++        lane2 ^= lane0;
++        lane3 ^= lane1;
++        lane1 ^= lane2;
++        lane0 ^= lane3;
++        lane2 ^= shifted;
++        lane3 = lane3.rotate_left(45);
++        self.0 = [lane0, lane1, lane2, lane3];
++        result
++    }
++}
+diff --git a/crates/qlrs-testkit/src/shapes.rs b/crates/qlrs-testkit/src/shapes.rs
+index 6e05484..7918d91 100644
+--- a/crates/qlrs-testkit/src/shapes.rs
++++ b/crates/qlrs-testkit/src/shapes.rs
+@@ -18,6 +18,33 @@ pub fn generate_shape(
+             defect.map(|defect| (defect, orders / 2)),
+         )?);
+     }
++    let config = shape_config(shape, seed, orders)?;
++    let index = if shape == "S8" && defect == Some(Defect::D04) {
++        config.fifo_ladder
++    } else {
++        orders / 2
++    };
++    let mut fixture = generate_rich(config, defect.map(|defect| (defect, index)))?;
++    if shape == "S9" {
++        let lines: Vec<_> = fixture
++            .bytes
++            .split_inclusive(|byte| *byte == b'\n')
++            .collect();
++        let last_cash = lines.iter().rposition(|line| {
++            std::str::from_utf8(line).is_ok_and(|text| text.contains("\"type\":\"AccountClaim\""))
++        });
++        fixture.bytes = lines
++            .iter()
++            .enumerate()
++            .filter(|(index, _)| Some(*index) != last_cash)
++            .flat_map(|(_, line)| line.iter().copied())
++            .collect();
++    }
++    add_removable_context(fixture)
++}
++
++/// Scheduling configuration shared by small fixtures and streaming presets.
++pub fn shape_config(shape: &str, seed: u64, orders: usize) -> Result<GeneratorConfig, String> {
+     let mut config = GeneratorConfig::profile("interleaved", orders, seed)?;
+     config.instruments = 1;
+     config.long_lived_orders = 0;
+@@ -53,28 +80,7 @@ pub fn generate_shape(
+         }
+         _ => return Err("unknown Part 2 shape".into()),
+     }
+-    let index = if shape == "S8" && defect == Some(Defect::D04) {
+-        config.fifo_ladder
+-    } else {
+-        orders / 2
+-    };
+-    let mut fixture = generate_rich(config, defect.map(|defect| (defect, index)))?;
+-    if shape == "S9" {
+-        let lines: Vec<_> = fixture
+-            .bytes
+-            .split_inclusive(|byte| *byte == b'\n')
+-            .collect();
+-        let last_cash = lines.iter().rposition(|line| {
+-            std::str::from_utf8(line).is_ok_and(|text| text.contains("\"type\":\"AccountClaim\""))
+-        });
+-        fixture.bytes = lines
+-            .iter()
+-            .enumerate()
+-            .filter(|(index, _)| Some(*index) != last_cash)
+-            .flat_map(|(_, line)| line.iter().copied())
+-            .collect();
+-    }
+-    add_removable_context(fixture)
++    Ok(config)
+ }
+ 
+ fn add_removable_context(fixture: Fixture) -> Result<Fixture, String> {
+diff --git a/crates/qlrs-testkit/tests/streaming_gen.rs b/crates/qlrs-testkit/tests/streaming_gen.rs
+new file mode 100644
+index 0000000..8f20db5
+--- /dev/null
++++ b/crates/qlrs-testkit/tests/streaming_gen.rs
+@@ -0,0 +1,70 @@
++//! Streaming keeps the established generator bytes and propagates sink failures.
++#![forbid(unsafe_code)]
++#![allow(clippy::unwrap_used)]
++use std::io::{self, Write};
++
++#[test]
++fn scale_003_rng_vectors_and_legacy_stream_commitment() {
++    let vectors: Vec<(u64, [u64; 16])> =
++        qlrs_io::decode(include_bytes!("../fixtures/rng-v1.json")).unwrap();
++    for (seed, expected) in vectors {
++        let mut rng = qlrs_testkit::rng::Rng::new(seed);
++        assert_eq!(
++            std::array::from_fn::<_, 16, _>(|_| rng.next_u64()),
++            expected
++        );
++    }
++    let mut bytes = Vec::new();
++    qlrs_testkit::generate_into(20_000, 42, None, &mut bytes).unwrap();
++    // Input produced and committed by SHA256 at CP3.1 before this refactor.
++    assert_eq!(
++        qlrs_io::digest(&bytes),
++        "563dffc8ea4f60531504245d3943b0276cd920bcaa97bff2107a1a343aa2649a"
++    );
++}
++
++struct Broken;
++impl Write for Broken {
++    fn write(&mut self, _: &[u8]) -> io::Result<usize> {
++        Err(io::Error::other("injected sink failure"))
++    }
++    fn flush(&mut self) -> io::Result<()> {
++        Ok(())
++    }
++}
++#[test]
++fn scale_003_both_generators_propagate_writer_failure() {
++    assert!(
++        qlrs_testkit::generate_into(20, 1, None, Broken)
++            .unwrap_err()
++            .contains("injected sink failure")
++    );
++    let config = qlrs_testkit::GeneratorConfig::profile("interleaved", 20, 1).unwrap();
++    assert!(
++        qlrs_testkit::generate_rich_into(config, None, Broken)
++            .unwrap_err()
++            .contains("injected sink failure")
++    );
++}
++
++#[test]
++fn hard_006_atomic_failure_preserves_target_and_unowned_files() {
++    let dir = std::env::temp_dir().join(format!("qlrs-atomic-{}", std::process::id()));
++    std::fs::create_dir(&dir).unwrap();
++    let target = dir.join("output");
++    std::fs::write(&target, b"old").unwrap();
++    let unowned = dir.join(format!(".qlrs.tmp.{}.0", std::process::id()));
++    std::fs::write(&unowned, b"unowned").unwrap();
++    assert!(qlrs_io::atomic_file(&target, |file| file.write_all(b"new")).is_err());
++    assert_eq!(std::fs::read(&unowned).unwrap(), b"unowned");
++    let failure = qlrs_io::atomic_file(&target, |file| {
++        file.write_all(b"partial")?;
++        Err::<(), _>(io::Error::other("injected writer failure"))
++    });
++    assert!(failure.is_err());
++    assert_eq!(std::fs::read(&target).unwrap(), b"old");
++    assert_eq!(std::fs::read_dir(&dir).unwrap().count(), 2);
++    qlrs_io::atomic_file(&target, |file| file.write_all(b"complete")).unwrap();
++    assert_eq!(std::fs::read(&target).unwrap(), b"complete");
++    std::fs::remove_dir_all(dir).unwrap();
++}

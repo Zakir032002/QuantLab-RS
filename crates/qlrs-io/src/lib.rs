@@ -49,6 +49,41 @@ pub fn digest(bytes: &[u8]) -> String {
     blake3::hash(bytes).to_hex().to_string()
 }
 
+/// Write and sync a sibling temporary file, then atomically replace the target.
+/// A failed writer leaves the previous target intact and removes its temporary.
+pub fn atomic_file<T>(
+    path: impl AsRef<Path>,
+    write: impl FnOnce(&mut fs::File) -> std::io::Result<T>,
+) -> std::io::Result<T> {
+    use std::sync::atomic::{AtomicU64, Ordering};
+    static NEXT: AtomicU64 = AtomicU64::new(0);
+    let path = path.as_ref();
+    let parent = path
+        .parent()
+        .filter(|p| !p.as_os_str().is_empty())
+        .unwrap_or(Path::new("."));
+    let temporary = parent.join(format!(
+        ".qlrs.tmp.{}.{}",
+        std::process::id(),
+        NEXT.fetch_add(1, Ordering::Relaxed)
+    ));
+    let mut file = fs::OpenOptions::new()
+        .write(true)
+        .create_new(true)
+        .open(&temporary)?;
+    let result = (|| {
+        let value = write(&mut file)?;
+        file.sync_all()?;
+        fs::rename(&temporary, path)?;
+        fs::File::open(parent)?.sync_all()?;
+        Ok(value)
+    })();
+    if result.is_err() {
+        let _ = fs::remove_file(&temporary);
+    }
+    result
+}
+
 #[derive(Deserialize)]
 #[serde(tag = "type", deny_unknown_fields)]
 enum Record<'a> {

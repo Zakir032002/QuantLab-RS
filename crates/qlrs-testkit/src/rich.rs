@@ -66,9 +66,9 @@ struct Order {
     factor: i128,
     parent: bool,
 }
-struct Generator {
+struct Generator<W> {
     config: GeneratorConfig,
-    out: Vec<u8>,
+    out: W,
     seq: u64,
     cash: i128,
     positions: Vec<i128>,
@@ -83,7 +83,7 @@ struct Generator {
     target_seq: Option<u64>,
     observations: usize,
 }
-impl Generator {
+impl<W: std::io::Write> Generator<W> {
     fn price(&self, instrument: usize) -> i128 {
         100 + i128::from(self.config.seed % 11) + i128::try_from(instrument).unwrap_or(0) * 17
     }
@@ -349,6 +349,16 @@ pub fn generate_rich(
     config: GeneratorConfig,
     mutation: Option<(Defect, usize)>,
 ) -> Result<Fixture, String> {
+    let mut bytes = Vec::new();
+    let (target_seq, _) = generate_rich_into(config, mutation, &mut bytes)?;
+    Ok(Fixture { bytes, target_seq })
+}
+/// Stream rich profiles with memory bounded by active orders and instruments.
+pub fn generate_rich_into(
+    config: GeneratorConfig,
+    mutation: Option<(Defect, usize)>,
+    mut out: impl std::io::Write,
+) -> Result<(Option<u64>, u64), String> {
     if config.orders == 0
         || !(1..=32).contains(&config.instruments)
         || !(1..=256).contains(&config.active_orders)
@@ -394,11 +404,13 @@ pub fn generate_rich(
             generated_by_qlrs: true,
         },
     };
+    out.write_all(&qlrs_io::encode(&header).map_err(|e| e.to_string())?)
+        .map_err(|e| e.to_string())?;
     let count = config.instruments;
     let fee = 1 + i128::from(config.seed % 7);
     let mut generator = Generator {
         config,
-        out: qlrs_io::encode(&header).map_err(|e| e.to_string())?,
+        out,
         seq: 0,
         cash: 100_000_000_000_000,
         positions: vec![0; count],
@@ -490,8 +502,5 @@ pub fn generate_rich(
     if mutation.is_some() && generator.target_seq.is_none() {
         return Err("defect target was not emitted".into());
     }
-    Ok(Fixture {
-        bytes: generator.out,
-        target_seq: generator.target_seq,
-    })
+    Ok((generator.target_seq, generator.seq))
 }

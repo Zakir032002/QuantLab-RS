@@ -9,3 +9,16 @@
 /verification/prefix-sums/target/
 
 /mutants.out.old/
+
+/gen/
+/fuzz/target/
+/fuzz/artifacts/
+/fuzz/coverage/
+*.jsonl
+!fixtures/**/*.jsonl
+!tests/**/*.jsonl
+!crates/**/fixtures/**/*.jsonl
+!fuzz/corpus/**/*.jsonl
+!bench/**/*.jsonl
+!bench-results/**/*.jsonl
+!evidence/**/*.jsonl

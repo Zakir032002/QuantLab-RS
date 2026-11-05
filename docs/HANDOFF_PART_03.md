@@ -86,3 +86,14 @@ streaming generator are next. R9 review for default parser limits is pending;
 [the concrete verdict differences](PART3_VERDICT_REVIEW.md) are recorded while
 independent baseline/generator work continues. No Part 3 default verdict change
 has been enabled without that approval. No Gate S pass or tag is claimed.
+
+## CP3.1–CP3.2 progress
+
+CP3.1 before baseline committed as ce6480b. CP3.2 reuses the old generator
+logic through generic writers; the new streaming CLI generated exactly 10M
+events with 2488 KiB peak RSS (raw GNU time: evidence/part3/gen/s10m).
+This passes the 64 MiB Linux goal. The original 100k generator byte commitment
+passes unchanged. All 85 native tests pass, with no skips; catalogue and goldens
+pass. Two 1M generations match both trace bytes and metadata. ARM confirmation
+is pending, not counted as a pass. Source is ce6480b plus gen/source.patch, with
+exact source hashes in each measurement metadata. No Gate S pass is claimed.

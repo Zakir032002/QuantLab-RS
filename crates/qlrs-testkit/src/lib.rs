@@ -82,7 +82,7 @@ pub struct Fixture {
     pub target_seq: Option<u64>,
 }
 fn emit(
-    out: &mut Vec<u8>,
+    out: &mut impl Write,
     seq: &mut u64,
     kind: &str,
     fields: fmt::Arguments<'_>,
@@ -98,6 +98,17 @@ pub fn generate(
     seed: u64,
     mutation: Option<(Defect, usize)>,
 ) -> Result<Fixture, String> {
+    let mut bytes = Vec::new();
+    let (target_seq, _) = generate_into(orders, seed, mutation, &mut bytes)?;
+    Ok(Fixture { bytes, target_seq })
+}
+/// Write the existing generator directly to a sink without retaining output.
+pub fn generate_into(
+    orders: usize,
+    seed: u64,
+    mutation: Option<(Defect, usize)>,
+    mut out: impl Write,
+) -> Result<(Option<u64>, u64), String> {
     if orders == 0 {
         return Err("generator requires at least one order".into());
     }
@@ -144,7 +155,8 @@ pub fn generate(
             generated_by_qlrs: true,
         },
     };
-    let mut out = qlrs_io::encode(&header).map_err(|e| e.to_string())?;
+    out.write_all(&qlrs_io::encode(&header).map_err(|e| e.to_string())?)
+        .map_err(|e| e.to_string())?;
     let mut seq = 0_u64;
     let mut target_seq = None;
     let mut cash = 100_000_000_000_000_i128;
@@ -279,14 +291,14 @@ pub fn generate(
             });
         }
     }
-    Ok(Fixture {
-        bytes: out,
-        target_seq,
-    })
+    Ok((target_seq, seq))
 }
 
 mod rich;
-pub use rich::{GeneratorConfig, generate_rich};
+pub use rich::{GeneratorConfig, generate_rich, generate_rich_into};
 
 mod shapes;
-pub use shapes::{SHAPES, generate_shape};
+pub use shapes::{SHAPES, generate_shape, shape_config};
+
+/// Stable seed expansion and generator stream.
+pub mod rng;

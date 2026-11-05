@@ -1,0 +1,29 @@
+{
+  "format": "qlrs-gen/v1",
+  "s1m_seed1": {
+    "generator_version": "qlrs-gen/v1",
+    "preset": "s1m",
+    "profile": "simple",
+    "seed": 1,
+    "requested_events": 1000000,
+    "events": 1000000,
+    "bytes": 178567133,
+    "blake3": "8db2ab01f3281108c0211ae9c4c3f7f466553498f0f81e89c21665d8457d117b",
+    "qlrs_commit": "ce6480b4cc3c9c42d22be63dfc1d85489e473415",
+    "target_seq": null
+  },
+  "s10m_seed1": {
+    "generator_version": "qlrs-gen/v1",
+    "preset": "s10m",
+    "profile": "simple",
+    "seed": 1,
+    "requested_events": 10000000,
+    "events": 10000000,
+    "bytes": 1817667136,
+    "blake3": "fbff133b7cc91d0c8e66b4e7ef0b67c64bafedb4736eda16c9ca1d9bdb0b7f40",
+    "qlrs_commit": "ce6480b4cc3c9c42d22be63dfc1d85489e473415",
+    "target_seq": null
+  },
+  "repeat_bytes_and_metadata_equal": true,
+  "cross_os_status": "pending real ARM/Linux CI"
+}

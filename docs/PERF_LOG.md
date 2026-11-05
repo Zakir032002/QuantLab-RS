@@ -13,3 +13,9 @@ attributed to a code change or an instruction-count improvement.
 Future changes are retained only with measured instruction or memory improvements
 and unchanged protected outputs. Streaming generation and source non-retention
 are the first memory targets; parser/allocator alternatives remain unadopted.
+
+CP3.2: new 10M streaming generator peaks at 2488 KiB, below the 64 MiB
+goal; the old 1M Vec generator peaked at 175248 KiB. Different preset seeds
+are labeled in raw metadata; no wall-time speedup is inferred from that comparison.
+See evidence/part3/gen/s10m and baseline-before/generate-s1m. Repeated 1M
+bytes/metadata are identical. Cross-OS confirmation is pending.

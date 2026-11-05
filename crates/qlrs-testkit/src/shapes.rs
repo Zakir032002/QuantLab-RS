@@ -18,6 +18,33 @@ pub fn generate_shape(
             defect.map(|defect| (defect, orders / 2)),
         )?);
     }
+    let config = shape_config(shape, seed, orders)?;
+    let index = if shape == "S8" && defect == Some(Defect::D04) {
+        config.fifo_ladder
+    } else {
+        orders / 2
+    };
+    let mut fixture = generate_rich(config, defect.map(|defect| (defect, index)))?;
+    if shape == "S9" {
+        let lines: Vec<_> = fixture
+            .bytes
+            .split_inclusive(|byte| *byte == b'\n')
+            .collect();
+        let last_cash = lines.iter().rposition(|line| {
+            std::str::from_utf8(line).is_ok_and(|text| text.contains("\"type\":\"AccountClaim\""))
+        });
+        fixture.bytes = lines
+            .iter()
+            .enumerate()
+            .filter(|(index, _)| Some(*index) != last_cash)
+            .flat_map(|(_, line)| line.iter().copied())
+            .collect();
+    }
+    add_removable_context(fixture)
+}
+
+/// Scheduling configuration shared by small fixtures and streaming presets.
+pub fn shape_config(shape: &str, seed: u64, orders: usize) -> Result<GeneratorConfig, String> {
     let mut config = GeneratorConfig::profile("interleaved", orders, seed)?;
     config.instruments = 1;
     config.long_lived_orders = 0;
@@ -53,28 +80,7 @@ pub fn generate_shape(
         }
         _ => return Err("unknown Part 2 shape".into()),
     }
-    let index = if shape == "S8" && defect == Some(Defect::D04) {
-        config.fifo_ladder
-    } else {
-        orders / 2
-    };
-    let mut fixture = generate_rich(config, defect.map(|defect| (defect, index)))?;
-    if shape == "S9" {
-        let lines: Vec<_> = fixture
-            .bytes
-            .split_inclusive(|byte| *byte == b'\n')
-            .collect();
-        let last_cash = lines.iter().rposition(|line| {
-            std::str::from_utf8(line).is_ok_and(|text| text.contains("\"type\":\"AccountClaim\""))
-        });
-        fixture.bytes = lines
-            .iter()
-            .enumerate()
-            .filter(|(index, _)| Some(*index) != last_cash)
-            .flat_map(|(_, line)| line.iter().copied())
-            .collect();
-    }
-    add_removable_context(fixture)
+    Ok(config)
 }
 
 fn add_removable_context(fixture: Fixture) -> Result<Fixture, String> {

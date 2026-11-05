@@ -1,0 +1,96 @@
+   Compiling qlrs-io v0.1.0 (/workspace/QuantLab-RS/crates/qlrs-io)
+   Compiling qlrs-bundle v0.1.0 (/workspace/QuantLab-RS/crates/qlrs-bundle)
+   Compiling qlrs-testkit v0.1.0 (/workspace/QuantLab-RS/crates/qlrs-testkit)
+   Compiling qlrs-bench v0.1.0 (/workspace/QuantLab-RS/crates/qlrs-bench)
+   Compiling qlrs-cli v0.1.0 (/workspace/QuantLab-RS/crates/qlrs-cli)
+    Finished `test` profile [optimized + debuginfo] target(s) in 18.29s
+────────────
+ Nextest run ID b556ec38-39b9-4e94-8905-0330658f92b6 with nextest profile: default
+    Starting 85 tests across 20 binaries
+        PASS [   0.004s] ( 1/85) qlrs-check tests::req_fp_002_at_seq_filters_status_and_anchor
+        PASS [   0.004s] ( 2/85) qlrs-check fingerprint::tests::req_fp_001_canonical_vector_and_order_independence
+        PASS [   0.004s] ( 3/85) qlrs-check fingerprint::tests::req_fp_003_all_fields_have_distinct_canonical_encodings
+        PASS [   0.005s] ( 4/85) qlrs-check fingerprint::tests::req_fp_004_utf8_lengths_sign_and_zero_multiset_entries
+        PASS [   0.004s] ( 5/85) qlrs-num tests::req_num_001_decimal_grammar_and_per_value_scale
+        PASS [   0.021s] ( 6/85) qlrs-cli::exit_codes req_cli_002_limits_preserve_verified_output_without_minimality_claim
+        PASS [   0.004s] ( 7/85) qlrs-num tests::req_num_002_signed_limits_and_checked_overflow
+        PASS [   0.028s] ( 8/85) qlrs-cli::exit_codes req_cli_003_reference_algorithm_and_certificate_recheck
+        PASS [   0.028s] ( 9/85) qlrs-cli::exit_codes req_cli_001_exit_codes_and_bundle_commands
+        PASS [   0.006s] (10/85) qlrs-num tests::req_num_003_all_rounding_modes_signed_ties
+        PASS [   0.025s] (11/85) qlrs-num tests::req_num_002_checked_operations_and_parser_never_panic
+        PASS [   0.004s] (12/85) qlrs-num tests::req_num_004_wide_intermediate_can_fit_final_value
+        PASS [   0.005s] (13/85) qlrs-num tests::req_num_005_compare_by_upscaling_without_overflow
+        PASS [   0.048s] (14/85) qlrs-num tests::req_num_006_roundtrip_100k_values
+        PASS [   0.006s] (15/85) qlrs-num::properties req_num_010_checked_mul_exact_product_scale
+        PASS [   0.005s] (16/85) qlrs-num::properties req_num_011_notional_fee_round_once
+        PASS [   0.122s] (17/85) qlrs-num::properties req_num_009_parser_no_panics
+        PASS [   0.005s] (18/85) qlrs-num::properties req_num_013_error_reason_codes
+        PASS [   0.129s] (19/85) qlrs-num::properties req_num_008_parse_format_roundtrip
+        PASS [   0.005s] (20/85) qlrs-reduce algebra::tests::req_reduce_022_shared_prerequisites_are_counted_once_and_overflow_falls_back
+        PASS [   0.004s] (21/85) qlrs-reduce cache::tests::req_reduce_011_cache_forced_collision_and_incremental_toggles
+        PASS [   0.004s] (22/85) qlrs-reduce helper_tests::req_reduce_015_remove_closure_respects_dependents_pins_and_noops
+        PASS [   0.008s] (23/85) qlrs-reduce helper_tests::req_reduce_014_evaluate_batch_selects_success_and_obeys_limits
+        PASS [   0.004s] (24/85) qlrs-reduce helper_tests::req_reduce_018_graph_commitment_is_canonical_and_rle_is_exact
+        PASS [   0.006s] (25/85) qlrs-reduce helper_tests::req_reduce_019_speculation_commits_lowest_success_across_thread_counts
+        PASS [   0.007s] (26/85) qlrs-reduce helper_tests::req_reduce_023_cache_requires_fixed_bounds_and_public_masks_are_normalized
+        PASS [   0.005s] (27/85) qlrs-testkit::allocations req_ledger_001_zero_allocations_in_replay_loop
+        PASS [   0.004s] (28/85) qlrs-testkit::corrections req_check_011_every_fill_needs_later_cash_and_same_asset_position
+        PASS [   0.006s] (29/85) qlrs-testkit::corrections req_check_012_i2_uses_local_claim_windows_for_carried_errors
+        PASS [   0.004s] (30/85) qlrs-testkit::corrections req_check_013_sparse_indices_must_be_unique_and_in_sequence_order
+        PASS [   0.005s] (31/85) qlrs-testkit::corrections req_checkpoint_001_earlier_bad_claim_is_an_opening_boundary
+        PASS [   0.013s] (32/85) qlrs-testkit::corrections req_checkpoint_002_open_and_terminal_orders_and_prior_trades_survive_cut
+        PASS [   0.021s] (33/85) qlrs-testkit::corrections req_checkpoint_003_invalid_context_never_becomes_a_financial_accusation
+        PASS [   0.009s] (34/85) qlrs-testkit::corrections req_generator_001_interleaving_sparse_claims_long_lived_and_carried_offsets
+        PASS [   0.107s] (35/85) qlrs-testkit::corrections req_gate_001_all_eleven_defects_on_rich_profiles
+        PASS [   0.039s] (36/85) qlrs-testkit::corrections req_generator_003_each_instrument_has_independent_buy_sell_cycles
+        PASS [   0.007s] (37/85) qlrs-testkit::corrections req_graph_002_checkpoint_inventory_replaces_historical_buy_dependencies
+        PASS [   0.018s] (38/85) qlrs-testkit::corrections req_reduce_005_limits_return_best_verified_uncertified_bundles
+        PASS [   0.041s] (39/85) qlrs-testkit::corrections req_reduce_006_sparse_dense_and_incremental_patterns_match_on_all_defects
+        PASS [   0.008s] (40/85) qlrs-testkit::corrections req_reduce_007_other_lifecycle_breaches_are_not_admitted_or_returned_on_limits
+        PASS [   0.005s] (41/85) qlrs-testkit::corrections req_reduce_008_short_logs_read_legacy_removed_unit_lists
+        PASS [   0.068s] (42/85) qlrs-testkit::differential_part2 req_reduce_013_algebra_matches_full_checker_on_closed_subsets_per_shape
+        PASS [   0.007s] (43/85) qlrs-testkit::invariants req_check_001_catalogue_statuses_and_invariants
+        PASS [   0.600s] (44/85) qlrs-num::properties req_num_007_mul_rescale_matches_bigint
+        PASS [   0.461s] (45/85) qlrs-testkit::corrections req_generator_002_rich_statuses_across_seeds
+        PASS [   0.182s] (46/85) qlrs-testkit::invariants req_check_002_clean_generated_consistent
+        PASS [   0.007s] (47/85) qlrs-testkit::invariants req_check_004_residual_relations_are_hints
+        PASS [   0.005s] (48/85) qlrs-testkit::invariants req_check_005_clean_corpus_and_flat_position
+        PASS [   0.005s] (49/85) qlrs-testkit::invariants req_check_006_unknown_event_is_unsupported_not_input_error
+        PASS [   0.007s] (50/85) qlrs-testkit::invariants req_check_007_partial_and_status_precedence
+        PASS [   0.004s] (51/85) qlrs-testkit::invariants req_check_008_lifecycle_subcodes_and_supported_terminal_states
+        PASS [   0.005s] (52/85) qlrs-testkit::invariants req_check_009_unknown_fill_never_invents_a_cash_delta
+        PASS [   0.004s] (53/85) qlrs-testkit::invariants req_check_010_trade_uniqueness_needs_known_instrument_scope
+        PASS [   0.005s] (54/85) qlrs-testkit::invariants req_io_001_strict_unknown_fields_decimal_types_and_sequences
+        PASS [   0.006s] (55/85) qlrs-testkit::invariants req_io_002_roundtrip_verbatim
+        PASS [   0.004s] (56/85) qlrs-testkit::invariants req_io_003_verbatim_noncanonical_decimal_evidence
+        PASS [   0.005s] (57/85) qlrs-testkit::invariants req_io_004_malformed_overflow_still_input_error
+        PASS [   0.004s] (58/85) qlrs-testkit::invariants req_io_005_cash_only_header_needs_no_instruments
+        PASS [   0.005s] (59/85) qlrs-testkit::invariants req_io_006_escaped_strings_use_owned_cold_path_and_roundtrip
+        PASS [   0.004s] (60/85) qlrs-testkit::invariants req_io_007_overflow_is_not_a_zero_quantity_or_precision_accusation
+        PASS [   0.005s] (61/85) qlrs-testkit::invariants req_ledger_002_replay_is_independent_of_observed_claims
+        PASS [   0.006s] (62/85) qlrs-testkit::part2 req_bundle_003_original_v0_writer_bundle_still_verifies
+        PASS [   0.012s] (63/85) qlrs-testkit::part2 req_bundle_002_v1_roles_and_certificates_reject_false_proofs
+        PASS [   0.004s] (64/85) qlrs-testkit::part2 req_check_014_violation_dominates_uncovered_tail_and_is_reducible
+        PASS [   0.005s] (65/85) qlrs-testkit::part2 req_check_015_witness_scope_and_unsupported_tail_findings_are_separate
+        PASS [   0.040s] (66/85) qlrs-testkit::part2 req_gate_003_sparse_required_evidence_can_exceed_thirty_two_events
+        PASS [   0.009s] (67/85) qlrs-testkit::part2 req_reduce_009_i2_witness_needs_only_its_instrument_and_position_claims
+        PASS [   0.031s] (68/85) qlrs-testkit::part2 req_reduce_010_r1_d04_sizes_finish_under_existing_budgets
+        PASS [   0.151s] (69/85) qlrs-testkit::part2 req_reduce_012_long_lived_and_second_carried_error_are_bounded
+        PASS [   0.015s] (70/85) qlrs-testkit::part2 req_reduce_016_unit_renaming_preserves_observed_witness
+        PASS [   0.008s] (71/85) qlrs-testkit::part2 req_reduce_017_nonmonotone_superset_is_saved_and_seed_recovers
+        PASS [   0.911s] (72/85) qlrs-num::properties req_num_012_product_plus_fee_bigint_oracle
+        PASS [   0.010s] (73/85) qlrs-testkit::part2 req_reduce_020_i2_keeps_other_asset_fills_only_for_required_cash_support
+        PASS [   0.011s] (74/85) qlrs-testkit::reduction req_bundle_001_deterministic_roundtrip_and_every_file_tamper
+        PASS [   0.006s] (75/85) qlrs-testkit::reduction req_graph_001_sell_closures_consume_earlier_buy_inventory
+        PASS [   0.022s] (76/85) qlrs-testkit::part2 req_reduce_021_small_window_quality_matches_exhaustive_ground_truth
+        PASS [   0.010s] (77/85) qlrs-testkit::reduction req_reduce_001_three_defects_exact_replay_and_idempotence
+        PASS [   0.008s] (78/85) qlrs-testkit::reduction req_reduce_002_actual_closure_minimality_certificate
+        PASS [   0.008s] (79/85) qlrs-testkit::reduction req_reduce_004_sparse_fast_predicate_matches_full_replay
+        PASS [   0.012s] (80/85) qlrs-testkit::streaming_gen hard_006_atomic_failure_preserves_target_and_unowned_files
+        PASS [   0.005s] (81/85) qlrs-testkit::streaming_gen scale_003_both_generators_propagate_writer_failure
+        PASS [   0.034s] (82/85) qlrs-testkit::reduction req_reduce_003_property_preserves_instance_and_source
+        PASS [   0.061s] (83/85) qlrs-testkit::streaming_gen scale_003_rng_vectors_and_legacy_stream_commitment
+        PASS [   0.723s] (84/85) qlrs-testkit::part2 req_gate_002_shapes_have_real_removals_and_recheckable_certificates
+        PASS [   2.551s] (85/85) qlrs-testkit::invariants req_check_003_all_defects_1000_injection_points
+────────────
+     Summary [   3.187s] 85 tests run: 85 passed, 0 skipped

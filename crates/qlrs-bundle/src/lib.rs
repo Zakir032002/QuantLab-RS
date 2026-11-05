@@ -466,3 +466,9 @@ fn regular_file(dir: &Path, name: &str) -> Result<Vec<u8>, String> {
     }
     fs::read(path).map_err(|e| e.to_string())
 }
+
+/// Source revision embedded when the product was built.
+#[must_use]
+pub const fn source_commit() -> &'static str {
+    env!("QLRS_GIT_COMMIT")
+}

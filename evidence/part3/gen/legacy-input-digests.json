@@ -1,0 +1,13 @@
+{
+  "s100k.jsonl": {
+    "bytes": 17537130,
+    "sha256": "0d60941a176b8bf133e321ad2e286c636ad4679e6b8d7eb3ee08111e1a126307",
+    "blake3": "563dffc8ea4f60531504245d3943b0276cd920bcaa97bff2107a1a343aa2649a"
+  },
+  "s1m.jsonl": {
+    "bytes": 178567133,
+    "sha256": "7c4cffd67a0e340635f801d648fdbc26dd0d883524730990a829169c346b0ea4",
+    "blake3": "3cfe93ad85ab9f2628849d99a032c478003f921ce317a4e76099c8bd6399b21e"
+  },
+  "blake3_provenance": "target/release/examples/hash on untouched baseline inputs; existing SHA256 rechecked before this addition"
+}

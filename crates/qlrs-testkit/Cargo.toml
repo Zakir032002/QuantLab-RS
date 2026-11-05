@@ -18,6 +18,9 @@ expect_used = "deny"
 indexing_slicing = "warn"
 
 [dependencies]
+blake3.workspace = true
+clap.workspace = true
+serde.workspace = true
 rayon.workspace = true
 qlrs-num.workspace = true
 qlrs-schema.workspace = true
