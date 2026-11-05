@@ -7,6 +7,12 @@ if not command:raise SystemExit('usage: bench_record.sh OUTPUT_DIRECTORY COMMAND
 out.mkdir(parents=True,exist_ok=True)
 meta={'started_utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'commit':subprocess.check_output(['git','rev-parse','HEAD'],text=True).strip(),'command':command,'host':platform.node(),'os':platform.platform(),'cpu':next((x.split(':',1)[1].strip() for x in pathlib.Path('/proc/cpuinfo').read_text().splitlines() if x.startswith('model name')),'not available') if platform.system()=='Linux' else subprocess.check_output(['sysctl','-n','machdep.cpu.brand_string'],text=True).strip(),'cores':os.cpu_count(),'rustc_vv':subprocess.check_output(['rustc','-Vv'],text=True),'runner_image':{k:os.environ.get(k) for k in ('ImageOS','ImageVersion')},'source_sha256':{str(p):hashlib.sha256(p.read_bytes()).hexdigest() for p in sorted(pathlib.Path('crates').rglob('*.rs'))},'environment':{k:os.environ.get(k) for k in ('RAYON_NUM_THREADS','GUNGRAUN_ALLOW_ASLR','CARGO_PROFILE_RELEASE_OVERFLOW_CHECKS','ASAN_OPTIONS')}}
 meta['fuzz_sha256']={str(p):hashlib.sha256(p.read_bytes()).hexdigest() for p in sorted(pathlib.Path('fuzz').glob('**/*')) if p.is_file() and ('target' not in p.parts) and ('corpus' not in p.parts) and ('artifacts' not in p.parts) and p.stat().st_size < 1024*1024}
+meta['ram_bytes']=int(next(line.split()[1] for line in pathlib.Path('/proc/meminfo').read_text().splitlines() if line.startswith('MemTotal:')))*1024 if platform.system()=='Linux' else int(subprocess.check_output(['sysctl','-n','hw.memsize'],text=True))
+meta['cgroup']={name:pathlib.Path('/sys/fs/cgroup/'+name).read_text().strip() for name in ('cpu.max','memory.max') if pathlib.Path('/sys/fs/cgroup/'+name).is_file()}
+meta['lock_sha256']={str(p):hashlib.sha256(p.read_bytes()).hexdigest() for p in (pathlib.Path('Cargo.lock'),pathlib.Path('fuzz/Cargo.lock')) if p.is_file()}
+meta['dirty']=bool(subprocess.check_output(['git','status','--porcelain','--untracked-files=no'],text=True).strip())
+for arg in command:
+ if arg.startswith('+nightly-'):meta['fuzz_rustc_vv']=subprocess.check_output(['rustc',arg,'-Vv'],text=True)
 (out/'metadata.json').write_text(json.dumps(meta,indent=2)+'\n')
 start=time.monotonic()
 with (out/'stdout.txt').open('wb') as stdout,(out/'stderr.txt').open('wb') as stderr:

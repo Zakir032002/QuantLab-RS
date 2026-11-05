@@ -15,7 +15,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        target: [io_line, io_trace, num_ops, num_decimal]
+        target: [io_line, io_trace, io_chunk_diff, num_ops, num_decimal, check_clean, check_injected, check_dense_vs_selected, reduce_sound, eval_vs_checker, bundle_verify]
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
       - name: Pinned toolchain and tool
@@ -37,6 +37,8 @@ jobs:
             io_line) qlrs_sanitizer=address; qlrs_flags+=(-dict=fuzz/dict/qlrs_trace_v0.dict);;
             io_trace) qlrs_sanitizer=address; qlrs_flags=(-max_len=1048576 -dict=fuzz/dict/qlrs_trace_v0.dict);;
             num_decimal) qlrs_flags+=(-dict=fuzz/dict/decimal.dict);;
+            io_chunk_diff) qlrs_flags=(-max_len=1048576 -dict=fuzz/dict/qlrs_trace_v0.dict);;
+            bundle_verify) qlrs_sanitizer=address; qlrs_flags=(-max_len=1048576 -dict=fuzz/dict/bundle.dict);;
           esac
           scripts/bench_record.sh "evidence/part3/fuzz-ci/$QLRS_TARGET" cargo +nightly-2026-11-04 fuzz run --fuzz-dir fuzz --release -s "$qlrs_sanitizer" "$QLRS_TARGET" -- -max_total_time="$qlrs_seconds" -rss_limit_mb=2048 -timeout=10 -print_final_stats=1 "${qlrs_flags[@]}"
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02

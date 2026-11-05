@@ -117,3 +117,28 @@ The exact before source ce6480b has now been measured on both actual macos-15
 ARM and ubuntu-24.04-arm. Both jobs succeeded; transferred outputs include
 verified per-file and source hashes under `baseline-before/<runner>`. Those are
 before results and do not establish the later scale or determinism gates.
+
+## Latest implemented state
+
+All eleven applicable targets build and have zero-crash smoke evidence. F03
+also completed 20 minutes (881439 executions); this is not Gate S CPU-hour
+evidence. Native tests: 109, floor raised to 109. All corpora were minimized
+before their commits, with at most 2000 files each. The sole new target failure
+was P3-ORACLE-001, an invalid later-anchor request; minimized regression and
+correction are separate commits 34ae0b5 and b5a126e, and the regression passes.
+No production invariant or fingerprint policy changed for that correction.
+
+File ingestion retains offsets and block digests, not full source bytes. The
+original CP3.1 1M input now peaks at 153760 KiB versus 332436 KiB before; raw
+streaming/verify-s1m and baseline-before/verify-s1m. The 10M process completes,
+but 1561384 KiB exceeds its RSS gate; compaction work is active. Removing the
+unused Unit.first_event field lowered the 1M development measurement to 149220
+KiB (hot-path/unit-column). Worktree source hashes are recorded with each run;
+these intermediate measurements are not represented as final Gate S baselines.
+
+Bundle reads now use safe rustix directory-relative descriptors and NOFOLLOW;
+file/root replacement race tests pass. Bundle staging also uses atomic
+NOREPLACE rename. Kani 0.68.0 is installed with its own pinned toolchain; proofs
+have not yet run. Main-branch push of 2ce5ff9 was rejected by automatic approval
+review pending explicit permission. Hosted validation will use a new review
+branch as the safer alternative; main approval remains pending. No Gate S tag.
