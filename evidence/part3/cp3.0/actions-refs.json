@@ -1,0 +1,16 @@
+[
+  {
+    "action": "actions/checkout",
+    "tag": "v4",
+    "commit": "11d5960a326750d5838078e36cf38b85af677262",
+    "commit_date": "2026-07-16T15:43:47-04:00",
+    "source": "https://github.com/actions/checkout.git"
+  },
+  {
+    "action": "actions/upload-artifact",
+    "tag": "v4",
+    "commit": "ea165f8d65b6e75b540449e92b4886f43607fa02",
+    "commit_date": "2025-03-19T10:34:59-07:00",
+    "source": "https://github.com/actions/upload-artifact.git"
+  }
+]

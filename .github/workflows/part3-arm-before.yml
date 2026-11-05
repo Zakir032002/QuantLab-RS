@@ -1,0 +1,63 @@
+name: Part 3 ARM before baseline
+on:
+  push:
+    branches: [codex/part3-arm-before]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  before:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-24.04-arm, macos-15]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          ref: ce6480b4cc3c9c42d22be63dfc1d85489e473415
+      - run: rustup toolchain install 1.99.1 --profile minimal
+      - name: Measure the unchanged before source
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/qlrs-arm-before evidence/part3/arm-before
+          uname -a > evidence/part3/arm-before/machine.txt
+          if [[ $(uname -s) == Darwin ]]; then
+            sysctl machdep.cpu.brand_string hw.ncpu hw.memsize >> evidence/part3/arm-before/machine.txt
+            qlrs_time_flag=-l
+          else
+            lscpu >> evidence/part3/arm-before/machine.txt
+            qlrs_time_flag=-v
+          fi
+          cargo build --release --locked -p qlrs-cli
+          cargo build --release --locked -p qlrs-testkit --example generate
+          scripts/bench_record.sh evidence/part3/arm-before/generate-s1m /usr/bin/time "$qlrs_time_flag" target/release/examples/generate 200000 /tmp/qlrs-arm-before/s1m.jsonl
+          scripts/bench_record.sh evidence/part3/arm-before/verify-s1m /usr/bin/time "$qlrs_time_flag" target/release/qlrs verify /tmp/qlrs-arm-before/s1m.jsonl
+          RAYON_NUM_THREADS=5 scripts/bench_record.sh evidence/part3/arm-before/criterion cargo bench -p qlrs-bench --bench throughput --locked -- 'pipeline/check_100k|reduce_100k' --sample-size 50
+          cargo build --release --locked -p qlrs-io --example hash
+          target/release/examples/hash /tmp/qlrs-arm-before > evidence/part3/arm-before/input-digests.txt
+          python3 - <<'PY'
+          import base64,hashlib,io,pathlib,zipfile
+          root=pathlib.Path('evidence/part3/arm-before')
+          for source in pathlib.Path('target/criterion').glob('**/new/*.json'):
+              if source.name in ('benchmark.json','estimates.json','sample.json','tukey.json'):
+                  path=root/'criterion-raw'/source.relative_to('target/criterion')
+                  path.parent.mkdir(parents=True,exist_ok=True);path.write_bytes(source.read_bytes())
+          files=sorted(p for p in root.rglob('*') if p.is_file())
+          (root/'MANIFEST.sha256').write_text(''.join(hashlib.sha256(p.read_bytes()).hexdigest()+'  '+p.relative_to(root).as_posix()+'\n' for p in files))
+          payload=io.BytesIO()
+          with zipfile.ZipFile(payload,'w',zipfile.ZIP_DEFLATED) as bundle:
+              for path in sorted(root.rglob('*')):
+                  if path.is_file():bundle.writestr(path.relative_to(root).as_posix(),path.read_bytes())
+          data=payload.getvalue();digest=hashlib.sha256(data).hexdigest()
+          encoded=base64.b64encode(data).decode();chunks=[encoded[i:i+3000] for i in range(0,len(encoded),3000)]
+          for i,chunk in enumerate(chunks,1):print(f'::notice title=Part3 ARM raw evidence::{digest}:{i}:{len(chunks)}:{chunk}')
+          PY
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        if: always()
+        with:
+          name: part3-before-${{ matrix.os }}
+          path: evidence/part3/arm-before/
+          retention-days: 90

@@ -87,3 +87,10 @@ The binary reports upstream version UNKNOWN; the package version and SHA256,
 not an invented binary version, are recorded in evidence/part3/cp3.0/gnu-time-package.json.
 The prescribed RSS tool was absent from /usr/bin; its workspace path is recorded
 in every command. Hyperfine 2.0.0 was installed with --locked after registry verification.
+
+Part 3 CI pins: actions/checkout v4 at 11d5960a326750d5838078e36cf38b85af677262
+(commit date 2026-07-16), actions/upload-artifact v4 at
+ea165f8d65b6e75b540449e92b4886f43607fa02 (2025-03-19; existing major retained).
+Official repository refs and exact dates: evidence/part3/cp3.0/actions-refs.json.
+Dated fuzz nightly verified against its official manifest: 2026-11-04,
+1.101.0-nightly; cargo-fuzz 0.13.2. Root Rust remains 1.99.1.
