@@ -1,0 +1,4 @@
+Darwin sat12-bq153-0b18d4ad-e799-4f67-81f7-ba79129f0b0f-1EC772E4CA05.local 24.6.0 Darwin Kernel Version 24.6.0: Sun Oct 11 23:44:11 PDT 2026; root:xnu-11417.140.69.713.47~2/RELEASE_ARM64_VMAPPLE arm64
+machdep.cpu.brand_string: Apple M1 (Virtual)
+hw.ncpu: 3
+hw.memsize: 7516192768

@@ -1,0 +1,96 @@
+ Downloading crates ...
+  Downloaded plotters-backend v0.3.7
+  Downloaded alloca v0.4.0
+  Downloaded ciborium-io v0.2.2
+  Downloaded ciborium-ll v0.2.2
+  Downloaded page_size v0.6.0
+  Downloaded same-file v1.0.6
+  Downloaded cast v0.3.0
+  Downloaded oorandom v11.1.5
+  Downloaded plotters-svg v0.3.7
+  Downloaded walkdir v2.5.0
+  Downloaded anes v0.1.6
+  Downloaded criterion-plot v0.8.2
+  Downloaded tinytemplate v1.2.1
+  Downloaded ciborium v0.2.2
+  Downloaded half v2.7.1
+  Downloaded aho-corasick v1.1.5
+  Downloaded zerocopy-derive v0.8.63
+  Downloaded criterion v0.8.2
+  Downloaded itertools v0.13.0
+  Downloaded plotters v0.3.7
+  Downloaded regex v1.13.1
+  Downloaded syn v2.0.119
+  Downloaded zerocopy v0.8.63
+  Downloaded regex-automata v0.4.18
+   Compiling serde_core v1.0.229
+   Compiling syn v3.0.9
+   Compiling serde v1.0.229
+   Compiling cfg-if v1.0.5
+   Compiling crossbeam-utils v0.8.23
+   Compiling crossbeam-epoch v0.9.21
+   Compiling either v1.19.0
+   Compiling crossbeam-deque v0.8.8
+   Compiling foldhash v0.2.0
+   Compiling qlrs-num v0.1.0 (/Users/runner/work/QuantLab-RS/QuantLab-RS/crates/qlrs-num)
+   Compiling rayon-core v1.13.0
+   Compiling serde_derive v1.0.229
+   Compiling zmij v1.0.23
+   Compiling memchr v2.8.3
+   Compiling itoa v1.0.18
+   Compiling constant_time_eq v0.4.2
+   Compiling arrayvec v0.7.8
+   Compiling serde_json v1.0.154
+   Compiling blake3 v1.8.7
+   Compiling rayon v1.12.0
+   Compiling qlrs-schema v0.1.0 (/Users/runner/work/QuantLab-RS/QuantLab-RS/crates/qlrs-schema)
+   Compiling syn v2.0.119
+   Compiling zerocopy v0.8.63
+   Compiling qlrs-ledger v0.1.0 (/Users/runner/work/QuantLab-RS/QuantLab-RS/crates/qlrs-ledger)
+   Compiling num-traits v0.2.19
+   Compiling qlrs-check v0.1.0 (/Users/runner/work/QuantLab-RS/QuantLab-RS/crates/qlrs-check)
+   Compiling qlrs-io v0.1.0 (/Users/runner/work/QuantLab-RS/QuantLab-RS/crates/qlrs-io)
+   Compiling zerocopy-derive v0.8.63
+   Compiling qlrs-reduce v0.1.0 (/Users/runner/work/QuantLab-RS/QuantLab-RS/crates/qlrs-reduce)
+   Compiling alloca v0.4.0
+   Compiling plotters-backend v0.3.7
+   Compiling clap_lex v1.1.1
+   Compiling anstyle v1.0.14
+   Compiling regex-syntax v0.8.11
+   Compiling ciborium-io v0.2.2
+   Compiling half v2.7.1
+   Compiling regex-automata v0.4.18
+   Compiling ciborium-ll v0.2.2
+   Compiling clap_builder v4.6.7
+   Compiling plotters-svg v0.3.7
+   Compiling qlrs-bundle v0.1.0 (/Users/runner/work/QuantLab-RS/QuantLab-RS/crates/qlrs-bundle)
+   Compiling libc v0.2.191
+   Compiling itertools v0.13.0
+   Compiling same-file v1.0.6
+   Compiling cast v0.3.0
+   Compiling walkdir v2.5.0
+   Compiling criterion-plot v0.8.2
+   Compiling page_size v0.6.0
+   Compiling plotters v0.3.7
+   Compiling qlrs-testkit v0.1.0 (/Users/runner/work/QuantLab-RS/QuantLab-RS/crates/qlrs-testkit)
+   Compiling clap v4.6.7
+   Compiling regex v1.13.1
+   Compiling ciborium v0.2.2
+   Compiling tinytemplate v1.2.1
+   Compiling anes v0.1.6
+   Compiling oorandom v11.1.5
+   Compiling qlrs-bench v0.1.0 (/Users/runner/work/QuantLab-RS/QuantLab-RS/crates/qlrs-bench)
+   Compiling criterion v0.8.2
+    Finished `bench` profile [optimized + debuginfo] target(s) in 50.90s
+     Running benches/throughput.rs (target/release/deps/throughput-d028294ce2a4fbcc)
+Gnuplot not found, using plotters backend
+Benchmarking pipeline/check_100k
+Benchmarking pipeline/check_100k: Warming up for 3.0000 s
+Benchmarking pipeline/check_100k: Collecting 50 samples in estimated 7.1281 s (3825 iterations)
+Benchmarking pipeline/check_100k: Analyzing
+Benchmarking reduce_100k
+Benchmarking reduce_100k: Warming up for 3.0000 s
+
+Warning: Unable to complete 50 samples in 5.0s. You may wish to increase target time to 5.6s, enable flat sampling, or reduce sample count to 30.
+Benchmarking reduce_100k: Collecting 50 samples in estimated 5.6175 s (1275 iterations)
+Benchmarking reduce_100k: Analyzing

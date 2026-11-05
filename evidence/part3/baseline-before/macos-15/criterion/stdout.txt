@@ -1,0 +1,10 @@
+pipeline/check_100k     time:   [1.8184 ms 1.8944 ms 1.9726 ms]
+                        thrpt:  [50.695 Melem/s 52.788 Melem/s 54.994 Melem/s]
+Found 5 outliers among 50 measurements (10.00%)
+  2 (4.00%) high mild
+  3 (6.00%) high severe
+
+reduce_100k             time:   [4.3087 ms 4.4744 ms 4.6531 ms]
+Found 1 outliers among 50 measurements (2.00%)
+  1 (2.00%) high mild
+

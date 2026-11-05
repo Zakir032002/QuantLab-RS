@@ -1,0 +1,5 @@
+pipeline/check_100k     time:   [2.2817 ms 2.2835 ms 2.2855 ms]
+                        thrpt:  [43.753 Melem/s 43.793 Melem/s 43.827 Melem/s]
+
+reduce_100k             time:   [4.9368 ms 4.9416 ms 4.9473 ms]
+
