@@ -1,0 +1,104 @@
+    Finished `release` profile [optimized + debuginfo] target(s) in 0.03s
+    Finished `release` profile [optimized + debuginfo] target(s) in 0.03s
+     Running `fuzz/target/x86_64-unknown-linux-gnu/release/reduce_sound -artifact_prefix=fuzz/artifacts/reduce_sound/ -minimize_crash=1 -runs=255 /tmp/qlrs-reduce-seed -max_total_time=60 -rss_limit_mb=2048 -timeout=10 -print_final_stats=1`
+WARNING: Failed to find function "__sanitizer_acquire_crash_state".
+WARNING: Failed to find function "__sanitizer_print_stack_trace".
+WARNING: Failed to find function "__sanitizer_set_death_callback".
+INFO: Running with entropic power schedule (0xFF, 100).
+INFO: Seed: 1222735630
+INFO: Loaded 1 modules   (18534 inline 8-bit counters): 18534 [0x55cbc7a97780, 0x55cbc7a9bfe6), 
+INFO: Loaded 1 PC tables (18534 PCs): 18534 [0x55cbc7a9bfe8,0x55cbc7ae4648), 
+CRASH_MIN: minimizing crash input: '/tmp/qlrs-reduce-seed' (19 bytes)
+CRASH_MIN: executing: fuzz/target/x86_64-unknown-linux-gnu/release/reduce_sound -artifact_prefix=fuzz/artifacts/reduce_sound/ -runs=255 -max_total_time=60 -rss_limit_mb=2048 -timeout=10 -print_final_stats=1 /tmp/qlrs-reduce-seed 2>&1
+CRASH_MIN: '/tmp/qlrs-reduce-seed' (19 bytes) caused a crash. Will try to minimize it further
+CRASH_MIN: executing: fuzz/target/x86_64-unknown-linux-gnu/release/reduce_sound -artifact_prefix=fuzz/artifacts/reduce_sound/ -runs=255 -max_total_time=60 -rss_limit_mb=2048 -timeout=10 -print_final_stats=1 /tmp/qlrs-reduce-seed -minimize_crash_internal_step=1 -exact_artifact_path=fuzz/artifacts/reduce_sound/minimized-from-62b164a86fb0a22d81121e828185746558fd838a 2>&1
+WARNING: Failed to find function "__sanitizer_acquire_crash_state".
+WARNING: Failed to find function "__sanitizer_print_stack_trace".
+WARNING: Failed to find function "__sanitizer_set_death_callback".
+INFO: Running with entropic power schedule (0xFF, 100).
+INFO: Seed: 1247600337
+INFO: Loaded 1 modules   (18534 inline 8-bit counters): 18534 [0x5654502de780, 0x5654502e2fe6), 
+INFO: Loaded 1 PC tables (18534 PCs): 18534 [0x5654502e2fe8,0x56545032b648), 
+INFO: Starting MinimizeCrashInputInternalStep: 19
+INFO: -max_len is not provided; libFuzzer will not generate inputs larger than 19 bytes
+
+thread '<unnamed>' (1356194) panicked at /workspace/QuantLab-RS/crates/qlrs-testkit/src/oracles.rs:522:29:
+Case { seed: 3, shape: 7, size: 7, defect: 7, bits: 0 }: claim-boundary context failed exact original replay
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+==1356194== ERROR: libFuzzer: deadly signal
+NOTE: libFuzzer has rudimentary signal handlers.
+      Combine libFuzzer with AddressSanitizer or similar for better crash reports.
+SUMMARY: libFuzzer: deadly signal
+MS: 1 EraseBytes-; base unit: 0000000000000000000000000000000000000000
+0x3,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x7,0x7,0x7,0x0,0x0,0x0,
+\003\000\000\000\000\000\000\000\007\007\007\000\000\000
+artifact_prefix='fuzz/artifacts/reduce_sound/'; Test unit written to fuzz/artifacts/reduce_sound/minimized-from-62b164a86fb0a22d81121e828185746558fd838a
+Base64: AwAAAAAAAAAHBwcAAAA=
+stat::number_of_executed_units: 21
+stat::average_exec_per_sec:     0
+stat::new_units_added:          0
+stat::slowest_unit_time_sec:    0
+stat::peak_rss_mb:              27
+*********************************
+CRASH_MIN: minimizing crash input: 'fuzz/artifacts/reduce_sound/minimized-from-62b164a86fb0a22d81121e828185746558fd838a' (14 bytes)
+CRASH_MIN: executing: fuzz/target/x86_64-unknown-linux-gnu/release/reduce_sound -artifact_prefix=fuzz/artifacts/reduce_sound/ -runs=255 -max_total_time=60 -rss_limit_mb=2048 -timeout=10 -print_final_stats=1 fuzz/artifacts/reduce_sound/minimized-from-62b164a86fb0a22d81121e828185746558fd838a 2>&1
+CRASH_MIN: 'fuzz/artifacts/reduce_sound/minimized-from-62b164a86fb0a22d81121e828185746558fd838a' (14 bytes) caused a crash. Will try to minimize it further
+CRASH_MIN: executing: fuzz/target/x86_64-unknown-linux-gnu/release/reduce_sound -artifact_prefix=fuzz/artifacts/reduce_sound/ -runs=255 -max_total_time=60 -rss_limit_mb=2048 -timeout=10 -print_final_stats=1 fuzz/artifacts/reduce_sound/minimized-from-62b164a86fb0a22d81121e828185746558fd838a -minimize_crash_internal_step=1 -exact_artifact_path=fuzz/artifacts/reduce_sound/minimized-from-ac435e6f7bd3c0d93cca420c97527f27a6871376 2>&1
+WARNING: Failed to find function "__sanitizer_acquire_crash_state".
+WARNING: Failed to find function "__sanitizer_print_stack_trace".
+WARNING: Failed to find function "__sanitizer_set_death_callback".
+INFO: Running with entropic power schedule (0xFF, 100).
+INFO: Seed: 1293059320
+INFO: Loaded 1 modules   (18534 inline 8-bit counters): 18534 [0x561c0ce99780, 0x561c0ce9dfe6), 
+INFO: Loaded 1 PC tables (18534 PCs): 18534 [0x561c0ce9dfe8,0x561c0cee6648), 
+INFO: Starting MinimizeCrashInputInternalStep: 14
+INFO: -max_len is not provided; libFuzzer will not generate inputs larger than 14 bytes
+
+thread '<unnamed>' (1356208) panicked at /workspace/QuantLab-RS/crates/qlrs-testkit/src/oracles.rs:522:29:
+Case { seed: 3, shape: 7, size: 7, defect: 7, bits: 0 }: claim-boundary context failed exact original replay
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+==1356208== ERROR: libFuzzer: deadly signal
+NOTE: libFuzzer has rudimentary signal handlers.
+      Combine libFuzzer with AddressSanitizer or similar for better crash reports.
+SUMMARY: libFuzzer: deadly signal
+MS: 2 EraseBytes-EraseBytes-; base unit: 0000000000000000000000000000000000000000
+0x3,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x7,0x7,0x7,0x0,0x0,
+\003\000\000\000\000\000\000\000\007\007\007\000\000
+artifact_prefix='fuzz/artifacts/reduce_sound/'; Test unit written to fuzz/artifacts/reduce_sound/minimized-from-ac435e6f7bd3c0d93cca420c97527f27a6871376
+Base64: AwAAAAAAAAAHBwcAAA==
+stat::number_of_executed_units: 17
+stat::average_exec_per_sec:     0
+stat::new_units_added:          0
+stat::slowest_unit_time_sec:    0
+stat::peak_rss_mb:              27
+*********************************
+CRASH_MIN: minimizing crash input: 'fuzz/artifacts/reduce_sound/minimized-from-ac435e6f7bd3c0d93cca420c97527f27a6871376' (13 bytes)
+CRASH_MIN: executing: fuzz/target/x86_64-unknown-linux-gnu/release/reduce_sound -artifact_prefix=fuzz/artifacts/reduce_sound/ -runs=255 -max_total_time=60 -rss_limit_mb=2048 -timeout=10 -print_final_stats=1 fuzz/artifacts/reduce_sound/minimized-from-ac435e6f7bd3c0d93cca420c97527f27a6871376 2>&1
+CRASH_MIN: 'fuzz/artifacts/reduce_sound/minimized-from-ac435e6f7bd3c0d93cca420c97527f27a6871376' (13 bytes) caused a crash. Will try to minimize it further
+CRASH_MIN: executing: fuzz/target/x86_64-unknown-linux-gnu/release/reduce_sound -artifact_prefix=fuzz/artifacts/reduce_sound/ -runs=255 -max_total_time=60 -rss_limit_mb=2048 -timeout=10 -print_final_stats=1 fuzz/artifacts/reduce_sound/minimized-from-ac435e6f7bd3c0d93cca420c97527f27a6871376 -minimize_crash_internal_step=1 -exact_artifact_path=fuzz/artifacts/reduce_sound/minimized-from-f8f64302c6ef8a77ee7bb3df2040a2f92be2d366 2>&1
+WARNING: Failed to find function "__sanitizer_acquire_crash_state".
+WARNING: Failed to find function "__sanitizer_print_stack_trace".
+WARNING: Failed to find function "__sanitizer_set_death_callback".
+INFO: Running with entropic power schedule (0xFF, 100).
+INFO: Seed: 1345760790
+INFO: Loaded 1 modules   (18534 inline 8-bit counters): 18534 [0x556a352d1780, 0x556a352d5fe6), 
+INFO: Loaded 1 PC tables (18534 PCs): 18534 [0x556a352d5fe8,0x556a3531e648), 
+INFO: Starting MinimizeCrashInputInternalStep: 13
+INFO: -max_len is not provided; libFuzzer will not generate inputs larger than 13 bytes
+INFO: Done MinimizeCrashInputInternalStep, no crashes found
+CRASH_MIN: failed to minimize beyond fuzz/artifacts/reduce_sound/minimized-from-ac435e6f7bd3c0d93cca420c97527f27a6871376 (13 bytes), exiting
+
+────────────────────────────────────────────────────────────────────────────────
+
+Minimized artifact:
+
+	fuzz/artifacts/reduce_sound/minimized-from-ac435e6f7bd3c0d93cca420c97527f27a6871376
+
+Output of `std::fmt::Debug`:
+
+	[3, 0, 0, 0, 0, 0, 0, 0, 7, 7, 7, 0, 0]
+
+Reproduce with:
+
+	cargo fuzz run -O --sanitizer=none reduce_sound fuzz/artifacts/reduce_sound/minimized-from-ac435e6f7bd3c0d93cca420c97527f27a6871376
+
