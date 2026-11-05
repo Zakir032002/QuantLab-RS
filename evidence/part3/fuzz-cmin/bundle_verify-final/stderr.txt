@@ -1,0 +1,37 @@
+    Finished `release` profile [optimized + debuginfo] target(s) in 0.04s
+    Finished `release` profile [optimized + debuginfo] target(s) in 0.04s
+     Running `fuzz/target/x86_64-unknown-linux-gnu/release/bundle_verify -artifact_prefix=fuzz/artifacts/bundle_verify/ -rss_limit_mb=2048 -timeout=10 -print_final_stats=1 -merge=1 /workspace/QuantLab-RS/fuzz/.tmpnx6n6a/corpus fuzz/corpus/bundle_verify`
+WARNING: Failed to find function "__sanitizer_acquire_crash_state".
+WARNING: Failed to find function "__sanitizer_print_stack_trace".
+WARNING: Failed to find function "__sanitizer_set_death_callback".
+INFO: Running with entropic power schedule (0xFF, 100).
+INFO: Seed: 1792647762
+INFO: Loaded 1 modules   (33953 inline 8-bit counters): 33953 [0x55dc39a50c60, 0x55dc39a59101), 
+INFO: Loaded 1 PC tables (33953 PCs): 33953 [0x55dc39a59108,0x55dc39addb18), 
+MERGE-OUTER: 673 files, 0 in the initial corpus, 0 processed earlier
+MERGE-OUTER: attempt 1
+WARNING: Failed to find function "__sanitizer_acquire_crash_state".
+WARNING: Failed to find function "__sanitizer_print_stack_trace".
+WARNING: Failed to find function "__sanitizer_set_death_callback".
+INFO: Running with entropic power schedule (0xFF, 100).
+INFO: Seed: 1808589360
+INFO: Loaded 1 modules   (33953 inline 8-bit counters): 33953 [0x558dd8513c60, 0x558dd851c101), 
+INFO: Loaded 1 PC tables (33953 PCs): 33953 [0x558dd851c108,0x558dd85a0b18), 
+INFO: -max_len is not provided; libFuzzer will not generate inputs larger than 1048576 bytes
+MERGE-INNER: using the control file '/tmp/libFuzzerTemp.Merge1365618.txt'
+MERGE-INNER: 673 total files; 0 processed earlier; will process 673 files now
+#1	pulse  cov: 62 ft: 63 exec/s: 0 rss: 27Mb
+#2	pulse  cov: 450 ft: 471 exec/s: 0 rss: 28Mb
+#4	pulse  cov: 457 ft: 486 exec/s: 0 rss: 28Mb
+#8	pulse  cov: 4414 ft: 6160 exec/s: 0 rss: 30Mb
+#16	pulse  cov: 4436 ft: 6241 exec/s: 0 rss: 30Mb
+#32	pulse  cov: 4558 ft: 6433 exec/s: 0 rss: 30Mb
+#64	pulse  cov: 4617 ft: 6518 exec/s: 0 rss: 30Mb
+#128	pulse  cov: 4745 ft: 6766 exec/s: 0 rss: 30Mb
+#256	pulse  cov: 4867 ft: 7026 exec/s: 0 rss: 30Mb
+#512	pulse  cov: 5052 ft: 7531 exec/s: 512 rss: 30Mb
+#673	DONE   cov: 5088 ft: 7709 exec/s: 673 rss: 30Mb
+MERGE-OUTER: successful in 1 attempt(s)
+MERGE-OUTER: the control file has 147466 bytes
+MERGE-OUTER: consumed 0Mb (30Mb rss) to parse the control file
+MERGE-OUTER: 473 new files with 7709 new features added; 5088 new coverage edges

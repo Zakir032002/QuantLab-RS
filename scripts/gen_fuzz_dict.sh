@@ -14,3 +14,11 @@ def quote(token):
 (p/'qlrs_trace_v0.dict').write_text('\n'.join(quote(token) for token in dict.fromkeys(tokens))+'\n')
 (p/'decimal.dict').write_text('\n'.join(json.dumps(t) for t in list('0123456789-.eE+'))+'\n')
 PY
+python3 - <<'PYDICT'
+import pathlib,re
+source=pathlib.Path('crates/qlrs-bundle/src/lib.rs').read_text()
+keys=list(dict.fromkeys(re.findall(r'pub ([a-z_]+):',source)))
+tokens=keys+['qlrs-bundle/v0','qlrs-bundle/v1','manifest.json','reduced_trace.jsonl','REPRODUCE.md','../outside','/etc/passwd','qlrs-fp1:', '{','}',':',',','[',']']
+def quote(s):return '"'+''.join('\\'+chr(b) if b in (34,92) else chr(b) if 32<=b<127 else f'\\x{b:02x}' for b in s.encode())+'"'
+pathlib.Path('fuzz/dict/bundle.dict').write_text('\n'.join(map(quote,tokens))+'\n')
+PYDICT

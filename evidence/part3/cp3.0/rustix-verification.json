@@ -1,0 +1,9 @@
+{
+  "name": "rustix",
+  "version": "1.1.6",
+  "released": "2026-10-27T00:49:03.146056Z",
+  "yanked": false,
+  "checksum": "e5e76742e5294153d4dde1207dbec5bdd81eef6fabdc0d2118babadabfd858aa",
+  "url": "https://crates.io/api/v1/crates/rustix/1.1.6",
+  "verified_utc": "2026-11-05T13:01:12.685075+00:00"
+}

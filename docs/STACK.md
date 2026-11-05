@@ -94,3 +94,11 @@ ea165f8d65b6e75b540449e92b4886f43607fa02 (2025-03-19; existing major retained).
 Official repository refs and exact dates: evidence/part3/cp3.0/actions-refs.json.
 Dated fuzz nightly verified against its official manifest: 2026-11-04,
 1.101.0-nightly; cargo-fuzz 0.13.2. Root Rust remains 1.99.1.
+
+Part 3 bundle descriptor-relative reads add a direct edge to the already locked
+rustix **1.1.6**, released **2026-10-27**, not yanked. Official source:
+https://crates.io/api/v1/crates/rustix/1.1.6 . Checksum and live verification:
+`evidence/part3/cp3.0/rustix-verification.json`. Its safe fs API provides openat,
+NOFOLLOW and directory iteration; product crates retain forbid(unsafe_code).
+Kani 0.68.0 installed successfully with its bundled CBMC 6.11.0 and its own
+nightly-2026-08-21; the root and fuzz toolchains remain unchanged.

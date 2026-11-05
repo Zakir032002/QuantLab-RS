@@ -72,3 +72,8 @@ fn fuzz_001_reduce_sound_corpus() {
 fn fuzz_001_eval_vs_checker_corpus() {
     replay("eval_vs_checker", qlrs_testkit::oracles::eval_vs_checker);
 }
+
+#[test]
+fn fuzz_001_bundle_verify_corpus() {
+    replay("bundle_verify", qlrs_testkit::oracles::bundle_verify);
+}

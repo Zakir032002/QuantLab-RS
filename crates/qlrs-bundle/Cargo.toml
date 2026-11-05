@@ -9,6 +9,7 @@ license.workspace = true
 workspace = true
 
 [dependencies]
+rustix.workspace = true
 qlrs-schema.workspace = true
 qlrs-check.workspace = true
 qlrs-reduce.workspace = true

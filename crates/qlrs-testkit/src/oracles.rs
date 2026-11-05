@@ -293,7 +293,7 @@ fn case(data: &[u8]) -> Option<Case> {
 }
 fn fixture(case: Case, defect: Option<crate::Defect>) -> crate::Fixture {
     let orders = 16 + usize::from(case.size % 49);
-    let simple = case.shape % 9 == 0
+    let simple = case.shape.is_multiple_of(9)
         || matches!(
             defect,
             Some(crate::Defect::D12 | crate::Defect::D13 | crate::Defect::D14)
@@ -373,6 +373,11 @@ pub fn check_clean(data: &[u8]) {
     }
 }
 
+#[derive(serde::Deserialize)]
+struct Sequence {
+    seq: u64,
+}
+
 /// Catalogue classification, actual injection location and supported-prefix law.
 /// # Panics
 /// Panics on a classification or first-violation disagreement.
@@ -396,10 +401,6 @@ pub fn check_injected(data: &[u8]) {
             _ => qlrs_check::Invariant::I1,
         };
         assert!(report.keys().any(|k| k.invariant_id == invariant));
-        #[derive(serde::Deserialize)]
-        struct Sequence {
-            seq: u64,
-        }
         let injection = trace
             .source
             .split_inclusive(|b| *b == b'\n')
@@ -657,5 +658,249 @@ pub fn eval_vs_checker(data: &[u8]) {
                     .unwrap_or_else(|e| panic!("{e}"))
             });
         assert_eq!(expected, actual);
+    }
+}
+
+struct Sandbox(std::path::PathBuf);
+impl Sandbox {
+    fn new() -> Self {
+        use std::sync::atomic::{AtomicU64, Ordering};
+        static NEXT: AtomicU64 = AtomicU64::new(0);
+        let path = std::env::temp_dir().join(format!(
+            "qlrs-bundle-fuzz-{}-{}",
+            std::process::id(),
+            NEXT.fetch_add(1, Ordering::Relaxed)
+        ));
+        std::fs::create_dir(&path).unwrap_or_else(|e| panic!("{e}"));
+        Self(path)
+    }
+}
+impl Drop for Sandbox {
+    fn drop(&mut self) {
+        let _ = std::fs::remove_dir_all(&self.0);
+    }
+}
+type BundleFiles = Vec<(String, Vec<u8>)>;
+fn bundle_seed(legacy: bool) -> &'static BundleFiles {
+    use std::sync::OnceLock;
+    static SEEDS: [OnceLock<BundleFiles>; 2] = [const { OnceLock::new() }; 2];
+    SEEDS
+        .get(usize::from(legacy))
+        .unwrap_or_else(|| panic!("invalid seed index"))
+        .get_or_init(|| {
+            if legacy {
+                return vec![
+                    (
+                        "REPRODUCE.md".to_owned(),
+                        include_bytes!("../../../fixtures/compat/bundle-v0/REPRODUCE.md").to_vec(),
+                    ),
+                    (
+                        "manifest.blake3".to_owned(),
+                        include_bytes!("../../../fixtures/compat/bundle-v0/manifest.blake3")
+                            .to_vec(),
+                    ),
+                    (
+                        "manifest.json".to_owned(),
+                        include_bytes!("../../../fixtures/compat/bundle-v0/manifest.json").to_vec(),
+                    ),
+                    (
+                        "reduced_trace.jsonl".to_owned(),
+                        include_bytes!("../../../fixtures/compat/bundle-v0/reduced_trace.jsonl")
+                            .to_vec(),
+                    ),
+                    (
+                        "reduction_log.jsonl".to_owned(),
+                        include_bytes!("../../../fixtures/compat/bundle-v0/reduction_log.jsonl")
+                            .to_vec(),
+                    ),
+                    (
+                        "synthetic_checkpoint.json".to_owned(),
+                        include_bytes!(
+                            "../../../fixtures/compat/bundle-v0/synthetic_checkpoint.json"
+                        )
+                        .to_vec(),
+                    ),
+                    (
+                        "violation.json".to_owned(),
+                        include_bytes!("../../../fixtures/compat/bundle-v0/violation.json")
+                            .to_vec(),
+                    ),
+                ];
+            }
+
+            let sandbox = Sandbox::new();
+            let path = sandbox.0.join("seed");
+            let input = crate::generate(4, 42, Some((crate::Defect::D03, 2)))
+                .unwrap_or_else(|e| panic!("{e}"));
+            let trace = prepared(input.bytes);
+            let reduction = qlrs_reduce::reduce_with_limits(
+                &trace.store,
+                &trace.source_digest(),
+                None,
+                None,
+                qlrs_reduce::ReductionLimits {
+                    max_calls: 64,
+                    time_limit: std::time::Duration::MAX,
+                },
+            )
+            .unwrap_or_else(|e| panic!("{e}"));
+            qlrs_bundle::write(&path, &trace, &reduction).unwrap_or_else(|e| panic!("{e}"));
+            let mut files: Vec<_> = std::fs::read_dir(path)
+                .unwrap_or_else(|e| panic!("{e}"))
+                .map(|entry| {
+                    let entry = entry.unwrap_or_else(|e| panic!("{e}"));
+                    (
+                        entry.file_name().to_string_lossy().into_owned(),
+                        std::fs::read(entry.path()).unwrap_or_else(|e| panic!("{e}")),
+                    )
+                })
+                .collect();
+            files.sort_by(|a, b| a.0.cmp(&b.0));
+            files
+        })
+}
+fn put_manifest(root: &std::path::Path, bytes: &[u8]) {
+    std::fs::write(root.join("manifest.json"), bytes).unwrap_or_else(|e| panic!("{e}"));
+    std::fs::write(
+        root.join("manifest.blake3"),
+        format!("{}  manifest.json\n", qlrs_io::digest(bytes)),
+    )
+    .unwrap_or_else(|e| panic!("{e}"));
+}
+/// Hostile manifests, tampering and filesystem entries stay within a root handle.
+/// The first byte selects a mutation; remaining bytes are raw manifest/file/name
+/// payload. Empty input is the independently generated valid v1 bundle.
+/// # Panics
+/// Panics if confinement, size limits, tamper detection or valid replay fails.
+pub fn bundle_verify(data: &[u8]) {
+    use std::os::unix::ffi::OsStringExt;
+    let sandbox = Sandbox::new();
+    let root = sandbox.0.join("bundle");
+    std::fs::create_dir(&root).unwrap_or_else(|e| panic!("{e}"));
+    let (&tag, payload) = data.split_first().unwrap_or((&0, &[]));
+    let legacy = tag & 128 != 0;
+    let operation = tag & 127;
+    let seed = bundle_seed(legacy);
+    for (name, bytes) in seed {
+        std::fs::write(root.join(name), bytes).unwrap_or_else(|e| panic!("{e}"));
+    }
+    let mut limits = Limits {
+        max_entries: 16,
+        max_entry_bytes: 64 << 10,
+        ..Limits::default()
+    };
+    let mut must_reject = false;
+    let manifest = seed
+        .iter()
+        .find(|(name, _)| name == "manifest.json")
+        .map_or_else(|| panic!("missing manifest"), |(_, bytes)| bytes);
+    match operation % 10 {
+        0 if !payload.is_empty() => put_manifest(&root, payload),
+        1 => {
+            let original = seed
+                .iter()
+                .find(|(name, _)| name == "reduced_trace.jsonl")
+                .map_or_else(|| panic!("missing trace"), |(_, bytes)| bytes);
+            std::fs::write(root.join("reduced_trace.jsonl"), payload)
+                .unwrap_or_else(|e| panic!("{e}"));
+            must_reject = payload != original;
+        }
+        2 => {
+            let mut value: qlrs_bundle::Manifest =
+                qlrs_io::decode(manifest).unwrap_or_else(|e| panic!("{e}"));
+            if let Some(file) = value.files.first_mut() {
+                let name = String::from_utf8_lossy(payload).into_owned();
+                must_reject = file.path != name;
+                file.path = name;
+            }
+            put_manifest(
+                &root,
+                &qlrs_io::encode(&value).unwrap_or_else(|e| panic!("{e}")),
+            );
+        }
+        3 => {
+            let outside = sandbox.0.join("outside");
+            std::fs::write(&outside, b"must not be read").unwrap_or_else(|e| panic!("{e}"));
+            let file = root.join("REPRODUCE.md");
+            std::fs::remove_file(&file).unwrap_or_else(|e| panic!("{e}"));
+            std::os::unix::fs::symlink(outside, file).unwrap_or_else(|e| panic!("{e}"));
+            must_reject = true;
+        }
+        4 => {
+            let mut value: qlrs_bundle::Manifest =
+                qlrs_io::decode(manifest).unwrap_or_else(|e| panic!("{e}"));
+            if let Some(entry) = value.files.first().cloned() {
+                value.files.push(entry);
+            }
+            put_manifest(
+                &root,
+                &qlrs_io::encode(&value).unwrap_or_else(|e| panic!("{e}")),
+            );
+            must_reject = true;
+        }
+        5 => {
+            limits.max_entries = usize::from(payload.first().copied().unwrap_or(0) % 20);
+            must_reject = limits.max_entries < seed.len();
+        }
+        6 => {
+            limits.max_entry_bytes = u64::from(payload.first().copied().unwrap_or(0)) * 256;
+            must_reject = seed
+                .iter()
+                .any(|(_, bytes)| bytes.len() as u64 > limits.max_entry_bytes);
+        }
+        7 => {
+            let mut value: qlrs_bundle::Manifest =
+                qlrs_io::decode(manifest).unwrap_or_else(|e| panic!("{e}"));
+            if let Some(entry) = value
+                .files
+                .iter_mut()
+                .find(|f| f.path == "reduced_trace.jsonl")
+            {
+                entry.blake3 = qlrs_io::digest(payload);
+                entry.byte_length = payload.len() as u64;
+            }
+            std::fs::write(root.join("reduced_trace.jsonl"), payload)
+                .unwrap_or_else(|e| panic!("{e}"));
+            put_manifest(
+                &root,
+                &qlrs_io::encode(&value).unwrap_or_else(|e| panic!("{e}")),
+            );
+        }
+        8 if !payload.is_empty()
+            && payload.len() <= 255
+            && !payload.contains(&0)
+            && !payload.contains(&b'/')
+            && payload != b"."
+            && payload != b".." =>
+        {
+            let name = std::ffi::OsString::from_vec(payload.to_vec());
+            if !seed
+                .iter()
+                .any(|(known, _)| std::ffi::OsStr::new(known) == name)
+            {
+                std::fs::write(root.join(name), b"extra").unwrap_or_else(|e| panic!("{e}"));
+                must_reject = true;
+            }
+        }
+        9 => {
+            let link = sandbox.0.join("link");
+            std::os::unix::fs::symlink(&root, &link).unwrap_or_else(|e| panic!("{e}"));
+            let result = qlrs_bundle::verify_with_observer(&link, false, limits, |_| {
+                panic!("symlink root reached a content read")
+            });
+            assert!(result.is_err());
+            return;
+        }
+        _ => {}
+    }
+    let result = qlrs_bundle::verify_with_observer(&root, !legacy, limits, |path| {
+        assert_eq!(path.parent(), Some(root.as_path()));
+        assert_eq!(path.components().count(), root.components().count() + 1);
+    });
+    if must_reject {
+        assert!(result.is_err());
+    }
+    if data.is_empty() || operation % 10 == 0 && payload.is_empty() {
+        assert!(result.is_ok());
     }
 }

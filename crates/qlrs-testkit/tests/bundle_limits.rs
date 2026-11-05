@@ -110,3 +110,44 @@ fn hard_002_index_boundary_uses_reserved_sentinel() {
         assert_eq!(qlrs_schema::checked_index(value), Err("U-LIMIT-INDEX"));
     }
 }
+
+#[test]
+fn hard_005_replacing_a_checked_file_with_a_symlink_cannot_escape() {
+    let path = bundle();
+    let outside = path.with_extension("canary");
+    std::fs::write(&outside, b"outside bytes must never be read").unwrap();
+    let mut swapped = false;
+    let error = qlrs_bundle::verify_with_observer(&path, false, Limits::default(), |file| {
+        if file.file_name().is_some_and(|name| name == "REPRODUCE.md") && !swapped {
+            std::fs::remove_file(file).unwrap();
+            std::os::unix::fs::symlink(&outside, file).unwrap();
+            swapped = true;
+        }
+    })
+    .unwrap_err();
+    assert!(swapped);
+    assert!(error.starts_with("E-BUNDLE-PATH"), "{error}");
+    std::fs::remove_dir_all(path).unwrap();
+    std::fs::remove_file(outside).unwrap();
+}
+
+#[test]
+fn hard_005_replacing_the_root_path_does_not_redirect_open_descriptors() {
+    let path = bundle();
+    let moved = path.with_extension("moved");
+    let outside = path.with_extension("outside");
+    std::fs::create_dir(&outside).unwrap();
+    std::fs::write(outside.join("manifest.json"), b"outside invalid bytes").unwrap();
+    let mut swapped = false;
+    qlrs_bundle::verify_with_observer(&path, false, Limits::default(), |_| {
+        if !swapped {
+            std::fs::rename(&path, &moved).unwrap();
+            std::os::unix::fs::symlink(&outside, &path).unwrap();
+            swapped = true;
+        }
+    })
+    .unwrap();
+    std::fs::remove_file(path).unwrap();
+    std::fs::remove_dir_all(moved).unwrap();
+    std::fs::remove_dir_all(outside).unwrap();
+}

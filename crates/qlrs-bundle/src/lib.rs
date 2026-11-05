@@ -6,6 +6,7 @@ use qlrs_io::{Limits, ParsedTrace, atomic_file, decode, digest, encode};
 use qlrs_reduce::Certificate;
 use qlrs_reduce::Reduction;
 use qlrs_schema::{AliveMask, Model, Status, SyntheticCheckpoint};
+use rustix::fs::{AtFlags, FileType, Mode, OFlags};
 use serde::{Deserialize, Serialize};
 use std::io::{Read, Write};
 use std::{collections::BTreeSet, fs, path::Path};
@@ -186,7 +187,14 @@ pub fn write(
         if fs::symlink_metadata(dir).is_ok() {
             return Err("bundle directory already exists".into());
         }
-        fs::rename(&temporary, dir).map_err(|e| e.to_string())?;
+        rustix::fs::renameat_with(
+            rustix::fs::CWD,
+            &temporary,
+            rustix::fs::CWD,
+            dir,
+            rustix::fs::RenameFlags::NOREPLACE,
+        )
+        .map_err(|e| e.to_string())?;
         fs::File::open(parent)
             .and_then(|f| f.sync_all())
             .map_err(|e| e.to_string())?;
@@ -333,24 +341,37 @@ pub fn verify_with_observer(
     {
         return Err("E-BUNDLE-PATH: root must be a real directory".into());
     }
+    let root = fs::File::from(
+        rustix::fs::open(
+            dir,
+            OFlags::RDONLY | OFlags::DIRECTORY | OFlags::NOFOLLOW | OFlags::CLOEXEC,
+            Mode::empty(),
+        )
+        .map_err(|e| format!("E-BUNDLE-PATH: {e}"))?,
+    );
     let mut actual = BTreeSet::new();
-    for entry in fs::read_dir(dir).map_err(|e| e.to_string())? {
+    for entry in rustix::fs::Dir::read_from(&root).map_err(|e| e.to_string())? {
         let entry = entry.map_err(|e| e.to_string())?;
         let name = entry
             .file_name()
-            .into_string()
+            .to_str()
             .map_err(|_| "E-BUNDLE-PATH: non-UTF-8 name")?;
-        if !actual.insert(name) || actual.len() > limits.max_entries {
+        if matches!(name, "." | "..") {
+            continue;
+        }
+        if !actual.insert(name.to_owned()) || actual.len() > limits.max_entries {
             return Err("E-BUNDLE-ENTRIES: too many entries".into());
         }
-        if !entry.file_type().map_err(|e| e.to_string())?.is_file() {
+        let stat = rustix::fs::statat(&root, name, AtFlags::SYMLINK_NOFOLLOW)
+            .map_err(|e| e.to_string())?;
+        if FileType::from_raw_mode(stat.st_mode) != FileType::RegularFile {
             return Err("E-BUNDLE-PATH: non-regular entry".into());
         }
-        if entry.metadata().map_err(|e| e.to_string())?.len() > limits.max_entry_bytes {
+        if u64::try_from(stat.st_size).map_err(|e| e.to_string())? > limits.max_entry_bytes {
             return Err("E-BUNDLE-ENTRY-BYTES: entry exceeds byte limit".into());
         }
     }
-    let mut read = |name: &str| regular_file(dir, name, limits, &mut observe);
+    let mut read = |name: &str| regular_file(&root, dir, name, limits, &mut observe);
     let manifest_bytes = read("manifest.json")?;
     let commitment = read("manifest.blake3")?;
     if commitment != format!("{}  manifest.json\n", digest(&manifest_bytes)).as_bytes() {
@@ -541,6 +562,7 @@ pub fn verify_with_observer(
     Ok(manifest)
 }
 fn regular_file(
+    root: &fs::File,
     dir: &Path,
     name: &str,
     limits: Limits,
@@ -556,15 +578,23 @@ fn regular_file(
         return Err("E-BUNDLE-PATH: invalid relative file name".into());
     }
     let path = dir.join(name);
-    let metadata = fs::symlink_metadata(&path).map_err(|e| e.to_string())?;
-    if !metadata.file_type().is_file() {
-        return Err(format!("E-BUNDLE-PATH: not a regular bundle file: {name}"));
+    observe(&path);
+    let file = fs::File::from(
+        rustix::fs::openat(
+            root,
+            name,
+            OFlags::RDONLY | OFlags::NOFOLLOW | OFlags::NONBLOCK | OFlags::CLOEXEC,
+            Mode::empty(),
+        )
+        .map_err(|e| format!("E-BUNDLE-PATH: {e}"))?,
+    );
+    let metadata = file.metadata().map_err(|e| e.to_string())?;
+    if !metadata.is_file() {
+        return Err("E-BUNDLE-PATH: non-regular entry".into());
     }
     if metadata.len() > limits.max_entry_bytes {
         return Err("E-BUNDLE-ENTRY-BYTES: entry exceeds byte limit".into());
     }
-    observe(&path);
-    let file = fs::File::open(&path).map_err(|e| e.to_string())?;
     let mut bytes = Vec::new();
     file.take(limits.max_entry_bytes.saturating_add(1))
         .read_to_end(&mut bytes)

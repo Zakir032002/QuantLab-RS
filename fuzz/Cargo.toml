@@ -87,3 +87,10 @@ path = "fuzz_targets/eval_vs_checker.rs"
 test = false
 doc = false
 bench = false
+
+[[bin]]
+name = "bundle_verify"
+path = "fuzz_targets/bundle_verify.rs"
+test = false
+doc = false
+bench = false
