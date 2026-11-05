@@ -23,8 +23,9 @@ This reconstruction is labeled, not backdated as a CP2.0 execution.
 
 Criterion console change percentages can compare prior local cache baselines;
 use the committed before/after estimates.json medians for reported comparisons.
-Mac after samples came from the actual successful a877c7b hosted job; transfer
-ZIP and per-file hashes, source commit and input hashes were verified. The retained
+macos/after samples came from the successful a877c7b development job;
+macos/final-source is the successful 4941acd confirmation job. Transfer ZIP and
+per-file hashes, source commits and input hashes were verified for both. The retained
 Intel before record has identical Rust/manifest/lock hashes to 281fa154. Both
 report i7-8700B / four CPUs / macOS 15.7.9; physical host identity is not known.
 No M1 or samply result is claimed. Kani remains optional and unexecuted locally.

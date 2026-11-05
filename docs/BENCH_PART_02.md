@@ -5,8 +5,9 @@ Raw data, commands, compiler and actual machine metadata are committed under
 measurements, not universal speed guarantees. Before is source 281fa154; after
 core is a877c7b plus the recorded internal cache-domain guard; exact measured
 sources are reconstructed by measurement.patch and checked by linked-source
-equivalence. The Mac after samples precede that defensive internal guard. The Mac before record is retained from Part 1 with matching source
-hashes; after is a fresh hosted measurement. Same declared Intel runner hardware,
+equivalence. The Mac final-source samples come from the successful 4941acd job;
+the earlier a877c7b development run remains in macos/after. The Mac before record
+is retained from Part 1 with matching source hashes. Same declared Intel runner hardware,
 not proven same physical host. Unchanged numeric benchmarks also vary on these
 shared runners; do not attribute every Mac difference solely to code changes.
 
@@ -16,8 +17,8 @@ shared runners; do not attribute every Mac difference solely to code changes.
 |---|---:|---:|---:|
 | Linux pipeline/check_100k | 2.995 ms | 2.202 ms | 26.5% |
 | Linux reduce_100k | 6.289 ms | 4.651 ms | 26.0% |
-| Intel macOS pipeline/check_100k | 8.966 ms | 4.649 ms | 48.2% |
-| Intel macOS reduce_100k | 19.656 ms | 11.764 ms | 40.2% |
+| Intel macOS pipeline/check_100k | 8.966 ms | 4.376 ms | 51.2% |
+| Intel macOS reduce_100k | 19.656 ms | 11.906 ms | 39.4% |
 
 The O(1) checked prefix query measured 7.18 ns (Linux median); it has no
 Part 1 equivalent. Exact samples and estimates are in after/criterion.
@@ -47,6 +48,8 @@ Both attempts and the stopped-checkpoint explanation remain in CP2.2 and
 claimed. Kani and samply profiles are not measured locally. Current M1 hardware
 was unavailable; the existing ADR-0009 Intel fallback is labeled explicitly.
 
-Intel replay was 0.317 ms before and 0.347 ms after (an observed regression).
-Its loop was not the Part 2 optimization target; raw data is retained rather
-than claiming every path improved. Shared-runner effects are not isolated.
+Final-source Intel samples and verified transfer hashes are in macos/final-source.
+Intel replay was 0.317 ms before and 0.258 ms on final source. The retained
+a877c7b development run measured 0.347 ms (an observed regression), with checker
+4.649 ms and reducer 11.764 ms. All runs remain committed; shared-runner effects
+are not isolated and the fastest observation is not substituted for final source.

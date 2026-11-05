@@ -6,6 +6,9 @@ Use the existing isolated checkout; do not create a worktree unless requested.
 For current Part 2 work, read `docs/PART_02_REBASE.md` first; it overrides stale
 Part 1/Part 2 assumptions. Part 2 benchmark outputs use `bench/results/CP2.x/`.
 Part 2 commits use `CP2.x: <objective>` and tags `part2-cp2.x` only when passed.
+Read `docs/HANDOFF_PART_02.md` for the current implementation and evidence.
+R4/CP2.2 is stopped after two measured attempts; CP2.13 acceptance is incomplete
+and has no passed tag. Do not silently retry or relax that gate.
 
 Read `docs/BLOCKERS.md`, `docs/HANDOFF_CLAIM_BOUNDARIES.md` and
 `docs/PART_01_INSTRUCTIONS.md` before resuming. The corrections handoff records

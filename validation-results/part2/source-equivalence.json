@@ -1,0 +1,7 @@
+{
+  "validated_source_commit": "4941acd858a82ca112b4b134f6a86b1bae5b0729",
+  "source_files": 58,
+  "all_runtime_tests_manifests_and_workflows_match_validated_commit": true,
+  "handoff_changes": "documentation, benchmark records and observed CI metadata only",
+  "note": "Git/build provenance can embed the later documentation commit; no binary identity claim is made."
+}

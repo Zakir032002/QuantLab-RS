@@ -111,11 +111,11 @@ export CARGO_HOME=/workspace/.qlrs-tools/cargo
 export PATH="/workspace/.qlrs-tools/bin:$CARGO_HOME/bin:$PATH"
 ```
 
-Read [the corrections handoff](docs/HANDOFF_CLAIM_BOUNDARIES.md) for current
-validation, mutation coverage, measured performance and limitations;
+Read [the Part 2 handoff](docs/HANDOFF_PART_02.md) for current validation,
+mutation coverage, measurements and the remaining R4 acceptance miss;
 [SPEC.md](docs/SPEC.md) for the contract; and [ADRs](docs/adr/) for decisions.
-The [original Part 1 handoff](docs/HANDOFF_PART_01.md) and its Linux/macOS results
-are an archived baseline for the earlier implementation.
+The [claim-boundary corrections](docs/HANDOFF_CLAIM_BOUNDARIES.md) and
+[original Part 1 handoff](docs/HANDOFF_PART_01.md) retain earlier baselines.
 
 NautilusTrader/LEAN adapters, multi-currency, shorting/margin, other order types,
 corporate actions, web UI and engine re-run minimization are outside Part 1.
