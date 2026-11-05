@@ -1,0 +1,48 @@
+{
+  "threshold_percent": 3,
+  "benchmarks": [
+    {
+      "benchmark": "instructions::numeric::decimal_parse",
+      "base": 1333,
+      "head": 1333,
+      "pass": true
+    },
+    {
+      "benchmark": "instructions::numeric::mul_rescale",
+      "base": 125,
+      "head": 125,
+      "pass": true
+    },
+    {
+      "benchmark": "instructions::numeric::replay_1000 prepared:(setup_replay())",
+      "base": 33519,
+      "head": 33519,
+      "pass": true
+    },
+    {
+      "benchmark": "instructions::pipeline::parse_100k source:(setup_parse())",
+      "base": 293475388,
+      "head": 262736014,
+      "pass": true
+    },
+    {
+      "benchmark": "instructions::pipeline::check_100k prepared:(setup_large(None))",
+      "base": 33297666,
+      "head": 33268394,
+      "pass": true
+    },
+    {
+      "benchmark": "instructions::pipeline::reduce_100k prepared:(setup_large(Some(qlrs_testkit :: Defect :: D03)))",
+      "base": 67339658,
+      "head": 67339685,
+      "pass": true
+    },
+    {
+      "benchmark": "instructions::pipeline::generate_100k",
+      "base": 238765593,
+      "head": 238765593,
+      "pass": true
+    }
+  ],
+  "pass": true
+}

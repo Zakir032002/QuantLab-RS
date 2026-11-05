@@ -29,3 +29,10 @@ results or a wall-time speedup claim. Raw paths:
 `evidence/part3/baseline-before/verify-s1m`, `streaming/verify-s10m`, and
 `hot-path/compact-state`. Its comparison.json passes all seven 3% instruction
 checks against hot-path/before, measured on the same host.
+
+The fixed interner is required for deterministic construction; its instruction
+change alone is below the noise floor and is not a speed claim. Replacing the
+builder's hash map from dense interned IDs to order IDs with a vector reduces
+parse_100k from 293475388 to 262736014 instructions on the same host (about 10%).
+Raw fixed-interner and dense-orders outputs and their source hashes are under
+`evidence/part3/hot-path`; dense-orders/comparison.json compares all seven cases.
