@@ -9,7 +9,7 @@ pub(crate) struct Progress {
     pub state: OrderState,
     pub total: i128,
     pub first: Option<u64>,
-    pub counts: [u64; 8],
+    pub counts: [u64; 5],
 }
 impl Default for Progress {
     fn default() -> Self {
@@ -17,7 +17,7 @@ impl Default for Progress {
             state: OrderState::Missing,
             total: 0,
             first: None,
-            counts: [0; 8],
+            counts: [0; 5],
         }
     }
 }

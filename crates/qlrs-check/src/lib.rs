@@ -305,6 +305,7 @@ impl Checker {
                     .instruments
                     .iter()
                     .position(|i| i.id == trade.instrument_id)
+                    .and_then(|index| u32::try_from(index).ok())
                 else {
                     report.findings.push(limitation(
                         Status::Inconclusive,
@@ -499,7 +500,8 @@ impl Checker {
                         *pending = Some(seq);
                     }
                     if store.header.instruments.get(instrument).is_some()
-                        && !trades.insert((instrument, store.fills.trade[payload]))
+                        && !trades
+                            .insert((store.orders.instrument[order], store.fills.trade[payload]))
                     {
                         codes.push("duplicate-trade-id");
                     }
@@ -933,7 +935,7 @@ fn violation(
         reason: None,
     }
 }
-fn counts_pattern(counts: &[u64; 8]) -> Vec<(Kind, u64)> {
+fn counts_pattern<const N: usize>(counts: &[u64; N]) -> Vec<(Kind, u64)> {
     [
         Kind::Submitted,
         Kind::Accepted,

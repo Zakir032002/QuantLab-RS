@@ -19,3 +19,13 @@ goal; the old 1M Vec generator peaked at 175248 KiB. Different preset seeds
 are labeled in raw metadata; no wall-time speedup is inferred from that comparison.
 See evidence/part3/gen/s10m and baseline-before/generate-s1m. Repeated 1M
 bytes/metadata are identical. Cross-OS confirmation is pending.
+
+Part 3 streaming and storage: the original 1M input's retained-source path peaked
+at 332436 KiB; streamed compact state peaks at 142824 KiB. The 10M run initially
+used 1561384 KiB and missed its RSS gate; compact units, five lifecycle counters
+and u32 trade keys lower it to 1388056 KiB and pass that bound. These are Linux
+cloud development measurements with recorded worktree hashes, not Apple Silicon
+results or a wall-time speedup claim. Raw paths:
+`evidence/part3/baseline-before/verify-s1m`, `streaming/verify-s10m`, and
+`hot-path/compact-state`. Its comparison.json passes all seven 3% instruction
+checks against hot-path/before, measured on the same host.
