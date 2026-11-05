@@ -1,0 +1,1648 @@
+diff --git a/crates/qlrs-bench/benches/throughput.rs b/crates/qlrs-bench/benches/throughput.rs
+index e98856d..34fd14c 100644
+--- a/crates/qlrs-bench/benches/throughput.rs
++++ b/crates/qlrs-bench/benches/throughput.rs
+@@ -81,7 +81,7 @@ fn pipeline(c: &mut Criterion) {
+         qlrs_testkit::generate(20_000, 42, Some((qlrs_testkit::Defect::D03, 12_000))).unwrap();
+     let mut input = qlrs_io::ParsedTrace::parse(fixture.bytes).unwrap();
+     qlrs_ledger::Ledger::prepare(&mut input.store);
+-    let digest = qlrs_io::digest(&input.source);
++    let digest = input.source_digest();
+     c.bench_function("reduce_100k", |b| {
+         b.iter(|| {
+             black_box(
+@@ -114,7 +114,7 @@ fn algebra(c: &mut Criterion) {
+         key.clone(),
+         &original,
+         None,
+-        &qlrs_io::digest(&trace.source),
++        &trace.source_digest(),
+     )
+     .unwrap();
+     let mask = predicate.candidate_mask(&AliveMask::all(trace.store.units.len()));
+diff --git a/crates/qlrs-bundle/src/lib.rs b/crates/qlrs-bundle/src/lib.rs
+index a06e27b..52341dd 100644
+--- a/crates/qlrs-bundle/src/lib.rs
++++ b/crates/qlrs-bundle/src/lib.rs
+@@ -41,8 +41,7 @@ fn roles(trace: &ParsedTrace, reduction: &Reduction) -> Result<Vec<RoleEntry>, S
+         }
+         let seq = *trace.store.spine.seq.get(event).ok_or("missing sequence")?;
+         let range = trace
+-            .lines
+-            .get(event.saturating_add(1))
++            .line_range(event.saturating_add(1))
+             .ok_or("missing source range")?;
+         out.push(RoleEntry {
+             original_seq: Some(seq),
+@@ -256,8 +255,8 @@ fn write_directory(
+         model_profile: trace.store.header.model.clone(),
+         verdict: Status::Violation,
+         original_trace: SourceTrace {
+-            blake3: digest(&trace.source),
+-            byte_length: u64::try_from(trace.source.len()).map_err(|_| "input too large")?,
++            blake3: trace.source_digest(),
++            byte_length: trace.source_len(),
+         },
+         checkpoint_source_digest: reduction
+             .checkpoint
+@@ -490,8 +489,7 @@ pub fn verify_with_observer(
+             };
+             let [first, last] = entry.source_range.ok_or("missing observed range")?;
+             let local = trace
+-                .lines
+-                .get(event.saturating_add(1))
++                .line_range(event.saturating_add(1))
+                 .ok_or("missing observed bytes")?;
+             if entry.original_seq != Some(*seq)
+                 || entry.role != wanted
+diff --git a/crates/qlrs-cli/src/main.rs b/crates/qlrs-cli/src/main.rs
+index 82d2031..7931664 100644
+--- a/crates/qlrs-cli/src/main.rs
++++ b/crates/qlrs-cli/src/main.rs
+@@ -71,6 +71,18 @@ enum BundleCommand {
+ }
+ #[derive(Args, Default)]
+ struct InputOptions {
++    /// Chunk size in bytes; records are never split during parsing.
++    #[arg(long, default_value_t = 8 << 20)]
++    io_chunk_bytes: usize,
++    /// Reject stdin and pipes instead of copying to an owned temporary file.
++    #[arg(long)]
++    no_spool: bool,
++    /// Include retained-memory statistics in the JSON result.
++    #[arg(long)]
++    stats: bool,
++    /// The `serde_json` reference remains the product parser.
++    #[arg(long, default_value = "reference", value_parser = ["reference"])]
++    parser: String,
+     /// Enable the proposed Part 3 defaults (pending default-verdict review).
+     #[arg(long)]
+     strict_limits: bool,
+@@ -88,29 +100,48 @@ struct InputOptions {
+ }
+ impl InputOptions {
+     fn read(&self, path: PathBuf) -> Result<qlrs_io::ParsedTrace, qlrs_io::InputError> {
+-        if !self.strict_limits
+-            && self.max_line_bytes.is_none()
+-            && self.max_interned.is_none()
+-            && self.max_events.is_none()
+-            && self.max_input_bytes.is_none()
+-            && self.memory_budget.is_none()
+-        {
+-            return qlrs_io::ParsedTrace::read(path);
+-        }
++        let enabled = self.strict_limits
++            || self.max_line_bytes.is_some()
++            || self.max_interned.is_some()
++            || self.max_events.is_some()
++            || self.max_input_bytes.is_some()
++            || self.memory_budget.is_some();
+         let defaults = Limits::default();
+-        qlrs_io::ParsedTrace::read_with_limits(
+-            path,
+-            Limits {
+-                max_line_bytes: self.max_line_bytes.unwrap_or(defaults.max_line_bytes),
+-                max_interned: self.max_interned.unwrap_or(defaults.max_interned),
+-                max_events: self.max_events.unwrap_or(defaults.max_events),
+-                max_input_bytes: self.max_input_bytes.unwrap_or(defaults.max_input_bytes),
+-                memory_budget_bytes: self.memory_budget,
+-                ..defaults
+-            },
+-        )
++        let limits = enabled.then_some(Limits {
++            max_line_bytes: self.max_line_bytes.unwrap_or(defaults.max_line_bytes),
++            max_interned: self.max_interned.unwrap_or(defaults.max_interned),
++            max_events: self.max_events.unwrap_or(defaults.max_events),
++            max_input_bytes: self.max_input_bytes.unwrap_or(defaults.max_input_bytes),
++            memory_budget_bytes: self.memory_budget,
++            ..defaults
++        });
++        let stdin = path.as_os_str() == "-";
++        let regular = !stdin && std::fs::metadata(&path).is_ok_and(|m| m.is_file());
++        if regular {
++            return qlrs_io::ParsedTrace::read_chunked(path, limits, self.io_chunk_bytes);
++        }
++        if self.no_spool {
++            return Err(qlrs_io::InputError {
++                kind: qlrs_io::ErrorKind::Input,
++                code: "E-INPUT-NOT-SEEKABLE",
++                line: 0,
++                message: "input requires spooling".into(),
++            });
++        }
++        if stdin {
++            qlrs_io::ParsedTrace::spool(io::stdin().lock(), limits, self.io_chunk_bytes)
++        } else {
++            let file = std::fs::File::open(path).map_err(|e| qlrs_io::InputError {
++                kind: qlrs_io::ErrorKind::Input,
++                code: "E-IO",
++                line: 0,
++                message: e.to_string(),
++            })?;
++            qlrs_io::ParsedTrace::spool(file, limits, self.io_chunk_bytes)
++        }
+     }
+ }
++
+ struct CliError {
+     code: u8,
+     message: String,
+@@ -142,6 +173,19 @@ fn checkpoint(path: Option<PathBuf>) -> Result<Option<SyntheticCheckpoint>, Stri
+     })
+     .transpose()
+ }
++fn with_stats(mut bytes: Vec<u8>, stats: Option<qlrs_io::TraceStats>) -> Result<Vec<u8>, String> {
++    if let Some(stats) = stats {
++        bytes.pop();
++        let stats = qlrs_io::encode(&stats).map_err(|e| e.to_string())?;
++        let mut out = b"{\"report\":".to_vec();
++        out.extend_from_slice(&bytes);
++        out.extend_from_slice(b",\"stats\":");
++        out.extend_from_slice(stats.strip_suffix(b"\n").unwrap_or(&stats));
++        out.extend_from_slice(b"}\n");
++        bytes = out;
++    }
++    Ok(bytes)
++}
+ fn run(cli: Cli) -> Result<u8, CliError> {
+     match cli.command {
+         Command::Verify {
+@@ -162,9 +206,13 @@ fn run(cli: Cli) -> Result<u8, CliError> {
+                 cp.as_ref(),
+                 partial,
+             );
++            let bytes = with_stats(
++                qlrs_io::encode(&report).map_err(|e| e.to_string())?,
++                input.stats.then(|| trace.stats()),
++            )?;
+             io::stdout()
+                 .lock()
+-                .write_all(&qlrs_io::encode(&report).map_err(|e| e.to_string())?)
++                .write_all(&bytes)
+                 .map_err(|e| e.to_string())?;
+             Ok(report.status.exit_code())
+         }
+@@ -183,7 +231,7 @@ fn run(cli: Cli) -> Result<u8, CliError> {
+             qlrs_ledger::Ledger::prepare_with_checkpoint(&mut trace.store, cp.as_ref())?;
+             let reduction = qlrs_reduce::reduce_with_options(
+                 &trace.store,
+-                &qlrs_io::digest(&trace.source),
++                &trace.source_digest(),
+                 cp.as_ref(),
+                 target_seq,
+                 qlrs_reduce::ReductionLimits {
+@@ -197,9 +245,13 @@ fn run(cli: Cli) -> Result<u8, CliError> {
+                 },
+             )?;
+             let manifest = qlrs_bundle::write(output, &trace, &reduction)?;
++            let bytes = with_stats(
++                qlrs_io::encode(&manifest).map_err(|e| e.to_string())?,
++                input.stats.then(|| trace.stats()),
++            )?;
+             io::stdout()
+                 .lock()
+-                .write_all(&qlrs_io::encode(&manifest).map_err(|e| e.to_string())?)
++                .write_all(&bytes)
+                 .map_err(|e| e.to_string())?;
+             Ok(0)
+         }
+diff --git a/crates/qlrs-io/src/lib.rs b/crates/qlrs-io/src/lib.rs
+index 362b1ea..1884f0d 100644
+--- a/crates/qlrs-io/src/lib.rs
++++ b/crates/qlrs-io/src/lib.rs
+@@ -6,11 +6,13 @@
+     clippy::module_name_repetitions
+ )]
+ mod limits;
++mod source;
+ pub use limits::{Limits, SCHEMA_KEYS, validate_line};
+ use qlrs_num::{Fixed, NumericError};
+ use qlrs_schema::{Account, AliveMask, Header, Issue, Kind, NONE, Side, Status, TraceStore, Unit};
+ use rayon::prelude::*;
+ use serde::{Deserialize, Serialize, de::DeserializeOwned};
++pub use source::{SourceReader, SourceRef};
+ use std::borrow::Cow;
+ use std::{collections::HashMap, error::Error, fmt, fs, io::Write, path::Path};
+ 
+@@ -377,23 +379,59 @@ impl Record<'_> {
+     }
+ }
+ 
++/// Retained heap estimates; process peak RSS is measured externally.
++#[derive(Debug, Serialize)]
++pub struct TraceStats {
++    /// Parsed event count.
++    pub events: usize,
++    /// Retained replay column capacities.
++    pub column_bytes: usize,
++    /// Column bytes per event (integer floor).
++    pub bytes_per_event: usize,
++    /// Retained source offset capacities.
++    pub offsets_bytes: usize,
++    /// Distinct interned strings.
++    pub interner_entries: usize,
++    /// Interner arena and index capacities.
++    pub interner_bytes: usize,
++    /// Columns, interner and source bookkeeping; not allocator/process overhead.
++    pub heap_bytes_estimate: usize,
++    /// Null unless measured externally; no fabricated in-process peak sample.
++    pub peak_rss: Option<u64>,
++}
++
+ /// Original bytes are isolated at the I/O boundary, not retained in replay columns.
+ #[derive(Debug)]
+ pub struct ParsedTrace {
+     /// Compact replay/check/reduction store.
+     pub store: TraceStore,
+-    /// Original JSONL, including all whitespace.
++    /// Original bytes for explicit in-memory parsing only. File ingest leaves
++    /// this empty; consumers use `source_digest`/`source_len`/`read_record` instead.
+     pub source: Vec<u8>,
++    file: Option<source::FileSource>,
+     /// One range for the header, followed by one per event; includes newline.
+     pub lines: Vec<std::ops::Range<usize>>,
+ }
+ impl ParsedTrace {
+     /// Read a trace using safe buffered file I/O.
+     pub fn read(path: impl AsRef<Path>) -> Result<Self, InputError> {
+-        Self::parse(fs::read(path).map_err(|e| err(0, e.to_string()))?)
++        Self::read_chunked(path, None, 8 << 20)
+     }
+     /// Strictly parse a complete UTF-8 JSONL buffer.
+     pub fn parse(source: Vec<u8>) -> Result<Self, InputError> {
++        Self::parse_mode(source, None)
++    }
++    fn parse_mode(source: Vec<u8>, limits: Option<Limits>) -> Result<Self, InputError> {
++        if let Some(limits) = limits {
++            limits.validate()?;
++            if source.len() as u64 > limits.max_input_bytes {
++                return Err(limits::error(
++                    0,
++                    "E-LIMIT-INPUT-BYTES",
++                    "input exceeds byte limit",
++                ));
++            }
++        }
+         if source.starts_with(&[0xef, 0xbb, 0xbf]) {
+             return Err(err(1, "UTF-8 BOM is forbidden"));
+         }
+@@ -413,11 +451,50 @@ impl ParsedTrace {
+         let mut start = 0;
+         for (end, byte) in source.iter().enumerate() {
+             if *byte == b'\n' {
++                if limits.is_some_and(|l| end + 1 - start > l.max_line_bytes) {
++                    return Err(limits::error(
++                        lines.len() + 1,
++                        "E-LIMIT-LINE-BYTES",
++                        "line exceeds byte limit",
++                    ));
++                }
+                 lines.push(start..end + 1);
+                 start = end + 1;
+             }
+         }
++        if let Some(limits) = limits {
++            if lines.len().saturating_sub(1) > limits.max_events {
++                return Err(limits::error(
++                    limits.max_events + 2,
++                    "U-LIMIT-EVENTS",
++                    "event limit exceeded",
++                ));
++            }
++            let estimate = (source.len() as u64)
++                .saturating_mul(2)
++                .saturating_add((lines.len() as u64).saturating_mul(160))
++                .saturating_add(64 << 20);
++            if limits
++                .memory_budget_bytes
++                .is_some_and(|budget| estimate > budget)
++            {
++                return Err(limits::error(
++                    0,
++                    "I-BUDGET-MEMORY",
++                    "pre-scan allocation estimate exceeds budget",
++                ));
++            }
++        }
+         let first = lines.first().ok_or_else(|| err(1, "missing header"))?;
++        if let Some(limits) = limits {
++            validate_line(
++                source
++                    .get(first.clone())
++                    .ok_or_else(|| err(1, "missing header"))?,
++                1,
++                limits,
++            )?;
++        }
+         let header: Header = serde_json::from_slice(
+             source
+                 .get(first.clone())
+@@ -430,7 +507,8 @@ impl ParsedTrace {
+         if header.accounts.is_empty() || header.currencies.is_empty() {
+             return Err(err(1, "accounts and currencies cannot be empty"));
+         }
+-        let mut builder = Builder::new(header)?;
++        let mut builder = TraceStoreBuilder::new(header)?;
++        builder.limits = limits;
+         // Bounded parallel batches borrow the immutable source; merge in source order.
+         for (batch_index, batch) in lines.get(1..).unwrap_or_default().chunks(8192).enumerate() {
+             let parse = |(offset, range): (usize, &std::ops::Range<usize>)| {
+@@ -438,6 +516,9 @@ impl ParsedTrace {
+                 let bytes = source
+                     .get(range.clone())
+                     .ok_or_else(|| err(line, "invalid source range"))?;
++                if let Some(limits) = limits {
++                    validate_line(bytes, line, limits)?;
++                }
+                 parse_record(bytes, line)
+             };
+             // Small traces avoid thread-pool startup; large batches remain parallel.
+@@ -455,153 +536,336 @@ impl ParsedTrace {
+             store: builder.store,
+             source,
+             lines,
++            file: None,
+         })
+     }
+     /// Parse with explicitly selected resource limits. Existing parse defaults
+     /// remain unchanged pending the recorded R9 review.
+     pub fn parse_with_limits(source: Vec<u8>, limits: Limits) -> Result<Self, InputError> {
+-        Self::from_limited_reader(std::io::Cursor::new(source), limits)
++        Self::parse_mode(source, Some(limits))
+     }
+     /// Read a regular file with line bounds enforced before whole-line buffering.
+     pub fn read_with_limits(path: impl AsRef<Path>, limits: Limits) -> Result<Self, InputError> {
+-        limits.validate()?;
+-        let metadata = fs::metadata(path.as_ref()).map_err(|e| err(0, e.to_string()))?;
+-        if !metadata.is_file() {
++        Self::read_chunked(path, Some(limits), 8 << 20)
++    }
++    /// Stream bounded batches and merge parsed records in source order. A chunk
++    /// smaller than one line still reads just that line; no line is split into
++    /// independent JSON records. The sequential path is selected at one byte.
++    pub fn read_chunked(
++        path: impl AsRef<Path>,
++        limits: Option<Limits>,
++        chunk_bytes: usize,
++    ) -> Result<Self, InputError> {
++        use std::io::{Read, Seek, SeekFrom};
++        if let Some(limits) = limits {
++            limits.validate()?;
++        }
++        if !(1..=16 << 20).contains(&chunk_bytes) {
+             return Err(limits::error(
+                 0,
+-                "E-INPUT-NOT-SEEKABLE",
+-                "input is not a regular file",
++                "E-LIMIT-CONFIG",
++                "chunk size must be 1..16 MiB",
+             ));
+         }
+-        if metadata.len() > limits.max_input_bytes {
++        let file = fs::File::open(path).map_err(|e| err(0, e.to_string()))?;
++        if !file
++            .metadata()
++            .map_err(|e| err(0, e.to_string()))?
++            .is_file()
++        {
+             return Err(limits::error(
+                 0,
+-                "E-LIMIT-INPUT-BYTES",
+-                "input exceeds byte limit",
++                "E-INPUT-NOT-SEEKABLE",
++                "input is not a regular file",
+             ));
+         }
+-        let file = fs::File::open(path).map_err(|e| err(0, e.to_string()))?;
+-        Self::from_limited_reader(std::io::BufReader::with_capacity(64 << 10, file), limits)
+-    }
+-    fn from_limited_reader(
+-        mut reader: impl std::io::BufRead,
+-        limits: Limits,
+-    ) -> Result<Self, InputError> {
+-        use std::io::{BufRead, Read};
+-        limits.validate()?;
+-        let mut source = Vec::new();
+-        let mut lines = Vec::new();
++        let mut source = source::FileSource::scan(file, limits)?;
+         let mut buffer = Vec::new();
+-        let mut builder: Option<Builder> = None;
+-        loop {
+-            buffer.clear();
+-            let cap = u64::try_from(limits.max_line_bytes)
+-                .map_err(|e| err(0, e.to_string()))?
+-                .saturating_add(1);
+-            let count = reader
+-                .by_ref()
+-                .take(cap)
+-                .read_until(b'\n', &mut buffer)
+-                .map_err(|e| err(0, e.to_string()))?;
+-            if count == 0 {
+-                break;
+-            }
+-            let line = lines.len().saturating_add(1);
+-            validate_line(&buffer, line, limits)?;
+-            if buffer.last() != Some(&b'\n') {
+-                return Err(limits::error(
+-                    line,
+-                    "E-NEWLINE",
+-                    "trace must end with a newline",
+-                ));
+-            }
+-            let end = source
+-                .len()
+-                .checked_add(buffer.len())
+-                .ok_or_else(|| limits::error(line, "U-LIMIT-INDEX", "source length overflow"))?;
+-            if u64::try_from(end).map_err(|e| err(line, e.to_string()))? > limits.max_input_bytes {
+-                return Err(limits::error(
+-                    line,
+-                    "E-LIMIT-INPUT-BYTES",
+-                    "input exceeds byte limit",
+-                ));
+-            }
+-            if limits.memory_budget_bytes.is_some_and(|budget| {
+-                u64::try_from(end)
+-                    .ok()
+-                    .and_then(|bytes| bytes.checked_mul(2))
+-                    .and_then(|bytes| {
+-                        bytes.checked_add(u64::try_from(line).ok()?.checked_mul(160)?)
+-                    })
+-                    .and_then(|bytes| bytes.checked_add(64 << 20))
+-                    .is_none_or(|estimate| estimate > budget)
+-            }) {
+-                return Err(limits::error(
+-                    line,
+-                    "I-BUDGET-MEMORY",
+-                    "estimated memory budget exceeded",
+-                ));
++        let mut first = 0;
++        let mut ingestion_digest = blake3::Hasher::new();
++        let mut builder: Option<TraceStoreBuilder> = None;
++        while first < source.starts.len() {
++            let start = *source
++                .starts
++                .get(first)
++                .ok_or_else(|| err(first + 1, "missing offset"))?;
++            let mut stop = first;
++            let mut bytes = 0_usize;
++            while let Some(length) = source.lengths.get(stop) {
++                let next = bytes
++                    .checked_add(*length as usize)
++                    .ok_or_else(|| err(stop + 1, "chunk size overflow"))?;
++                if stop > first && next > chunk_bytes {
++                    break;
++                }
++                bytes = next;
++                stop += 1;
+             }
+-            if let Some(builder) = builder.as_mut() {
+-                builder.push(parse_record(&buffer, line)?, line)?;
+-            } else {
+-                if buffer.starts_with(&[0xef, 0xbb, 0xbf]) {
++            buffer.resize(bytes, 0);
++            source
++                .file
++                .seek(SeekFrom::Start(start))
++                .and_then(|_| source.file.read_exact(&mut buffer))
++                .map_err(|e| err(first + 1, e.to_string()))?;
++            ingestion_digest.update(&buffer);
++            if first == 0 {
++                let length = *source
++                    .lengths
++                    .first()
++                    .ok_or_else(|| err(1, "missing header"))? as usize;
++                let bytes = buffer
++                    .get(..length)
++                    .ok_or_else(|| err(1, "missing header"))?;
++                if bytes.starts_with(&[0xef, 0xbb, 0xbf]) {
+                     return Err(err(1, "UTF-8 BOM is forbidden"));
+                 }
+-                let header: Header = decode(&buffer).map_err(|mut error| {
+-                    error.line = line;
+-                    error
+-                })?;
++                if let Some(limits) = limits {
++                    validate_line(bytes, 1, limits)?;
++                }
++                let header: Header =
++                    serde_json::from_slice(bytes).map_err(|e| err(1, e.to_string()))?;
+                 if header.record_type != "header" || header.schema != "qlrs-trace/v0" {
+                     return Err(err(1, "expected header schema qlrs-trace/v0"));
+                 }
+                 if header.accounts.is_empty() || header.currencies.is_empty() {
+                     return Err(err(1, "accounts and currencies cannot be empty"));
+                 }
+-                let mut value = Builder::new(header)?;
+-                value.limits = Some(limits);
++                let mut value = TraceStoreBuilder::new(header)?;
++                value.limits = limits;
+                 builder = Some(value);
+             }
+-            source
+-                .try_reserve(buffer.len())
+-                .map_err(|e| limits::error(line, "I-BUDGET-MEMORY", &e.to_string()))?;
+-            lines
+-                .try_reserve(1)
+-                .map_err(|e| limits::error(line, "I-BUDGET-MEMORY", &e.to_string()))?;
+-            lines.push(source.len()..end);
+-            source.extend_from_slice(&buffer);
++            let skip = usize::from(first == 0);
++            let mut ranges = Vec::with_capacity(stop.saturating_sub(first));
++            let mut offset = 0_usize;
++            for line in first..stop {
++                let length = *source
++                    .lengths
++                    .get(line)
++                    .ok_or_else(|| err(line + 1, "missing length"))?
++                    as usize;
++                if line >= first + skip {
++                    ranges.push((line + 1, offset..offset + length));
++                }
++                offset += length;
++            }
++            let parse = |(line, range): &(usize, std::ops::Range<usize>)| {
++                let bytes = buffer
++                    .get(range.clone())
++                    .ok_or_else(|| err(*line, "invalid range"))?;
++                if let Some(limits) = limits {
++                    validate_line(bytes, *line, limits)?;
++                }
++                std::str::from_utf8(bytes).map_err(|e| err(*line, e.to_string()))?;
++                parse_record(bytes, *line)
++            };
++            let records: Vec<_> = if ranges.len() < 32 || chunk_bytes == 1 {
++                ranges.iter().map(parse).collect()
++            } else {
++                ranges.par_iter().map(parse).collect()
++            };
++            let builder = builder.as_mut().ok_or_else(|| err(1, "missing header"))?;
++            for ((line, _), record) in ranges.iter().zip(records) {
++                builder.push(record?, *line)?;
++            }
++            first = stop;
++        }
++        if ingestion_digest.finalize().to_hex().as_str() != source.digest
++            || source
++                .file
++                .metadata()
++                .map_err(|e| err(0, e.to_string()))?
++                .len()
++                != source.bytes
++        {
++            return Err(limits::error(
++                0,
++                "E-INPUT-CHANGED",
++                "source changed during parse",
++            ));
+         }
+         let mut builder = builder.ok_or_else(|| err(1, "missing header"))?;
+         builder.store.compact();
+         Ok(Self {
+             store: builder.store,
+-            source,
+-            lines,
++            source: Vec::new(),
++            lines: Vec::new(),
++            file: Some(source),
+         })
+     }
+-    /// Write the original pinned header and kept observed lines byte-for-byte.
++    /// Copy a non-seekable source into an owned temporary, enforcing the input
++    /// byte limit during the copy. The temporary lives exactly as long as the trace.
++    pub fn spool(
++        mut reader: impl std::io::Read,
++        limits: Option<Limits>,
++        chunk_bytes: usize,
++    ) -> Result<Self, InputError> {
++        use std::sync::atomic::{AtomicU64, Ordering};
++        static NEXT: AtomicU64 = AtomicU64::new(0);
++        let path = std::env::temp_dir().join(format!(
++            "qlrs-spool-{}-{}",
++            std::process::id(),
++            NEXT.fetch_add(1, Ordering::Relaxed)
++        ));
++        let mut file = fs::OpenOptions::new()
++            .write(true)
++            .create_new(true)
++            .open(&path)
++            .map_err(|e| err(0, e.to_string()))?;
++        let result = (|| {
++            let mut buffer = vec![0_u8; 64 << 10];
++            let mut total = 0_u64;
++            loop {
++                let count = reader
++                    .read(&mut buffer)
++                    .map_err(|e| err(0, e.to_string()))?;
++                if count == 0 {
++                    break;
++                }
++                total = total.checked_add(count as u64).ok_or_else(|| {
++                    limits::error(0, "E-LIMIT-INPUT-BYTES", "input byte count overflow")
++                })?;
++                if limits.is_some_and(|l| total > l.max_input_bytes) {
++                    return Err(limits::error(
++                        0,
++                        "E-LIMIT-INPUT-BYTES",
++                        "input exceeds byte limit",
++                    ));
++                }
++                file.write_all(
++                    buffer
++                        .get(..count)
++                        .ok_or_else(|| err(0, "invalid copy length"))?,
++                )
++                .map_err(|e| err(0, e.to_string()))?;
++            }
++            file.sync_all().map_err(|e| err(0, e.to_string()))?;
++            let mut trace = Self::read_chunked(&path, limits, chunk_bytes)?;
++            trace
++                .file
++                .as_mut()
++                .ok_or_else(|| err(0, "missing spooled source"))?
++                .remove_on_drop(path.clone());
++            Ok(trace)
++        })();
++        if result.is_err() {
++            let _ = fs::remove_file(path);
++        }
++        result
++    }
++    /// Resource statistics without sampling a process-global allocator.
++    #[must_use]
++    pub fn stats(&self) -> TraceStats {
++        let columns = self.store.column_bytes();
++        TraceStats {
++            events: self.store.len(),
++            column_bytes: columns,
++            bytes_per_event: columns.checked_div(self.store.len()).unwrap_or(0),
++            offsets_bytes: self.file.as_ref().map_or(
++                self.lines.capacity() * std::mem::size_of::<std::ops::Range<usize>>(),
++                |f| f.starts.capacity() * 8 + f.lengths.capacity() * 4,
++            ),
++            interner_entries: self.store.strings.len(),
++            interner_bytes: self.store.strings.heap_bytes(),
++            heap_bytes_estimate: columns.saturating_add(self.source_heap_bytes()),
++            peak_rss: None,
++        }
++    }
++    /// Original input commitment, independent of storage backend.
++    #[must_use]
++    pub fn source_digest(&self) -> String {
++        self.file
++            .as_ref()
++            .map_or_else(|| digest(&self.source), |f| f.digest.clone())
++    }
++    /// Original source length, without fetching its bytes.
++    #[must_use]
++    pub fn source_len(&self) -> u64 {
++        self.file
++            .as_ref()
++            .map_or(self.source.len() as u64, |f| f.bytes)
++    }
++    /// Number of source lines, including the header.
++    #[must_use]
++    pub fn line_count(&self) -> usize {
++        self.file
++            .as_ref()
++            .map_or(self.lines.len(), |f| f.starts.len())
++    }
++    /// Original byte range for a source line, including its newline.
++    #[must_use]
++    pub fn line_range(&self, line: usize) -> Option<std::ops::Range<usize>> {
++        if let Some(file) = &self.file {
++            let reference = file.reference(line)?;
++            let start = usize::try_from(reference.offset).ok()?;
++            Some(start..start.checked_add(reference.len as usize)?)
++        } else {
++            self.lines.get(line).cloned()
++        }
++    }
++    /// Source location for an event (the header is source line zero).
++    #[must_use]
++    pub fn source_ref(&self, event: usize) -> Option<SourceRef> {
++        self.line_ref(event.checked_add(1)?)
++    }
++    fn line_ref(&self, line: usize) -> Option<SourceRef> {
++        if let Some(file) = &self.file {
++            file.reference(line)
++        } else {
++            let range = self.lines.get(line)?;
++            Some(SourceRef {
++                file_id: 0,
++                offset: u64::try_from(range.start).ok()?,
++                len: u32::try_from(range.len()).ok()?,
++                line_or_record: u64::try_from(line).ok()?.checked_add(1)?,
++            })
++        }
++    }
++    /// Offset and source-commitment allocations; excludes replay columns.
++    #[must_use]
++    pub fn source_heap_bytes(&self) -> usize {
++        self.file.as_ref().map_or(
++            self.source.capacity()
++                + self.lines.capacity() * std::mem::size_of::<std::ops::Range<usize>>(),
++            source::FileSource::heap_bytes,
++        )
++    }
++    /// Write original header and kept observed lines, verifying source blocks.
+     pub fn write_kept(&self, alive: &AliveMask, mut writer: impl Write) -> Result<(), InputError> {
+-        for (line, range) in self.lines.iter().enumerate() {
+-            let keep = line == 0
+-                || self
+-                    .store
+-                    .spine
+-                    .seq
+-                    .get(line - 1)
+-                    .is_some_and(|_| alive.contains_event(&self.store, line - 1));
+-            if keep {
++        for line in 0..self.line_count() {
++            if line == 0 || alive.contains_event(&self.store, line - 1) {
++                let reference = self
++                    .line_ref(line)
++                    .ok_or_else(|| err(line + 1, "missing source reference"))?;
+                 writer
+-                    .write_all(
+-                        self.source
+-                            .get(range.clone())
+-                            .ok_or_else(|| err(line, "source range missing"))?,
+-                    )
++                    .write_all(&self.read_record(&reference)?)
+                     .map_err(|e| err(0, e.to_string()))?;
+             }
+         }
+         Ok(())
+     }
+ }
++impl SourceReader for ParsedTrace {
++    fn read_record(&self, reference: &SourceRef) -> Result<Vec<u8>, InputError> {
++        if let Some(file) = &self.file {
++            return file.read(reference);
++        }
++        let line = usize::try_from(reference.line_or_record)
++            .ok()
++            .and_then(|n| n.checked_sub(1))
++            .ok_or_else(|| err(0, "invalid source reference"))?;
++        if self.line_ref(line).as_ref() != Some(reference) {
++            return Err(err(line + 1, "invalid source reference"));
++        }
++        let range = self
++            .lines
++            .get(line)
++            .ok_or_else(|| err(line + 1, "missing source range"))?;
++        self.source
++            .get(range.clone())
++            .map(<[u8]>::to_vec)
++            .ok_or_else(|| err(line + 1, "invalid source range"))
++    }
++}
+ 
+ fn canonical_decimal(text: &str, value: Fixed) -> bool {
+     if value.raw() == 0 && text.starts_with('-') {
+@@ -626,13 +890,35 @@ fn decimal_syntax(text: &str) -> bool {
+         && integer.bytes().all(|b| b.is_ascii_digit())
+         && fraction.is_none_or(|f| !f.is_empty() && f.bytes().all(|b| b.is_ascii_digit()))
+ }
+-struct Builder {
++/// One deterministic, resource-bounded builder for JSONL and adapter events.
++pub struct TraceStoreBuilder {
+     store: TraceStore,
+     orders: HashMap<u32, u32>,
+     instruments: HashMap<String, u32>,
+     limits: Option<Limits>,
+ }
+-impl Builder {
++impl TraceStoreBuilder {
++    /// Start from the same strict header used by JSONL ingestion.
++    pub fn with_limits(header: Header, limits: Limits) -> Result<Self, InputError> {
++        limits.validate()?;
++        validate_line(&encode(&header)?, 1, limits)?;
++        let mut builder = Self::new(header)?;
++        builder.limits = Some(limits);
++        Ok(builder)
++    }
++    /// Admit one canonical adapter event in increasing original sequence order.
++    pub fn push_json(&mut self, bytes: &[u8], line: usize) -> Result<(), InputError> {
++        if let Some(limits) = self.limits {
++            validate_line(bytes, line, limits)?;
++        }
++        self.push(parse_record(bytes, line)?, line)
++    }
++    /// Finish and compact the shared replay store.
++    #[must_use]
++    pub fn finish(mut self) -> TraceStore {
++        self.store.compact();
++        self.store
++    }
+     fn new(header: Header) -> Result<Self, InputError> {
+         let mut instruments = HashMap::new();
+         for (index, instrument) in header.instruments.iter().enumerate() {
+diff --git a/crates/qlrs-schema/src/lib.rs b/crates/qlrs-schema/src/lib.rs
+index cd7b137..97e57ad 100644
+--- a/crates/qlrs-schema/src/lib.rs
++++ b/crates/qlrs-schema/src/lib.rs
+@@ -161,6 +161,12 @@ pub struct Interner {
+     heads: HashMap<u64, Id, foldhash::fast::RandomState>,
+     hasher: foldhash::fast::RandomState,
+ }
++impl PartialEq for Interner {
++    fn eq(&self, other: &Self) -> bool {
++        self.bytes == other.bytes && self.offsets == other.offsets && self.lengths == other.lengths
++    }
++}
++impl Eq for Interner {}
+ impl Interner {
+     /// Find an existing symbol without inserting or allocating.
+     #[must_use]
+@@ -285,7 +291,7 @@ pub enum OrderState {
+     Rejected,
+ }
+ /// Event spine; all columns have identical lengths.
+-#[derive(Debug, Clone, Default)]
++#[derive(Debug, Clone, Default, PartialEq, Eq)]
+ pub struct Spine {
+     #[doc = "seq column or schema field."]
+     pub seq: Vec<u64>,
+@@ -299,7 +305,7 @@ pub struct Spine {
+     pub payload_idx: Vec<u32>,
+ }
+ /// Submitted order metadata, referenced by all lifecycle events.
+-#[derive(Debug, Clone, Default)]
++#[derive(Debug, Clone, Default, PartialEq, Eq)]
+ pub struct Orders {
+     /// Prepared submitted quantities at each instrument quantity precision.
+     pub quantity_limit: Vec<Option<i128>>,
+@@ -317,7 +323,7 @@ pub struct Orders {
+     pub unit: Vec<u32>,
+ }
+ /// Fill payload columns; scale remains per numeric value.
+-#[derive(Debug, Clone, Default)]
++#[derive(Debug, Clone, Default, PartialEq, Eq)]
+ pub struct Fills {
+     #[doc = "order column or schema field."]
+     pub order: Vec<u32>,
+@@ -337,7 +343,7 @@ pub struct Fills {
+     pub fee_scale: Vec<u8>,
+ }
+ /// Observed account claim payloads, including verbatim decimal text IDs.
+-#[derive(Debug, Clone, Default)]
++#[derive(Debug, Clone, Default, PartialEq, Eq)]
+ pub struct CashClaims {
+     #[doc = "raw column or schema field."]
+     pub raw: Vec<i128>,
+@@ -347,7 +353,7 @@ pub struct CashClaims {
+     pub text: Vec<Id>,
+ }
+ /// Observed signed position claims.
+-#[derive(Debug, Clone, Default)]
++#[derive(Debug, Clone, Default, PartialEq, Eq)]
+ pub struct PositionClaims {
+     #[doc = "instrument column or schema field."]
+     pub instrument: Vec<u32>,
+@@ -359,7 +365,7 @@ pub struct PositionClaims {
+     pub text: Vec<Id>,
+ }
+ /// A lifecycle unit or an individual observed claim.
+-#[derive(Debug, Clone)]
++#[derive(Debug, Clone, PartialEq, Eq)]
+ pub struct Unit {
+     #[doc = "order column or schema field."]
+     pub order: Option<u32>,
+@@ -378,7 +384,7 @@ pub struct Issue {
+ }
+ 
+ /// Compact representation used by replay, checking and reduction; no JSON DOM.
+-#[derive(Debug, Clone)]
++#[derive(Debug, Clone, PartialEq, Eq)]
+ pub struct TraceStore {
+     #[doc = "header column or schema field."]
+     pub header: Header,
+@@ -539,6 +545,7 @@ impl TraceStore {
+             + self.spine.payload_idx.capacity() * 4
+             + self.delta_cash.capacity() * 16
+             + self.fill_qty.capacity() * 16
++            + self.orders.quantity_limit.capacity() * std::mem::size_of::<Option<i128>>()
+             + self.orders.id.capacity() * 4
+             + self.orders.instrument.capacity() * 4
+             + self.orders.side.capacity()
+diff --git a/crates/qlrs-testkit/examples/part2_gate.rs b/crates/qlrs-testkit/examples/part2_gate.rs
+index 2d3835e..06e00da 100644
+--- a/crates/qlrs-testkit/examples/part2_gate.rs
++++ b/crates/qlrs-testkit/examples/part2_gate.rs
+@@ -89,7 +89,7 @@ fn main() {
+                         Checker::check(store, &AliveMask::all(store.units.len()), None, true);
+                     assert_eq!(original.status, Status::Violation);
+                     let finding = original.at_seq(fixture.target_seq.unwrap()).unwrap();
+-                    let digest = qlrs_io::digest(&trace.source);
++                    let digest = trace.source_digest();
+                     let key = finding.instance_key.as_ref().unwrap();
+                     let mut canonical: Option<Vec<(String, Vec<u8>)>> = None;
+                     let mut kept = 0;
+diff --git a/crates/qlrs-testkit/examples/part2_regressions.rs b/crates/qlrs-testkit/examples/part2_regressions.rs
+index ab96735..deddde6 100644
+--- a/crates/qlrs-testkit/examples/part2_regressions.rs
++++ b/crates/qlrs-testkit/examples/part2_regressions.rs
+@@ -34,7 +34,7 @@ fn main() {
+     for (name, fixture) in cases {
+         let mut trace = qlrs_io::ParsedTrace::parse(fixture.bytes).unwrap();
+         qlrs_ledger::Ledger::prepare(&mut trace.store);
+-        let digest = qlrs_io::digest(&trace.source);
++        let digest = trace.source_digest();
+         let start = Instant::now();
+         let result = pool
+             .install(|| {
+diff --git a/crates/qlrs-testkit/examples/rich_gate.rs b/crates/qlrs-testkit/examples/rich_gate.rs
+index e1d7323..d9d8bdb 100644
+--- a/crates/qlrs-testkit/examples/rich_gate.rs
++++ b/crates/qlrs-testkit/examples/rich_gate.rs
+@@ -24,7 +24,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
+         println!(
+             "profile={profile} clean=true seed=42 events={} source_blake3={} status=CONSISTENT",
+             parsed.store.len(),
+-            qlrs_io::digest(&parsed.source)
++            parsed.source_digest()
+         );
+         drop(parsed);
+         for defect in qlrs_testkit::DEFECTS.into_iter().take(11) {
+diff --git a/crates/qlrs-testkit/src/oracles.rs b/crates/qlrs-testkit/src/oracles.rs
+index 85130ba..98375db 100644
+--- a/crates/qlrs-testkit/src/oracles.rs
++++ b/crates/qlrs-testkit/src/oracles.rs
+@@ -218,3 +218,57 @@ pub fn num_decimal(data: &[u8]) {
+         assert_eq!(Fixed::parse(&value.to_string(), 18), Ok(value));
+     }
+ }
++
++/// Chunk sizes and worker scheduling cannot change columns, IDs or first errors.
++/// # Panics
++/// Panics if sequential and parallel ingestion disagree.
++pub fn io_chunk_diff(data: &[u8]) {
++    use std::sync::{
++        OnceLock,
++        atomic::{AtomicU64, Ordering},
++    };
++    static NEXT: AtomicU64 = AtomicU64::new(0);
++    static POOLS: OnceLock<Vec<rayon::ThreadPool>> = OnceLock::new();
++    let [low, high, workers, bytes @ ..] = data else {
++        return;
++    };
++    let chunk = usize::from(u16::from_le_bytes([*low, *high])) + 1;
++    let threads = usize::from(*workers % 8);
++    let pools = POOLS.get_or_init(|| {
++        (1..=8)
++            .map(|threads| {
++                rayon::ThreadPoolBuilder::new()
++                    .num_threads(threads)
++                    .build()
++                    .unwrap_or_else(|e| panic!("{e}"))
++            })
++            .collect()
++    });
++    let path = std::env::temp_dir().join(format!(
++        "qlrs-fuzz-chunk-{}-{}",
++        std::process::id(),
++        NEXT.fetch_add(1, Ordering::Relaxed)
++    ));
++    qlrs_io::atomic_file(&path, |f| std::io::Write::write_all(f, bytes))
++        .unwrap_or_else(|e| panic!("{e}"));
++    let left = ParsedTrace::read_chunked(&path, Some(limits()), 1);
++    let right = pools
++        .get(threads)
++        .unwrap_or_else(|| panic!("invalid pool"))
++        .install(|| ParsedTrace::read_chunked(&path, Some(limits()), chunk));
++    std::fs::remove_file(path).unwrap_or_else(|e| panic!("{e}"));
++    match (left, right) {
++        (Ok(left), Ok(right)) => {
++            assert_eq!(left.store, right.store);
++            assert_eq!(left.source_digest(), right.source_digest());
++            for event in 0..left.store.len() {
++                assert_eq!(left.source_ref(event), right.source_ref(event));
++            }
++        }
++        (Err(left), Err(right)) => assert_eq!(
++            (left.kind, left.code, left.line, left.message),
++            (right.kind, right.code, right.line, right.message)
++        ),
++        (left, right) => panic!("chunk divergence: {left:?} != {right:?}"),
++    }
++}
+diff --git a/crates/qlrs-testkit/tests/bundle_limits.rs b/crates/qlrs-testkit/tests/bundle_limits.rs
+index bff83b6..c8dfd04 100644
+--- a/crates/qlrs-testkit/tests/bundle_limits.rs
++++ b/crates/qlrs-testkit/tests/bundle_limits.rs
+@@ -19,7 +19,7 @@ fn bundle() -> PathBuf {
+     qlrs_check::Checker::prepare(&mut trace.store);
+     let reduced = qlrs_reduce::reduce(
+         &trace.store,
+-        &qlrs_io::digest(&trace.source),
++        &trace.source_digest(),
+         None,
+         fixture.target_seq,
+     )
+diff --git a/crates/qlrs-testkit/tests/corrections.rs b/crates/qlrs-testkit/tests/corrections.rs
+index 7d3cc02..8beaf84 100644
+--- a/crates/qlrs-testkit/tests/corrections.rs
++++ b/crates/qlrs-testkit/tests/corrections.rs
+@@ -114,13 +114,8 @@ fn req_check_012_i2_uses_local_claim_windows_for_carried_errors() {
+         findings.first().unwrap().residual.as_deref(),
+         Some("-10.000")
+     );
+-    let reduced = qlrs_reduce::reduce(
+-        &trace.store,
+-        &qlrs_io::digest(&trace.source),
+-        None,
+-        Some(anchor),
+-    )
+-    .unwrap();
++    let reduced =
++        qlrs_reduce::reduce(&trace.store, &trace.source_digest(), None, Some(anchor)).unwrap();
+     let fill = trace.store.spine.seq.binary_search(&8).unwrap();
+     assert!(reduced.alive.contains_event(&trace.store, fill));
+     let predecessor = trace.store.spine.seq.binary_search(&5).unwrap();
+@@ -132,7 +127,7 @@ fn req_check_012_i2_uses_local_claim_windows_for_carried_errors() {
+         reduced.target.instance_key.clone().unwrap(),
+         &result,
+         None,
+-        &qlrs_io::digest(&trace.source),
++        &trace.source_digest(),
+     )
+     .unwrap();
+     assert!(
+@@ -192,13 +187,8 @@ fn req_checkpoint_001_earlier_bad_claim_is_an_opening_boundary() {
+             .count(),
+         2
+     );
+-    let reduced = qlrs_reduce::reduce(
+-        &trace.store,
+-        &qlrs_io::digest(&trace.source),
+-        None,
+-        Some(14),
+-    )
+-    .unwrap();
++    let reduced =
++        qlrs_reduce::reduce(&trace.store, &trace.source_digest(), None, Some(14)).unwrap();
+     let cp = reduced.checkpoint.as_ref().unwrap();
+     assert_eq!(cp.cut_seq, 9);
+     assert_eq!(cp.cash_window.as_ref().unwrap().observed, earlier);
+@@ -241,7 +231,7 @@ fn req_checkpoint_002_open_and_terminal_orders_and_prior_trades_survive_cut() {
+         let trace = parse(fixture.bytes, None);
+         let reduced = qlrs_reduce::reduce(
+             &trace.store,
+-            &qlrs_io::digest(&trace.source),
++            &trace.source_digest(),
+             None,
+             fixture.target_seq,
+         )
+@@ -312,7 +302,7 @@ fn req_checkpoint_002_open_and_terminal_orders_and_prior_trades_survive_cut() {
+         }
+         let again = qlrs_reduce::reduce(
+             &witness.store,
+-            &qlrs_io::digest(&witness.source),
++            &witness.source_digest(),
+             Some(cp),
+             fixture.target_seq,
+         )
+@@ -349,7 +339,7 @@ fn req_checkpoint_002_open_and_terminal_orders_and_prior_trades_survive_cut() {
+     assert!(trace.store.order_index(alias).is_some());
+     let reduced = qlrs_reduce::reduce(
+         &trace.store,
+-        &qlrs_io::digest(&trace.source),
++        &trace.source_digest(),
+         None,
+         fixture.target_seq,
+     )
+@@ -381,7 +371,7 @@ fn req_graph_002_checkpoint_inventory_replaces_historical_buy_dependencies() {
+     let trace = parse(fixture.bytes, None);
+     let reduced = qlrs_reduce::reduce(
+         &trace.store,
+-        &qlrs_io::digest(&trace.source),
++        &trace.source_digest(),
+         None,
+         fixture.target_seq,
+     )
+@@ -442,7 +432,7 @@ fn req_reduce_005_limits_return_best_verified_uncertified_bundles() {
+     ] {
+         let reduced = qlrs_reduce::reduce_with_limits(
+             &trace.store,
+-            &qlrs_io::digest(&trace.source),
++            &trace.source_digest(),
+             None,
+             fixture.target_seq,
+             qlrs_reduce::ReductionLimits {
+@@ -515,7 +505,7 @@ fn req_gate_001_all_eleven_defects_on_rich_profiles() {
+             );
+             let reduced = qlrs_reduce::reduce_with_limits(
+                 &trace.store,
+-                &qlrs_io::digest(&trace.source),
++                &trace.source_digest(),
+                 None,
+                 Some(anchor),
+                 qlrs_reduce::ReductionLimits {
+@@ -661,7 +651,7 @@ fn req_reduce_006_sparse_dense_and_incremental_patterns_match_on_all_defects() {
+             key.clone(),
+             &original,
+             None,
+-            &qlrs_io::digest(&trace.source),
++            &trace.source_digest(),
+         )
+         .unwrap();
+         let mut random = 41_u64;
+@@ -781,7 +771,7 @@ fn req_checkpoint_003_invalid_context_never_becomes_a_financial_accusation() {
+     let trace = parse(fixture.bytes, None);
+     let reduced = qlrs_reduce::reduce(
+         &trace.store,
+-        &qlrs_io::digest(&trace.source),
++        &trace.source_digest(),
+         None,
+         fixture.target_seq,
+     )
+@@ -936,7 +926,7 @@ fn req_reduce_007_other_lifecycle_breaches_are_not_admitted_or_returned_on_limit
+         assert!(
+             qlrs_reduce::reduce_with_limits(
+                 &trace.store,
+-                &qlrs_io::digest(&trace.source),
++                &trace.source_digest(),
+                 None,
+                 Some(anchor),
+                 qlrs_reduce::ReductionLimits {
+diff --git a/crates/qlrs-testkit/tests/differential_part2.rs b/crates/qlrs-testkit/tests/differential_part2.rs
+index 4aa4cf1..311229b 100644
+--- a/crates/qlrs-testkit/tests/differential_part2.rs
++++ b/crates/qlrs-testkit/tests/differential_part2.rs
+@@ -31,7 +31,7 @@ fn req_reduce_013_algebra_matches_full_checker_on_closed_subsets_per_shape() {
+                 key.clone(),
+                 &original,
+                 None,
+-                &qlrs_io::digest(&trace.source),
++                &trace.source_digest(),
+             )
+             .unwrap();
+             let window = predicate.candidate_mask(&AliveMask::all(store.units.len()));
+diff --git a/crates/qlrs-testkit/tests/fuzz_corpus_replay.rs b/crates/qlrs-testkit/tests/fuzz_corpus_replay.rs
+index 0610be2..ad23a0c 100644
+--- a/crates/qlrs-testkit/tests/fuzz_corpus_replay.rs
++++ b/crates/qlrs-testkit/tests/fuzz_corpus_replay.rs
+@@ -39,3 +39,8 @@ fn fuzz_001_num_ops_corpus() {
+ fn fuzz_001_num_decimal_corpus() {
+     replay("num_decimal", qlrs_testkit::oracles::num_decimal);
+ }
++
++#[test]
++fn fuzz_001_io_chunk_diff_corpus() {
++    replay("io_chunk_diff", qlrs_testkit::oracles::io_chunk_diff);
++}
+diff --git a/crates/qlrs-testkit/tests/part2.rs b/crates/qlrs-testkit/tests/part2.rs
+index 3887bab..eba3a0f 100644
+--- a/crates/qlrs-testkit/tests/part2.rs
++++ b/crates/qlrs-testkit/tests/part2.rs
+@@ -45,7 +45,7 @@ fn req_check_014_violation_dominates_uncovered_tail_and_is_reducible() {
+     let target = report.at_seq(fixture.target_seq.unwrap()).unwrap();
+     let reduced = qlrs_reduce::reduce(
+         &trace.store,
+-        &qlrs_io::digest(&trace.source),
++        &trace.source_digest(),
+         None,
+         fixture.target_seq,
+     )
+@@ -82,7 +82,7 @@ fn req_reduce_009_i2_witness_needs_only_its_instrument_and_position_claims() {
+     assert_eq!(original.status, Status::Violation);
+     let reduced = qlrs_reduce::reduce(
+         &trace.store,
+-        &qlrs_io::digest(&trace.source),
++        &trace.source_digest(),
+         None,
+         fixture.target_seq,
+     )
+@@ -137,7 +137,7 @@ fn req_reduce_010_r1_d04_sizes_finish_under_existing_budgets() {
+         let trace = prepared(fixture.bytes);
+         let result = qlrs_reduce::reduce_with_limits(
+             &trace.store,
+-            &qlrs_io::digest(&trace.source),
++            &trace.source_digest(),
+             None,
+             fixture.target_seq,
+             qlrs_reduce::ReductionLimits {
+@@ -165,7 +165,7 @@ fn req_gate_002_shapes_have_real_removals_and_recheckable_certificates() {
+             let trace = prepared(fixture.bytes);
+             let result = qlrs_reduce::reduce(
+                 &trace.store,
+-                &qlrs_io::digest(&trace.source),
++                &trace.source_digest(),
+                 None,
+                 fixture.target_seq,
+             )
+@@ -210,7 +210,7 @@ fn req_reduce_012_long_lived_and_second_carried_error_are_bounded() {
+         );
+         let result = qlrs_reduce::reduce_with_limits(
+             &trace.store,
+-            &qlrs_io::digest(&trace.source),
++            &trace.source_digest(),
+             None,
+             fixture.target_seq,
+             qlrs_reduce::ReductionLimits {
+@@ -245,7 +245,7 @@ fn req_reduce_012_long_lived_and_second_carried_error_are_bounded() {
+     let trace = prepared(fixture.bytes);
+     let result = qlrs_reduce::reduce_with_limits(
+         &trace.store,
+-        &qlrs_io::digest(&trace.source),
++        &trace.source_digest(),
+         None,
+         fixture.target_seq,
+         qlrs_reduce::ReductionLimits {
+@@ -265,7 +265,7 @@ fn req_bundle_002_v1_roles_and_certificates_reject_false_proofs() {
+     let trace = prepared(fixture.bytes);
+     let result = qlrs_reduce::reduce(
+         &trace.store,
+-        &qlrs_io::digest(&trace.source),
++        &trace.source_digest(),
+         None,
+         fixture.target_seq,
+     )
+@@ -364,14 +364,14 @@ fn req_reduce_016_unit_renaming_preserves_observed_witness() {
+     }
+     let a = qlrs_reduce::reduce(
+         &first.store,
+-        &qlrs_io::digest(&first.source),
++        &first.source_digest(),
+         None,
+         fixture.target_seq,
+     )
+     .unwrap();
+     let b = qlrs_reduce::reduce(
+         &second.store,
+-        &qlrs_io::digest(&second.source),
++        &second.source_digest(),
+         None,
+         fixture.target_seq,
+     )
+@@ -402,7 +402,7 @@ fn req_reduce_017_nonmonotone_superset_is_saved_and_seed_recovers() {
+         key.clone(),
+         &original,
+         None,
+-        &qlrs_io::digest(&trace.source),
++        &trace.source_digest(),
+     )
+     .unwrap();
+     let b = predicate.candidate_mask(&AliveMask::all(trace.store.units.len()));
+@@ -412,8 +412,7 @@ fn req_reduce_017_nonmonotone_superset_is_saved_and_seed_recovers() {
+     assert!(a.iter().all(|unit| b.contains(unit)));
+     assert!(predicate.test(&a).unwrap().accepted);
+     assert!(!predicate.test(&b).unwrap().accepted);
+-    let result =
+-        qlrs_reduce::reduce(&trace.store, &qlrs_io::digest(&trace.source), None, Some(7)).unwrap();
++    let result = qlrs_reduce::reduce(&trace.store, &trace.source_digest(), None, Some(7)).unwrap();
+     assert!(result.closure_1_minimal);
+     assert_eq!(result.target.instance_key, Some(key));
+     assert!(
+@@ -446,7 +445,7 @@ fn req_bundle_003_original_v0_writer_bundle_still_verifies() {
+ fn req_reduce_020_i2_keeps_other_asset_fills_only_for_required_cash_support() {
+     use qlrs_reduce::{Predicate, ReductionPredicate};
+     let trace = prepared(include_bytes!("../../../fixtures/part2/i2-cash-support.jsonl").to_vec());
+-    let digest = qlrs_io::digest(&trace.source);
++    let digest = trace.source_digest();
+     let original = Checker::check(
+         &trace.store,
+         &AliveMask::all(trace.store.units.len()),
+@@ -485,7 +484,7 @@ fn req_reduce_021_small_window_quality_matches_exhaustive_ground_truth() {
+     use qlrs_reduce::{Predicate, ReductionPredicate};
+     let fixture = qlrs_testkit::generate_shape("S2", 3, 1000, Some(Defect::D06)).unwrap();
+     let trace = prepared(fixture.bytes);
+-    let digest = qlrs_io::digest(&trace.source);
++    let digest = trace.source_digest();
+     let original = Checker::check(
+         &trace.store,
+         &AliveMask::all(trace.store.units.len()),
+@@ -543,7 +542,7 @@ fn req_gate_003_sparse_required_evidence_can_exceed_thirty_two_events() {
+     let trace = prepared(fixture.bytes);
+     let result = qlrs_reduce::reduce_with_limits(
+         &trace.store,
+-        &qlrs_io::digest(&trace.source),
++        &trace.source_digest(),
+         None,
+         fixture.target_seq,
+         qlrs_reduce::ReductionLimits {
+diff --git a/crates/qlrs-testkit/tests/reduction.rs b/crates/qlrs-testkit/tests/reduction.rs
+index 82c9b25..69182d3 100644
+--- a/crates/qlrs-testkit/tests/reduction.rs
++++ b/crates/qlrs-testkit/tests/reduction.rs
+@@ -23,7 +23,7 @@ fn req_reduce_001_three_defects_exact_replay_and_idempotence() {
+     for defect in [Defect::D01, Defect::D03, Defect::D07] {
+         let fixture = generate(100, 42, Some((defect, 60))).unwrap();
+         let input = prepared(fixture.bytes);
+-        let digest = qlrs_io::digest(&input.source);
++        let digest = input.source_digest();
+         let reduced = qlrs_reduce::reduce(&input.store, &digest, None, fixture.target_seq).unwrap();
+         assert!(reduced.closure_1_minimal);
+         assert!(
+@@ -62,7 +62,7 @@ fn req_reduce_001_three_defects_exact_replay_and_idempotence() {
+         }
+         let again = qlrs_reduce::reduce(
+             &output.store,
+-            &qlrs_io::digest(&output.source),
++            &output.source_digest(),
+             Some(cp),
+             Some(target.anchor_claim_original_seq),
+         )
+@@ -77,7 +77,7 @@ fn req_reduce_001_three_defects_exact_replay_and_idempotence() {
+ fn req_reduce_002_actual_closure_minimality_certificate() {
+     let fixture = generate(15, 0, Some((Defect::D11, 10))).unwrap();
+     let input = prepared(fixture.bytes);
+-    let digest = qlrs_io::digest(&input.source);
++    let digest = input.source_digest();
+     let original = Checker::check(
+         &input.store,
+         &AliveMask::all(input.store.units.len()),
+@@ -111,7 +111,7 @@ proptest! {
+  #![proptest_config(ProptestConfig {cases:100,..ProptestConfig::default()})]
+  #[test]
+  fn req_reduce_003_property_preserves_instance_and_source(seed in any::<u64>(),index in 1usize..19){
+-  let fixture=generate(20,seed,Some((Defect::D03,index))).unwrap();let input=prepared(fixture.bytes);let reduced=qlrs_reduce::reduce(&input.store,&qlrs_io::digest(&input.source),None,fixture.target_seq).unwrap();let report=Checker::check(&input.store,&reduced.alive,reduced.checkpoint.as_ref(),false);prop_assert!(report.keys().any(|key|Some(key)==reduced.target.instance_key.as_ref()));prop_assert!(reduced.retained_events<=6);
++  let fixture=generate(20,seed,Some((Defect::D03,index))).unwrap();let input=prepared(fixture.bytes);let reduced=qlrs_reduce::reduce(&input.store,&input.source_digest(),None,fixture.target_seq).unwrap();let report=Checker::check(&input.store,&reduced.alive,reduced.checkpoint.as_ref(),false);prop_assert!(report.keys().any(|key|Some(key)==reduced.target.instance_key.as_ref()));prop_assert!(reduced.retained_events<=6);
+  }
+ }
+ #[test]
+@@ -120,7 +120,7 @@ fn req_bundle_001_deterministic_roundtrip_and_every_file_tamper() {
+     let input = prepared(fixture.bytes);
+     let reduction = qlrs_reduce::reduce(
+         &input.store,
+-        &qlrs_io::digest(&input.source),
++        &input.source_digest(),
+         None,
+         fixture.target_seq,
+     )
+@@ -155,7 +155,7 @@ fn req_reduce_004_sparse_fast_predicate_matches_full_replay() {
+     use qlrs_schema::Status;
+     let fixture = generate(40, 42, Some((Defect::D03, 25))).unwrap();
+     let input = prepared(fixture.bytes);
+-    let digest = qlrs_io::digest(&input.source);
++    let digest = input.source_digest();
+     let store = &input.store;
+     let original = Checker::check(store, &AliveMask::all(store.units.len()), None, true);
+     let key = original
+diff --git a/crates/qlrs-io/src/source.rs b/crates/qlrs-io/src/source.rs
+new file mode 100644
+index 0000000..0fd90c8
+--- /dev/null
++++ b/crates/qlrs-io/src/source.rs
+@@ -0,0 +1,262 @@
++//! Compact source offsets and checked positioned reads, without mmap.
++use crate::{InputError, err, limits};
++use std::{
++    fs::File,
++    io::{Read, Seek, SeekFrom},
++    os::unix::fs::FileExt,
++};
++
++const BLOCK: usize = 64 << 10;
++
++/// Location of an original adapter or JSONL record.
++#[derive(Debug, Clone, Copy, PartialEq, Eq)]
++pub struct SourceRef {
++    /// Source file identifier; JSONL currently uses zero.
++    pub file_id: u32,
++    /// Absolute byte offset.
++    pub offset: u64,
++    /// Record length including its newline.
++    pub len: u32,
++    /// One-based source line or record.
++    pub line_or_record: u64,
++}
++/// Random access boundary shared with future engine adapters.
++pub trait SourceReader {
++    /// Fetch the original record and verify its source commitment.
++    fn read_record(&self, reference: &SourceRef) -> Result<Vec<u8>, InputError>;
++}
++
++#[derive(Debug)]
++pub(crate) struct FileSource {
++    pub file: File,
++    pub starts: Vec<u64>,
++    pub lengths: Vec<u32>,
++    blocks: Vec<blake3::Hash>,
++    pub digest: String,
++    pub bytes: u64,
++    remove_on_drop: Option<std::path::PathBuf>,
++}
++impl Drop for FileSource {
++    fn drop(&mut self) {
++        if let Some(path) = &self.remove_on_drop {
++            let _ = std::fs::remove_file(path);
++        }
++    }
++}
++impl FileSource {
++    pub fn scan(mut file: File, limits: Option<crate::Limits>) -> Result<Self, InputError> {
++        file.seek(SeekFrom::Start(0))
++            .map_err(|e| err(0, e.to_string()))?;
++        let bytes = file.metadata().map_err(|e| err(0, e.to_string()))?.len();
++        if limits.is_some_and(|l| bytes > l.max_input_bytes) {
++            return Err(limits::error(
++                0,
++                "E-LIMIT-INPUT-BYTES",
++                "input exceeds byte limit",
++            ));
++        }
++        let mut result = Self {
++            file: file.try_clone().map_err(|e| err(0, e.to_string()))?,
++            starts: Vec::new(),
++            lengths: Vec::new(),
++            blocks: Vec::new(),
++            digest: String::new(),
++            bytes,
++            remove_on_drop: None,
++        };
++        let mut block = vec![0_u8; BLOCK];
++        let mut hasher = blake3::Hasher::new();
++        let mut offset = 0_u64;
++        let mut start = 0_u64;
++        let mut last = None;
++        loop {
++            let mut used = 0;
++            while used < BLOCK {
++                let count = file
++                    .read(
++                        block
++                            .get_mut(used..)
++                            .ok_or_else(|| err(0, "invalid block"))?,
++                    )
++                    .map_err(|e| err(0, e.to_string()))?;
++                if count == 0 {
++                    break;
++                }
++                used += count;
++            }
++            if used == 0 {
++                break;
++            }
++            let data = block.get(..used).ok_or_else(|| err(0, "invalid block"))?;
++            hasher.update(data);
++            result.blocks.push(blake3::hash(data));
++            last = data.last().copied();
++            for (index, byte) in data.iter().enumerate() {
++                let end = offset
++                    .checked_add(u64::try_from(index).map_err(|e| err(0, e.to_string()))?)
++                    .and_then(|v| v.checked_add(1))
++                    .ok_or_else(|| limits::error(0, "U-LIMIT-INDEX", "offset overflow"))?;
++                let length = end.saturating_sub(start);
++                if limits
++                    .is_some_and(|l| length > u64::try_from(l.max_line_bytes).unwrap_or(u64::MAX))
++                {
++                    return Err(limits::error(
++                        result.starts.len() + 1,
++                        "E-LIMIT-LINE-BYTES",
++                        "line exceeds byte limit",
++                    ));
++                }
++                if *byte == b'\n' {
++                    let length = u32::try_from(length).map_err(|_| {
++                        limits::error(
++                            result.starts.len() + 1,
++                            "U-LIMIT-INDEX",
++                            "line length exceeds u32",
++                        )
++                    })?;
++                    result.starts.push(start);
++                    result.lengths.push(length);
++                    start = end;
++                    if limits.is_some_and(|l| result.starts.len().saturating_sub(1) > l.max_events)
++                    {
++                        return Err(limits::error(
++                            result.starts.len(),
++                            "U-LIMIT-EVENTS",
++                            "event count exceeds limit",
++                        ));
++                    }
++                }
++            }
++            offset = offset
++                .checked_add(u64::try_from(used).map_err(|e| err(0, e.to_string()))?)
++                .ok_or_else(|| err(0, "offset overflow"))?;
++        }
++        if last != Some(b'\n') {
++            return Err(limits::error(
++                result.starts.len() + 1,
++                "E-NEWLINE",
++                "trace must end with a newline",
++            ));
++        }
++        if offset != bytes {
++            return Err(limits::error(
++                0,
++                "E-INPUT-CHANGED",
++                "input size changed during scan",
++            ));
++        }
++        result.digest = hasher.finalize().to_hex().to_string();
++        result.starts.shrink_to_fit();
++        result.lengths.shrink_to_fit();
++        result
++            .file
++            .seek(SeekFrom::Start(0))
++            .map_err(|e| err(0, e.to_string()))?;
++        if limits
++            .and_then(|l| l.memory_budget_bytes)
++            .is_some_and(|budget| result.estimate() > budget)
++        {
++            return Err(limits::error(
++                0,
++                "I-BUDGET-MEMORY",
++                "pre-scan allocation estimate exceeds budget",
++            ));
++        }
++        Ok(result)
++    }
++    pub fn estimate(&self) -> u64 {
++        // Conservative model before event columns are allocated, including
++        // temporary chunks and checker work arrays; no source-byte retention.
++        u64::try_from(self.starts.len())
++            .unwrap_or(u64::MAX)
++            .saturating_mul(240)
++            .saturating_add(64 << 20)
++    }
++    pub fn heap_bytes(&self) -> usize {
++        self.starts.capacity() * 8 + self.lengths.capacity() * 4 + self.blocks.capacity() * 32
++    }
++    pub fn reference(&self, line: usize) -> Option<SourceRef> {
++        Some(SourceRef {
++            file_id: 0,
++            offset: *self.starts.get(line)?,
++            len: *self.lengths.get(line)?,
++            line_or_record: u64::try_from(line).ok()?.checked_add(1)?,
++        })
++    }
++    pub fn read(&self, reference: &SourceRef) -> Result<Vec<u8>, InputError> {
++        let line = usize::try_from(reference.line_or_record)
++            .ok()
++            .and_then(|n| n.checked_sub(1))
++            .ok_or_else(|| err(0, "invalid source reference"))?;
++        if self.reference(line).as_ref() != Some(reference) {
++            return Err(err(line + 1, "invalid source reference"));
++        }
++        if self
++            .file
++            .metadata()
++            .map_err(|e| err(0, e.to_string()))?
++            .len()
++            != self.bytes
++        {
++            return Err(limits::error(
++                line + 1,
++                "E-INPUT-CHANGED",
++                "source length changed",
++            ));
++        }
++        let end = reference
++            .offset
++            .checked_add(u64::from(reference.len))
++            .ok_or_else(|| err(line + 1, "invalid source range"))?;
++        let first = usize::try_from(reference.offset / (BLOCK as u64))
++            .map_err(|e| err(line + 1, e.to_string()))?;
++        let last = usize::try_from(end.saturating_sub(1) / (BLOCK as u64))
++            .map_err(|e| err(line + 1, e.to_string()))?;
++        let mut out = Vec::with_capacity(reference.len as usize);
++        let mut block = vec![0_u8; BLOCK];
++        for index in first..=last {
++            let offset = u64::try_from(index)
++                .map_err(|e| err(line + 1, e.to_string()))?
++                .checked_mul(BLOCK as u64)
++                .ok_or_else(|| err(line + 1, "invalid block offset"))?;
++            let length = usize::try_from(self.bytes.saturating_sub(offset).min(BLOCK as u64))
++                .map_err(|e| err(line + 1, e.to_string()))?;
++            let data = block
++                .get_mut(..length)
++                .ok_or_else(|| err(line + 1, "invalid block length"))?;
++            self.file.read_exact_at(data, offset).map_err(|_| {
++                limits::error(
++                    line + 1,
++                    "E-INPUT-CHANGED",
++                    "source truncated during positioned read",
++                )
++            })?;
++            if self.blocks.get(index) != Some(&blake3::hash(data)) {
++                return Err(limits::error(
++                    line + 1,
++                    "E-INPUT-CHANGED",
++                    "source block digest mismatch",
++                ));
++            }
++            let from = usize::try_from(reference.offset.saturating_sub(offset))
++                .map_err(|e| err(line + 1, e.to_string()))?;
++            let to = usize::try_from(end.saturating_sub(offset).min(length as u64))
++                .map_err(|e| err(line + 1, e.to_string()))?;
++            out.extend_from_slice(
++                data.get(from..to)
++                    .ok_or_else(|| err(line + 1, "invalid record slice"))?,
++            );
++        }
++        if out.last() != Some(&b'\n') {
++            return Err(limits::error(
++                line + 1,
++                "E-INPUT-CHANGED",
++                "record terminator changed",
++            ));
++        }
++        Ok(out)
++    }
++    pub fn remove_on_drop(&mut self, path: std::path::PathBuf) {
++        self.remove_on_drop = Some(path);
++    }
++}
