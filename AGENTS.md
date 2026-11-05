@@ -7,8 +7,11 @@ For current Part 2 work, read `docs/PART_02_REBASE.md` first; it overrides stale
 Part 1/Part 2 assumptions. Part 2 benchmark outputs use `bench/results/CP2.x/`.
 Part 2 commits use `CP2.x: <objective>` and tags `part2-cp2.x` only when passed.
 Read `docs/HANDOFF_PART_02.md` for the current implementation and evidence.
-R4/CP2.2 is stopped after two measured attempts; CP2.13 acceptance is incomplete
-and has no passed tag. Do not silently retry or relax that gate.
+Part 3 is active: read docs/PART_03_INSTRUCTIONS.md, docs/PART3_REBASE.md and
+docs/HANDOFF_PART_03.md. The user explicitly reopened R4; fresh unchanged-source
+measurements pass its original bounds. Historical failures remain recorded.
+Part 3 raw evidence goes under evidence/part3; commits use CP3.N. Only the final
+fully passing Gate S may receive part3-gate-s. No Part 2 tag was retroactively added.
 
 Read `docs/BLOCKERS.md`, `docs/HANDOFF_CLAIM_BOUNDARIES.md` and
 `docs/PART_01_INSTRUCTIONS.md` before resuming. The corrections handoff records

@@ -1,0 +1,5 @@
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.04s
+   Compiling qlrs-bundle v0.1.0 (/workspace/QuantLab-RS/crates/qlrs-bundle)
+   Compiling qlrs-testkit v0.1.0 (/workspace/QuantLab-RS/crates/qlrs-testkit)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.46s
+one/two/eight-thread reports and complete bundles: classic, all D01-D11 rich cases, and call-limited output PASS

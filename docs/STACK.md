@@ -44,3 +44,39 @@ Part 2 tooling recheck, 2026-11-05 Asia/Calcutta: cargo-mutants 27.1.0
 yanked, verified via https://crates.io/api/v1/crates/cargo-mutants and
 https://crates.io/api/v1/crates/kani-verifier . Raw metadata is recorded with
 CP2.11. Kani is configured as an optional job; no local proof pass is claimed.
+
+## Part 3 version inventory — 2026-11-05
+
+Official registry recheck: [raw metadata](../evidence/part3/cp3.0/registry.json).
+Pinned product dependencies are retained. Candidates listed here are not all adopted.
+Older samply/ahash releases are inventory only; no maintained-status exception or use is claimed.
+Rust stable remains 1.99.1; the [official channel](../evidence/part3/cp3.0/channel-rust-stable.toml)
+reports 2026-10-15, so no 1.100 toolchain bump is made. Existing dated nightly
+2026-11-04 is retained for Miri; the fuzz nightly will be independently checked at CP3.4.
+
+| Package/tool | Exact version | Published UTC | Official source |
+|---|---|---|---|
+| cargo-fuzz | 0.13.2 | 2026-06-09 | https://crates.io/api/v1/crates/cargo-fuzz |
+| kani-verifier | 0.68.0 | 2026-09-16 | https://crates.io/api/v1/crates/kani-verifier |
+| cargo-mutants | 27.1.0 | 2026-06-02 | https://crates.io/api/v1/crates/cargo-mutants |
+| cargo-nextest | 0.9.151 | 2026-11-03 | https://crates.io/api/v1/crates/cargo-nextest |
+| cargo-deny | 0.20.2 | 2026-07-09 | https://crates.io/api/v1/crates/cargo-deny |
+| cargo-audit | 0.22.2 | 2026-06-05 | https://crates.io/api/v1/crates/cargo-audit |
+| gungraun | 0.20.0 | 2026-09-26 | https://crates.io/api/v1/crates/gungraun |
+| gungraun-runner | 0.20.0 | 2026-09-26 | https://crates.io/api/v1/crates/gungraun-runner |
+| hyperfine | 2.0.0 | 2026-10-07 | https://crates.io/api/v1/crates/hyperfine |
+| samply | 0.13.1 | 2025-02-01 | https://crates.io/api/v1/crates/samply |
+| serde_json | 1.0.154 | 2026-10-11 | https://crates.io/api/v1/crates/serde_json |
+| rayon | 1.12.0 | 2026-04-14 | https://crates.io/api/v1/crates/rayon |
+| foldhash | 0.2.0 | 2025-08-23 | https://crates.io/api/v1/crates/foldhash |
+| ahash | 0.8.12 | 2025-05-08 | https://crates.io/api/v1/crates/ahash |
+| rustc-hash | 2.1.3 | 2026-07-02 | https://crates.io/api/v1/crates/rustc-hash |
+| mimalloc | 0.1.52 | 2026-05-22 | https://crates.io/api/v1/crates/mimalloc |
+| tikv-jemallocator | 0.7.0 | 2026-05-25 | https://crates.io/api/v1/crates/tikv-jemallocator |
+| sonic-rs | 0.5.10 | 2026-09-11 | https://crates.io/api/v1/crates/sonic-rs |
+| simd-json | 0.19.0 | 2026-10-27 | https://crates.io/api/v1/crates/simd-json |
+| arbitrary | 1.5.0 | 2026-10-06 | https://crates.io/api/v1/crates/arbitrary |
+| libfuzzer-sys | 0.4.13 | 2026-06-04 | https://crates.io/api/v1/crates/libfuzzer-sys |
+| cargo-auditable | 0.7.7 | 2026-10-02 | https://crates.io/api/v1/crates/cargo-auditable |
+| cargo-vet | 0.10.3 | 2026-10-22 | https://crates.io/api/v1/crates/cargo-vet |
+| blake3 | 1.8.7 | 2026-08-20 | https://crates.io/api/v1/crates/blake3 |

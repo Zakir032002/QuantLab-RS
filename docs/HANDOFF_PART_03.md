@@ -1,10 +1,23 @@
 # Handoff — Part 3 (Scale and Hardening)
 
 Starting commit: `4f8bcbc0a5828eba10b8ba81bfc05de3971f36fc`.
-Status: **CP3.0 blocked; Part 3 implementation has not started.**
+Status: **CP3.0 resumed and verified after user authorization; implementation in progress.**
 Instructions are preserved verbatim in [PART_03_INSTRUCTIONS.md](PART_03_INSTRUCTIONS.md).
 
-## Part 2 gate failure
+## Resumed prerequisite verification
+
+The user authorized reopening R4 and building Part 3. A fresh run on unchanged
+source passed the original R4 limits (ratio 11.105456). The original failures
+remain historical evidence; this is no claimed algorithm improvement.
+Fresh verification passes 82 native tests plus one doctest, all 891 synthetic
+gate cells, the catalogue, golden checks, float/dependency guards, mutation
+floors, test-count ratchet and full 1/2/8-worker determinism. Commands, host,
+toolchain and outputs are in evidence/part3/cp3.0 and r4-reopened/before.
+The rebase is [PART3_REBASE.md](PART3_REBASE.md); current behaviour and its
+executed probes are [PART3_CURRENT_BEHAVIOUR.md](PART3_CURRENT_BEHAVIOUR.md).
+Versions were rechecked against the official registry; no dependency bump was made.
+
+## Historical Part 2 gate failure
 
 CP3.0 task 3 explicitly requires:
 
@@ -49,11 +62,11 @@ baseline have not been started: those are tasks 4–6, after the blocking check.
 
 | Checkpoint | Status | Evidence | Notes |
 |---|---|---|---|
-| CP3.0 | **BLOCKED** | [revalidation.json](../evidence/part3/cp3.0/revalidation.json) | No passed checkpoint or tag claimed |
+| CP3.0 | **RESUMED / VERIFIED** | [revalidation.json](../evidence/part3/cp3.0/revalidation.json) | Fresh verification: resumed-metadata.json; no tag |
 | CP3.1–CP3.15 | NOT STARTED | None | Blocked by the CP3.0 prerequisite |
 | Gate S | NOT RUN | None | No `part3-gate-s` tag |
 
-## Blockers
+## Initial blockers (superseded by user authorization)
 
 R4 already exhausted its two Part 2 optimization attempts. The existing
 [repository rule](../AGENTS.md) says not to silently retry or relax it; Part 3's
@@ -65,3 +78,11 @@ optimization attempt with the original 12× scaling and 0.5-second absolute
 criteria. Once that is authorized and passes, CP3.0 must rerun the remaining
 checks before Part 3 implementation begins. There is no permission request
 to waive or lower the threshold.
+
+## Current work and approvals
+
+The R4 stop was explicitly reopened by the user. CP3.1 baseline and CP3.2
+streaming generator are next. R9 review for default parser limits is pending;
+[the concrete verdict differences](PART3_VERDICT_REVIEW.md) are recorded while
+independent baseline/generator work continues. No Part 3 default verdict change
+has been enabled without that approval. No Gate S pass or tag is claimed.

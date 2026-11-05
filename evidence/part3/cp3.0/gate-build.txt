@@ -1,0 +1,3 @@
+   Compiling qlrs-testkit v0.1.0 (/workspace/QuantLab-RS/crates/qlrs-testkit)
+    Finished `release` profile [optimized + debuginfo] target(s) in 19.25s
+     Running `target/release/examples/part2_gate`

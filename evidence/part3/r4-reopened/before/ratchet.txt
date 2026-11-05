@@ -1,0 +1,2 @@
+R4 medians: 2061760 ns -> 22896785 ns; ratio 11.105456; limit 12
+R4 scaling: PASS

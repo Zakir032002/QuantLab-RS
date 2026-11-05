@@ -1,0 +1,11 @@
+{
+  "case": "41-digit starting balance",
+  "command": [
+    "target/debug/qlrs",
+    "verify",
+    "evidence/part3/cp3.0/current-behaviour/number41.jsonl"
+  ],
+  "exit": 3,
+  "stdout": "{\"status\":\"INCONCLUSIVE\",\"findings\":[{\"status\":\"INCONCLUSIVE\",\"instance_key\":null,\"class_fp\":null,\"residual\":null,\"expected\":null,\"observed\":null,\"window\":{\"start_seq\":null,\"end_seq\":0},\"relation\":\"other\",\"reason\":\"numeric-overflow\"}],\"expected_cash\":\"\",\"expected_positions\":[]}\n",
+  "stderr": ""
+}

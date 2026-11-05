@@ -1,0 +1,242 @@
+[
+  {
+    "name": "cargo-fuzz",
+    "version": "0.13.2",
+    "released": "2026-06-09T18:37:27.158092Z",
+    "yanked": false,
+    "checksum": "5acfd01930e49823e58c30dd8012d3338a620377d7c7d4cc140ca4b2169400e2",
+    "repository": "https://github.com/rust-fuzz/cargo-fuzz/",
+    "url": "https://crates.io/api/v1/crates/cargo-fuzz",
+    "checked_utc": "2026-11-05T09:16:06.493806+00:00"
+  },
+  {
+    "name": "kani-verifier",
+    "version": "0.68.0",
+    "released": "2026-09-16T03:50:19.125477Z",
+    "yanked": false,
+    "checksum": "842fabd2ba8b13babab862e21fef2946b581d493f23062d5ce86266630f1d1ae",
+    "repository": "https://github.com/model-checking/kani",
+    "url": "https://crates.io/api/v1/crates/kani-verifier",
+    "checked_utc": "2026-11-05T09:16:06.653571+00:00"
+  },
+  {
+    "name": "cargo-mutants",
+    "version": "27.1.0",
+    "released": "2026-06-02T15:18:24.420387Z",
+    "yanked": false,
+    "checksum": "07072e7bcdeb425d5e5fdbfd9f15a2c749e23cb2edf5ef40aee5876760ae1cf9",
+    "repository": "https://github.com/sourcefrog/cargo-mutants",
+    "url": "https://crates.io/api/v1/crates/cargo-mutants",
+    "checked_utc": "2026-11-05T09:16:06.632385+00:00"
+  },
+  {
+    "name": "cargo-nextest",
+    "version": "0.9.151",
+    "released": "2026-11-03T00:02:40.946393Z",
+    "yanked": false,
+    "checksum": "f21c861100d8ee08937edc925583ab006a47e64e4a1ccd454bf37e6cb7b3a624",
+    "repository": "https://github.com/nextest-rs/nextest",
+    "url": "https://crates.io/api/v1/crates/cargo-nextest",
+    "checked_utc": "2026-11-05T09:16:06.545583+00:00"
+  },
+  {
+    "name": "cargo-deny",
+    "version": "0.20.2",
+    "released": "2026-07-09T17:58:09.303885Z",
+    "yanked": false,
+    "checksum": "e528dfcbe739af7ce37a77d3d6df1b29dd6887b1c701d888820c0f16b864f737",
+    "repository": "https://github.com/EmbarkStudios/cargo-deny",
+    "url": "https://crates.io/api/v1/crates/cargo-deny",
+    "checked_utc": "2026-11-05T09:16:06.513433+00:00"
+  },
+  {
+    "name": "cargo-audit",
+    "version": "0.22.2",
+    "released": "2026-06-05T12:33:04.440539Z",
+    "yanked": false,
+    "checksum": "700c2b240f7fd330c24b675fe429f73a5b676531fcc6300400b2b67f155ba12a",
+    "repository": "https://github.com/rustsec/rustsec",
+    "url": "https://crates.io/api/v1/crates/cargo-audit",
+    "checked_utc": "2026-11-05T09:16:06.678467+00:00"
+  },
+  {
+    "name": "gungraun",
+    "version": "0.20.0",
+    "released": "2026-09-26T17:18:08.711102Z",
+    "yanked": false,
+    "checksum": "c041375e48b8ef7cd2d0e70715598154af627c1a551e41c35fdb4a2b3910831a",
+    "repository": "https://github.com/gungraun/gungraun",
+    "url": "https://crates.io/api/v1/crates/gungraun",
+    "checked_utc": "2026-11-05T09:16:06.821624+00:00"
+  },
+  {
+    "name": "gungraun-runner",
+    "version": "0.20.0",
+    "released": "2026-09-26T17:13:35.810792Z",
+    "yanked": false,
+    "checksum": "1e1460377fe936c3efbe8e27c422b745fa54ebaea81ffe4a53a6f17c7a478683",
+    "repository": "https://github.com/gungraun/gungraun",
+    "url": "https://crates.io/api/v1/crates/gungraun-runner",
+    "checked_utc": "2026-11-05T09:16:06.703415+00:00"
+  },
+  {
+    "name": "hyperfine",
+    "version": "2.0.0",
+    "released": "2026-10-07T21:17:20.921878Z",
+    "yanked": false,
+    "checksum": "aca5e6f74c882defe4f5faa41fd8be7ff4fb9ebaaf050b62a517490f8632b3c4",
+    "repository": "https://github.com/sharkdp/hyperfine",
+    "url": "https://crates.io/api/v1/crates/hyperfine",
+    "checked_utc": "2026-11-05T09:16:06.957305+00:00"
+  },
+  {
+    "name": "samply",
+    "version": "0.13.1",
+    "released": "2025-02-01T06:57:38.581398Z",
+    "yanked": false,
+    "checksum": "4522bce933096db8be451224bde3dbb1ce640748170dce8aca1edbdad7c82fff",
+    "repository": "https://github.com/mstange/samply/",
+    "url": "https://crates.io/api/v1/crates/samply",
+    "checked_utc": "2026-11-05T09:16:06.908376+00:00"
+  },
+  {
+    "name": "serde_json",
+    "version": "1.0.154",
+    "released": "2026-10-11T15:31:46.076577Z",
+    "yanked": false,
+    "checksum": "e7e9cc8b1b85264074fbcc02a88680c4096b1e47df8f739dceb03bf482f04bd6",
+    "repository": "https://github.com/serde-rs/json",
+    "url": "https://crates.io/api/v1/crates/serde_json",
+    "checked_utc": "2026-11-05T09:16:07.058978+00:00"
+  },
+  {
+    "name": "rayon",
+    "version": "1.12.0",
+    "released": "2026-04-14T00:56:56.454086Z",
+    "yanked": false,
+    "checksum": "fb39b166781f92d482534ef4b4b1b2568f42613b53e5b6c160e24cfbfa30926d",
+    "repository": "https://github.com/rayon-rs/rayon",
+    "url": "https://crates.io/api/v1/crates/rayon",
+    "checked_utc": "2026-11-05T09:16:06.900843+00:00"
+  },
+  {
+    "name": "foldhash",
+    "version": "0.2.0",
+    "released": "2025-08-23T19:14:01.103482Z",
+    "yanked": false,
+    "checksum": "77ce24cb58228fbb8aa041425bb1050850ac19177686ea6e0f41a70416f56fdb",
+    "repository": "https://github.com/orlp/foldhash",
+    "url": "https://crates.io/api/v1/crates/foldhash",
+    "checked_utc": "2026-11-05T09:16:06.954944+00:00"
+  },
+  {
+    "name": "ahash",
+    "version": "0.8.12",
+    "released": "2025-05-08T05:05:32.999746Z",
+    "yanked": false,
+    "checksum": "5a15f179cd60c4584b8a8c596927aadc462e27f2ca70c04e0071964a73ba7a75",
+    "repository": "https://github.com/tkaitchuck/ahash",
+    "url": "https://crates.io/api/v1/crates/ahash",
+    "checked_utc": "2026-11-05T09:16:07.113695+00:00"
+  },
+  {
+    "name": "rustc-hash",
+    "version": "2.1.3",
+    "released": "2026-07-02T19:13:03.150587Z",
+    "yanked": false,
+    "checksum": "6b1e7f9a428571be2dc5bc0505c13fb6bf936822b894ec87abf8a08a4e51742d",
+    "repository": "https://github.com/rust-lang/rustc-hash",
+    "url": "https://crates.io/api/v1/crates/rustc-hash",
+    "checked_utc": "2026-11-05T09:16:07.047959+00:00"
+  },
+  {
+    "name": "mimalloc",
+    "version": "0.1.52",
+    "released": "2026-05-22T13:15:21.565252Z",
+    "yanked": false,
+    "checksum": "2d4139bb28d14ad1facf21d5eb8825051b326e172d216b39f6d31df53cc97862",
+    "repository": "https://github.com/purpleprotocol/mimalloc_rust",
+    "url": "https://crates.io/api/v1/crates/mimalloc",
+    "checked_utc": "2026-11-05T09:16:07.086383+00:00"
+  },
+  {
+    "name": "tikv-jemallocator",
+    "version": "0.7.0",
+    "released": "2026-05-25T17:14:14.038227Z",
+    "yanked": false,
+    "checksum": "249f09e49ab1609436f34c776e84231bead18d6a955f119f939bdc1d847561bd",
+    "repository": "https://github.com/tikv/jemallocator",
+    "url": "https://crates.io/api/v1/crates/tikv-jemallocator",
+    "checked_utc": "2026-11-05T09:16:07.038087+00:00"
+  },
+  {
+    "name": "sonic-rs",
+    "version": "0.5.10",
+    "released": "2026-09-11T08:34:33.860840Z",
+    "yanked": false,
+    "checksum": "756586caeeb21126a57c17d1ef2b9386e2613ba784aae0f27104f5e9982335ec",
+    "repository": "https://github.com/cloudwego/sonic-rs",
+    "url": "https://crates.io/api/v1/crates/sonic-rs",
+    "checked_utc": "2026-11-05T09:16:07.193505+00:00"
+  },
+  {
+    "name": "simd-json",
+    "version": "0.19.0",
+    "released": "2026-10-27T22:19:36.419570Z",
+    "yanked": false,
+    "checksum": "e8f2e4d523646f7da6dde3983bd18ede0babc21c258ab708b3dd93ea0259719d",
+    "repository": "https://github.com/simd-lite/simd-json",
+    "url": "https://crates.io/api/v1/crates/simd-json",
+    "checked_utc": "2026-11-05T09:16:07.152057+00:00"
+  },
+  {
+    "name": "arbitrary",
+    "version": "1.5.0",
+    "released": "2026-10-06T23:00:58.853193Z",
+    "yanked": false,
+    "checksum": "3bc62ac97cc33321f50863d514c3bc38a453947a8f9e781137e47c7401020aed",
+    "repository": "https://github.com/rust-fuzz/arbitrary/",
+    "url": "https://crates.io/api/v1/crates/arbitrary",
+    "checked_utc": "2026-11-05T09:16:07.287745+00:00"
+  },
+  {
+    "name": "libfuzzer-sys",
+    "version": "0.4.13",
+    "released": "2026-06-04T18:55:34.718132Z",
+    "yanked": false,
+    "checksum": "a9fd2f41a1cba099f79a0b6b6c35656cf7c03351a7bae8ff0f28f25270f929d2",
+    "repository": "https://github.com/rust-fuzz/libfuzzer",
+    "url": "https://crates.io/api/v1/crates/libfuzzer-sys",
+    "checked_utc": "2026-11-05T09:16:07.160854+00:00"
+  },
+  {
+    "name": "cargo-auditable",
+    "version": "0.7.7",
+    "released": "2026-10-02T13:01:26.711010Z",
+    "yanked": false,
+    "checksum": "ccdd489bc94d1338cd04389a842e00661300331ec915fb376b4810ef7d480b5d",
+    "repository": "https://github.com/rust-secure-code/cargo-auditable",
+    "url": "https://crates.io/api/v1/crates/cargo-auditable",
+    "checked_utc": "2026-11-05T09:16:07.283452+00:00"
+  },
+  {
+    "name": "cargo-vet",
+    "version": "0.10.3",
+    "released": "2026-10-22T19:04:28.071021Z",
+    "yanked": false,
+    "checksum": "173c2501643f10d4b4f1157da393d9dedb9c288f2ec8687c08bd5b71f89478d6",
+    "repository": "https://github.com/mozilla/cargo-vet",
+    "url": "https://crates.io/api/v1/crates/cargo-vet",
+    "checked_utc": "2026-11-05T09:16:07.241114+00:00"
+  },
+  {
+    "name": "blake3",
+    "version": "1.8.7",
+    "released": "2026-08-20T09:09:56.903547Z",
+    "yanked": false,
+    "checksum": "6d9e454fc11f76977dc803893aff6304ed33d6a26efae8696573bea74baa27ae",
+    "repository": "https://github.com/BLAKE3-team/BLAKE3",
+    "url": "https://crates.io/api/v1/crates/blake3",
+    "checked_utc": "2026-11-05T09:16:07.282692+00:00"
+  }
+]

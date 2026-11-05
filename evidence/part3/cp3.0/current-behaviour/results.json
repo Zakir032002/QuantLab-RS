@@ -1,0 +1,182 @@
+[
+  {
+    "case": "clean",
+    "command": [
+      "target/debug/qlrs",
+      "verify",
+      "INPUT.jsonl"
+    ],
+    "input_bytes": 1227,
+    "exit": 0,
+    "stdout": "{\"status\":\"CONSISTENT\",\"findings\":[],\"expected_cash\":\"7990.00\",\"expected_positions\":[\"20\"]}\n",
+    "stderr": ""
+  },
+  {
+    "case": "invalid-utf8",
+    "command": [
+      "target/debug/qlrs",
+      "verify",
+      "INPUT.jsonl"
+    ],
+    "input_bytes": 1229,
+    "exit": 1,
+    "stdout": "",
+    "stderr": "qlrs: line 7: invalid utf-8 sequence of 1 bytes from index 1227\n"
+  },
+  {
+    "case": "missing-final-newline",
+    "command": [
+      "target/debug/qlrs",
+      "verify",
+      "INPUT.jsonl"
+    ],
+    "input_bytes": 1226,
+    "exit": 1,
+    "stdout": "",
+    "stderr": "qlrs: line 1: trace must end with a newline\n"
+  },
+  {
+    "case": "crlf",
+    "command": [
+      "target/debug/qlrs",
+      "verify",
+      "INPUT.jsonl"
+    ],
+    "input_bytes": 1233,
+    "exit": 0,
+    "stdout": "{\"status\":\"CONSISTENT\",\"findings\":[],\"expected_cash\":\"7990.00\",\"expected_positions\":[\"20\"]}\n",
+    "stderr": ""
+  },
+  {
+    "case": "deep-json",
+    "command": [
+      "target/debug/qlrs",
+      "verify",
+      "INPUT.jsonl"
+    ],
+    "input_bytes": 20002,
+    "exit": 1,
+    "stdout": "",
+    "stderr": "qlrs: line 1: invalid type: sequence, expected a string at line 1 column 1\n"
+  },
+  {
+    "case": "oversized-line",
+    "command": [
+      "target/debug/qlrs",
+      "verify",
+      "INPUT.jsonl"
+    ],
+    "input_bytes": 1049804,
+    "exit": 0,
+    "stdout": "{\"status\":\"CONSISTENT\",\"findings\":[],\"expected_cash\":\"7990.00\",\"expected_positions\":[\"20\"]}\n",
+    "stderr": ""
+  },
+  {
+    "case": "unknown-header-key",
+    "command": [
+      "target/debug/qlrs",
+      "verify",
+      "INPUT.jsonl"
+    ],
+    "input_bytes": 1285,
+    "exit": 1,
+    "stdout": "",
+    "stderr": "qlrs: line 1: unknown field `unexpected`, expected one of `type`, `schema`, `model`, `currencies`, `instruments`, `accounts`, `origin` at line 1 column 478\n"
+  },
+  {
+    "case": "duplicate-header-key",
+    "command": [
+      "target/debug/qlrs",
+      "verify",
+      "INPUT.jsonl"
+    ],
+    "input_bytes": 1252,
+    "exit": 1,
+    "stdout": "",
+    "stderr": "qlrs: line 1: duplicate field `schema` at line 1 column 435\n"
+  },
+  {
+    "case": "unknown-event-key",
+    "command": [
+      "target/debug/qlrs",
+      "verify",
+      "INPUT.jsonl"
+    ],
+    "input_bytes": 1266,
+    "exit": 1,
+    "stdout": "",
+    "stderr": "qlrs: line 2: unknown field `unexpected`, expected one of `seq`, `ts_event`, `account_id`, `provenance`, `client_order_id`, `instrument_id`, `side`, `order_type`, `quantity`\n"
+  },
+  {
+    "case": "duplicate-event-key",
+    "command": [
+      "target/debug/qlrs",
+      "verify",
+      "INPUT.jsonl"
+    ],
+    "input_bytes": 1235,
+    "exit": 1,
+    "stdout": "",
+    "stderr": "qlrs: line 2: duplicate field `seq`\n"
+  },
+  {
+    "case": "scale19",
+    "command": [
+      "target/debug/qlrs",
+      "verify",
+      "INPUT.jsonl"
+    ],
+    "input_bytes": 1278,
+    "exit": 4,
+    "stdout": "{\"status\":\"UNSUPPORTED\",\"findings\":[{\"status\":\"UNSUPPORTED\",\"instance_key\":null,\"class_fp\":null,\"residual\":null,\"expected\":null,\"observed\":null,\"window\":{\"start_seq\":null,\"end_seq\":0},\"relation\":\"other\",\"reason\":\"unsupported-scale\"}],\"expected_cash\":\"\",\"expected_positions\":[]}\n",
+    "stderr": ""
+  },
+  {
+    "case": "million-digit-number",
+    "command": [
+      "target/debug/qlrs",
+      "verify",
+      "INPUT.jsonl"
+    ],
+    "input_bytes": 1001257,
+    "exit": 3,
+    "stdout": "{\"status\":\"INCONCLUSIVE\",\"findings\":[{\"status\":\"INCONCLUSIVE\",\"instance_key\":null,\"class_fp\":null,\"residual\":null,\"expected\":null,\"observed\":null,\"window\":{\"start_seq\":null,\"end_seq\":0},\"relation\":\"other\",\"reason\":\"numeric-overflow\"}],\"expected_cash\":\"\",\"expected_positions\":[]}\n",
+    "stderr": ""
+  },
+  {
+    "case": "exponent",
+    "command": [
+      "target/debug/qlrs",
+      "verify",
+      "INPUT.jsonl"
+    ],
+    "input_bytes": 1260,
+    "exit": 1,
+    "stdout": "",
+    "stderr": "qlrs: line 1: invalid decimal syntax\n"
+  },
+  {
+    "case": "leading-plus",
+    "command": [
+      "target/debug/qlrs",
+      "verify",
+      "INPUT.jsonl"
+    ],
+    "input_bytes": 1259,
+    "exit": 1,
+    "stdout": "",
+    "stderr": "qlrs: line 1: invalid decimal syntax\n"
+  },
+  {
+    "case": "leading-zero",
+    "command": [
+      "target/debug/qlrs",
+      "verify",
+      "INPUT.jsonl"
+    ],
+    "input_bytes": 1259,
+    "exit": 4,
+    "stdout": "{\"status\":\"UNSUPPORTED\",\"findings\":[{\"status\":\"UNSUPPORTED\",\"instance_key\":null,\"class_fp\":null,\"residual\":null,\"expected\":null,\"observed\":null,\"window\":{\"start_seq\":null,\"end_seq\":3},\"relation\":\"other\",\"reason\":\"overspend\"}],\"expected_cash\":\"-2009.00\",\"expected_positions\":[\"20\"]}\n",
+    "stderr": ""
+  }
+]
