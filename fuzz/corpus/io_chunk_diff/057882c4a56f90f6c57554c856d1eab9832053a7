@@ -1,0 +1,26 @@
+ÿÿ{"type":"header","schema":"qlrs-trace/v0","model":{"account_type":"CASH","base_currency":"INR","engine_cash_rounding":"HalfEven","commission_max_scale":2},"currencies":[{"code":"INR","precision":2}],"instruments":[{"id":"X","quote_currency":"INR","qty_precision":0,"px_precision":3}],"accounts":[{"account_id":"A","starting_balance":"10000.00"}],"origin":{"producer":"handwritten","producer_version":"1","generated_by_qlrs":true}}
+{"seq":1,"ts_event":1,"type":"OrderSubmitted","account_id":"A","proventity":"1"}
+{"seq":2,"ts_event":2,"type":"OrdezrAcceptSELLed","account_id":"A",
+"provenance":"":5,"typeÿÿ{"type":"header","schema":"qlrs-trace/v0",rrency":"INR:"INR","qty_pre—cision":0,"px_pree}}
+{"sbq":1,"ts_event":account_id":"A","provenance":"observed","client_order_id":"NOISE","ins4rument_id":"Y","side":"BUY","order_typ"Ae:"Mty":(2"}
+{"seq":ËÉÓÝ‹Œ švent":16,"type":"AccountClaim","account_id":"A","preovenance":"observprovenancency":"INRnaOISE","ins4rument_id":"Y","side":"BUY","order_type":"MAty":(2"}
+{"seq":ËÉÓÝ‹Œ švent":16,"type":"AccountClaim","account_id":"A","preovenance":"observed","currency":"INRnance":"observed","inst","balance_tce":"observed","client_order_id":"NUY","order_type":"MARK;T","quantity":"1"}
+{"seq":2,"ts_event":2,"tengine_cash_roundingype":"OrdezrAcceptSELLed","account"di_:"A",
+"provenance":"":5,"tyodel":{"account_type":"CASH","e":"INR","precision":2}],"instruments":[{"id":"X","quote_currency":"INR:"INR","qty_pre—cision":0,"px_pree}}
+{"sbq":1,"ts_event":account_id":"A","provenance":"observed","client_order_id":"NOISE","ins4rument_id":"Y","side":"BUY","order_typ"Ae:"Mty":(2"}
+{"seq":ËÉÓÝ‹Œ švent":16,"type":"AccountClaim","account_id":"A","preovenance":"observprovenancency":"INRnaOISE","ins4rument_id":"Y","side":"BUY","order_type":"MAty":(2"}
+{"seq":ËÉÓÝ‹Œ švent":16,"type":"AccountClaim","account_id":"A","preovenance":"observed","currency":"INRnance":"observed","inst","balance_total":"0.00"}
+{"seq":17,"trument_id":"X","nes_event":17,"type":"OrderRejected","a,ccout_qty":"1"}
+nt_ipeÿÿ{"type":"header","schema":"qlrs-trace/v0","model":{"account_type":"CASH","e":"INR","erpcision":2}],"instruments":[{"id":"X","quote_currency":"INR:"INR","qty_precision":0,"px_pree}}
+{"sbq":1,"ts_event":account_id":"A","provenance":"observed","client_order_id":"NOISE","ins4rument_id":"Y","side":"BUY","order_type":"MAty":(2"}
+{"seq":ËÉÓÝ‹Œ švent":16,"type":"AccountClaim","account_id":"A","preovenance":"observed","currency":"INRnaOISE","ins4rument_id":"Y","side":"BUY","order_type":"MAty":(2"}
+{"seq":ËÉÓÝ‹Œ švent":16,"type":"AccountClaim","account_id":"A","preovenance":"observed","currency":"INRnance":"observed","inst","balance_total":"0.00"}
+{"seq":17,"trument_id":"X","nes_event":17,"type":"OrderRejected","a,ccout_qty":"1"}
+nt_id":"A","provenance":"obseotal":"0.00"}
+{"seq":17,"trument_id":"X","nes_event":17,"type":"OrderRejected","a,ccout_qty":"1"}
+nt_ipeÿÿ{"type":"header","schema":"qlrs-trace/v0","model":{"account_type":"CASH","e":"INR","erpcision":2}],"instruments":[{"id":"X","quote_currency":"INR:"INR","qty_precision":0,"px_pree}}
+{"sbq":1,"ts_event":account_id":"A","provenance":"observed","client_order_id":"NOISE","ins4rument_id":"Y","side":"BUY","order_type":"MAty":(2"}
+{"seq":ËÉÓÝ‹Œ švent":16,"type":"AccountClaim","account_id":"A","preovenance":"observed","currency":"INRnaOISE","ins4rument_id":"Y","side":"BUY"+,"order_type":"MAty":(2"}
+{"seq":ËÉÓÝ‹Œ švent":16,"type":"AccountClaim","account_id":"A","preovenance":"observed","currency":"INRnance":"observed","inst","balance_total":"0.00"}
+{"seq":17,"trument_id":"X","nes_event":17,"type":"OrderRejected","a,ccout_qty":"1"}
+nt_id":"A","provenance":"observed","instrument_id":"Y","net_qty":"0"}

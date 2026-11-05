@@ -1,0 +1,13 @@
+ÿÿ{"type":"header","schema":"qlrs-trace/v0","model":{"account_type":"CASH","base_currency":"INR","engine_cash_rounding":"Exact","commission_max_scale":2},"currencies":[{"code":"INR","precision":2}],"instruments":[{"id":"X","quote_currency":"INR","qty_precision":3,"px_precision":3}],"accounts":[{"account_id":"A","starting_balance":"1000000000000.00"}],"origin":{"producer":"qlrs-testkit","producer_version":"0.1.0","generated_by_qlrs":true}}
+{"couvenance":"observed","client_order_id":"O9","instrument_id":"X","side":"BUY","order_type":"MARKET","quantity":"20.000"}
+{"seq":49,"ts_event":49,"type":"OrderAccepted","accoun!t_id":"A","provenance":"observed","client_or"10000.","provenance":"observedÞ,"client_order_id":"O11","instrument_id":"X","side":"BUY","order_type":"MARKET","quantity":"20.000"}
+{"seq":59,"ts_event":59,"type":"OrderAccepted","account_id":"A","provenance":"observed","client_order_id":"O11","venue_order_id":"V11"}
+{"se":"20.000"}
+{"seq":7,"ts_event":7,"type":"OrderAccepted","account_id":"A","provenance":"observed","client_order_id":"O1","venue_order_id":"V1"}
+{"seq":8,"ts_event":8,"type":"OrderFilled","account_id":"A","provenance":"observed","client_order_id":"O1","trade_id":"T1","last_qty"::"observed","client_order_id":"O9","venue_order_id":"V9"}
+{"seq":50,"ts_event": a50,"type":"OrderFilled","account_id":"A","provenance":"observed","client_order_id":"O9","trade_id":"T9","last_qty":"20.000","last_px":"103.00","commission":"4.00","commission_currency":"INR","liquidity_side":"TAKER"}
+{"se}q":51,"ts_event":51,"type":"AccountClaim","account_id":"A","provenance":"observed","currency":"INR","balance_total":"999999979360.00"}
+{"seq"::"observed","instrument_id":"X","net_qty":"130.000"}
+{"seq":68,"ts_event":68,"type":"OrderSubÿÿ{}}
+M"account_id":"A","provenance":"observed","client_order_id":"O13","instrument_id":"X","side":"BUY","order_type":"MARKET","quantity":"20.000"}
+{"seq":69,"ts_event":69,"type":"OrderAccepted","account_id":"A","provenance":"observed","onClaim","account_id":"A","provenance":"observed","instrumen"A","provenance":"observed","instrument_id":"X","net_qty":"320.000"}

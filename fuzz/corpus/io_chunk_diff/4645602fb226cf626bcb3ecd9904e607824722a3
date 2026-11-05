@@ -1,0 +1,2 @@
+ÿÿ{"type":"header","schema":"qlrs-trace/v0","model":{"account_type":"CASH","base_currency":"INR","engine_cash_rounding":"Exact","commission_max_scale":2},"currencies":[{"code":"INR","precision":2}],"instruments":[{"id":"X","quote_currency0"}
+{"seq":2,"ts_event":2,"type":"Orde0"}

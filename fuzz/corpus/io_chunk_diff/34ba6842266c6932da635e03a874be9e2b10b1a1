@@ -1,0 +1,14 @@
+ÿÿ{"type":"header","schema":"qlrs-trace/v0","model":{"account_type":"CASH","base_currency":"INR","engine_cash_rounding":"Exact","commission_max_scale":2},"currencies":[{"code":"INR","precision":2}],"instruments":[{"id":"X0","quote_currency":"INR","qty_precision":3,"px_precision":3},{"id":"X1","quote_currency":"INR","qty_precision":3,"px_precision":3},{"id":"X2","quote_currency":"INR","qty_precision":3,"px_precision":3},{"id":"X3","quote_currency":"INR","qty_precision":3,"px_precision":3},{"id":"X4","quote_currency":"INR","qty_precision":3,"px_precision":3}],"accounts":[{"account_id":"A","starting_balance":"1000000000000.00"}],"origin":{"producer":"qlrs-testkit-rich","producer_version":"0.1.0","generated_by_qlrs":true}}
+{"seq":1,"ts_event":1,"type":"AccountClaim","account_id":"A","provenance":"observed","currt_id":"A","provenance":"observed","instrument_id":"X0","net_qty":"0.000"}
+{"seq":3,"ts_event":3,"type":"Positi000"}
+{"seq":5,"ts_event":5,"type":"PositionClaim","account_id":"A","provenance":"observed","instrument_id":"X3","net_qty":"0.000"}
+{"seq":6,"ts_event":6,"type":"PositionClaim","account_id":"A","provenance":"observed","instrument_id":"X4","net_qty":"0.000"}
+{"seq":7,"ts_event":7,"type":"OrderSuby":"5.000","last_px":"120.000","commission":"4.00","commission_currency":"INR","liquidity_side":"TAKER"}
+{"seq":42,"ts_event":42,"type":"OrderFilled","account_id":"A","provenance":"observed","client_order_i"currency":"INR","balance_total":"999999305123.00"}
+{"seq":47,"ts_event":47,"type":"PoonClaim","account_id":"A","provenance":"observed","instrument_id":"X0","net_qty":"1020.000"}
+{"a":"qlrs-trace/v0","model":{"account_type":"CASH","base_currency":"INR","engine_cash_rounding":"Exact","commission_max_scale":2},"currencies":[{"code":"INR","precision":2}],"instruments":[{"id":"X","quote_currency":"INR","qty_precision":18,"px_precision":0}],"accounts":[{   !        '                        "account_id":"A","starting_balance10:""000.00"}],"origin":{"producer":"handwritten","producer_version":"1\u0000","genegiclan1seq":48,"ts_event":48,"type":"PositionClaim","account_id":"A","provenance":"observed","instrument_id":"X1","net_qty":"1005.000"}
+{"seq":49,"ts_event":49,"type":"PositionClaim","account_id":"A","provenance":"observed","instrument_id":"X2","net_qty":"1005.000"}
+{"seq":50,"ts_event":50,"type":"PositionClaim","account_id":"A","provenance":"observed","instrument_id":"X3","net_qty":"1020.000"}
+{"seq":51,"ts_event":51,"type":"PositionClaim","account_id":"A","provenance":"observed","instrument_id":"X4","net_qty":"1020.000"}
+{"seq":52,"ts_event":52,"tytrument_id":"X2","net_qty":"1020.000"}type":"PositionClaim","account_id":"A","provenance":"observed","instrument_id":"X2","net_qtyinstrument_id":"X3","net_qty":"1020.000"}
+{"seq":122,"ts_event":122,"type":"PositionClaim","account_id":"A","provenance":"observed","instrumeft_id":"X4","net_qty":"1020.000"}

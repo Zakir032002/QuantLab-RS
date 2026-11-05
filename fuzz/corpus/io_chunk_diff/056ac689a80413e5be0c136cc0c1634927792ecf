@@ -1,0 +1,2 @@
+ÿÿ{"type":"header","schema":"qlrs-trace/v0","model":{"account_type":"CASH","base_currency":"INR","engine_cash_rounding":"Exact","commission_max_scale":2},"currencies":[{"code":"INR","precision":2}],"instruments":[																				{"id":"X","quote_currency":									base_currency			{"id":"X","quote_currency":"INR","qty_precision":3,"px_precision":3}],"accounts":[{"0.000"}
+{"seq":11,"ts_e_currency":"INR","qty_pExaction15,"þt_qty":"60.000"}

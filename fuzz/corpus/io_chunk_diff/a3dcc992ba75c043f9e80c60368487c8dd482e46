@@ -1,0 +1,12 @@
+ÿÿ{"type":"header","schema":"qlrs-trace/v0","model":{"account_type":"CASH","base_currency":"INR","engine_cash_rounding":"Exact","commission_max_scale":2},"currencies":[{"code":"INR","precision":4}],"instruments":[{"id":"X","quote_currency":"INR","qty_precision":18,"px_precision":0}],"accounts":[{"account_id":"A","starting_balance":"10000.00"}],"origin":{"producer":"handwritten","producer_version":"1","generated_by_qlrs":true}}
+{"seq":mmmmmmmmmversion":"1","generated_by_qlrs":trunt_order_id":"O1","instrument_id":"X","side":"BUY","order_type":"MARKET","quantity :"20"000.00"}],"origin":{"producer":"handwritten","producer_version":"1","generated_by_qlrs":true}}
+{"seq":1,"ts_event":1,"type":"OrdermmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmINR","engine_cash_rounding":"Exac"t"c,ommission_max_scale":2},"currencies":[{"code":"INR","precision":2}],"instruments":[{"id":"X","quote_currency":"INR","qty_precision":0,"px:_precision":2}],"accounts":[{"account_id":"F","starting_balance":"10000.00"}],"o`rigin":{"producer":"handwritten","producer_version":"1","generated_by_q¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯lrs":true}}
+{"seq":1,"ts_event":1,"type":"OrderSubmitted","account_id":"A","provenance":"observed","client_order_id"ªªªªªªHalfEvenªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªª,"balance_total":"8995.00"}
+{"seq":5,"ts_event":5,"type":"PositionnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnKET","quantity":"0.000000000000000001"}
+{"seq":2,"ts_event":2,"type":3e0
+"OrderAccepted","account_id":"A","provenance":"observed","client_NNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNorder_id":"O1","venue_order_id":"VO1"}
+{"seq":3,"ts_event":3,"type":"OrderFilents":[{"id":"X","":5,"type":"PositionnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnKET","quantity":"0.000000000000000001"}
+{"seq":2,"ts_event":2,"type":3e0
+"OrderAccepted","account_id":"A","provenance":"observed","client_NNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNorder_id":"O1","venue_order_id":"VO1"}
+{"seq":3,"ti_event":3,"type":"OrderFilents":[{"id":"X","quote_curcer_version":"1","generated_by_qlrs":trued","account_id":"A","pronance":"observed","currency":"INR","balance_total":"9999.00"}
+{"seq":5,"ts_event":5,"type":"PstioionClaim","account_id":"A","provenance":"observed","instrument_id":"X","net_qty":"0.000000000000000001"}

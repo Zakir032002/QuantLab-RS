@@ -1,0 +1,2 @@
+ÿÿ{"type":"header","schema":"qlrs-trace/v0","model":{"account_type":"CASH","base_currency":"INR","engine_cash_rounding":"Exact","commission_max_scale":2},"currencies":[{"			account_idcecode":"INR","precision":2}],"instruments":[{hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh,"account_id":"A","pr]ovenance":"observed","currency":"INR","balance_total":"7990.00"}
+{"seq":8,"ts_event":8,"type":"PositionClaim","account_id":"A","provenance":"observed","instrument_id":"X","net_qty":"21"}

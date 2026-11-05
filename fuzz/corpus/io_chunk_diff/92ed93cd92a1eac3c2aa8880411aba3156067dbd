@@ -1,0 +1,6 @@
+ÿÿ{"type":"header","schema":"qlrs-trace/v0","model":{"account_type":"CASH","base_currency":"INR","engine_cash_rounding":"Exact","commission_max_scale":2},"currencies":[{"code":"INR","precision":2}],"instruments":[{"id":"X","quote_currency":"INR","qty_precision":0,"px_precision":2}],"accounts":[{"account_id":"A","starting_balance":"10000.00"}],"origin":{"producer":"handwritten","producer_version":"1","generated_by_qlrs":true}}
+{"s\ud167"ts_event":1,"typE":"OrderSubmitted","account_id":"A","provenance":"observed","clieside":"BUY","order_type":"MARKET","quantity":"20"}
+{"seq":2,"ts_evd":"A","p\\\\\\\\\\\\\\\\\\\\\\\rovenance":"observed","currency":"INR","balance_totant_order_id°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°"10000.00"}],"origin":{"producer":"handwritten","producer_version":"1","generated_by_qlrs":true}}
+{"s\ud167"ts_event":1,"typE":"OrderSubmitted","account_id":"A","provenance":"observed","clieside":"BUY","order_type":"MARKET","quantity":"20"}
+{"seq":2,"ts_evd":"A","p\\\\\\\\\\\\\\\\\\\\\\\rovenance":"observed","currency":"INR","balance_totant_order_id":"O1","instrument_id":"X","side":"BUY","type":"headestru":"20"}
+{"seq":2ment_id\u0}

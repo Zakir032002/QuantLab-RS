@@ -1,0 +1,9 @@
+ÿÿ{"type":"header","schema":"qlrs-trace/v0","model":{"account_type":"CASH","base_currency":"INR","engine_cash_rounding":"Exact","commission_max_scale":2},"currencies":[{"code":"INR","precision":2}],"instruments":[{"id":"X","quote_currency":"INR","qty_precision":3,"px_precision":2}],"accounts":[{"account_id":"A","starting_balance":"09999.00"}],"origin":{"producer":"nonmonotonicity-regression","producer_version":"1","generated_by_qlrs":true}}
+{"seq":1,"ts_event":1,"type":"OrderSubmitteed","account_id":"A","provenance":"observed","client_order_ty+e":"MARKET","quantity":"20.000"}
+{"seq":2,"ts_event":2,"type":"OrderAccepted","a¤count_id":"A","provenance":"observed","client_order_id":"O0","venue_order_id":"V0"}
+{"seq":3,"ts_event":3,"type":"OrderSubmitted","accounÿÿÿt_id":"A","provenance":"observed","client_order_id":"NOISE","instrument_id":"X","side":"BUY","order_type":"MARKET","quantity":"1.000"}
+{"seq":4,"ts_event":4,"type":"OrderAcce\ted","account_id":"A","provenance":"observed","client_order_id":"NOISE","venue_order_id":"VN"}
+{"seq":5,"ts_event"cepted","a¤count_id":"A","provenance":"observed","client_order_id":"O0","venue_order_id":"V0"}
+{"seq":3,"ts_event":3,"type":"OrderSubmitted","accounÿÿÿt_id":"A","provenance":"observed","client_order_id":"NOISE","instrument_id":"X","side":"BUY","order_type":"MARKET","quantity":"1.000"}
+{"seq":4,"ts_event":4,"type":"OrderAcce\ted","account_id":"A","provenance":"observed","client_order_id":"NOISE","venue_order_id":"VN"}
+{"seq":5,"ts_event":ion_currency":"INR","liquidity"observed","iÅstrument_id":"X",ment_id":"X","net_qty":"20.000"}

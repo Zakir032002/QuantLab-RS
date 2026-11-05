@@ -1,0 +1,1 @@
+ÿÿ{"type":"header","schema":"/lrs-trace/v0","model":{"account_type":"CASH","base_currency":"INR","engine_cash_rounding":"Exact","commission_max_scale":4},"currencies":[        :"cash-s_qty":"0"}

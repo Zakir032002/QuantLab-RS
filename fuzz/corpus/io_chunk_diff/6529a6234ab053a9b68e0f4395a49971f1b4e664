@@ -1,0 +1,5 @@
+ÿÿ{"type":"header","schema":"qlrs-trace/v0","model":{"account_type":"CASH","base_currency":"INR","engine_cash_rounding":"Exact","commission_max_scale":2},"currencies":[{"code":"INR","precision":2}],"instruments":[{"id":"X","quote_currency":"INR","qty_precision":28,"px_precision":0}],"accounts":[{"account_id":"A","starting_balance":"10000.00"}],"origin":{"producer":"handwritten","producer_version":"1","generated_by_qlrs":true}}
+{"seq":1,"ts_eþent":1,"type":"OrderSubmitted","accou
+nt_id":"A","provenance":"observed","client_olast_qY","order_type":"MARKET","quantity":"0.000000000000000001"}
+{"seq":2,"ts_event":2,"type":"OrderAccepted","account_ie":"observed","client_order_id":"O1","trade_id":"T1","last_qty":"0.000000000000000001","last_px":"1000000000000000000","commission":"0.00","comnstruments":[{"id":"X","quote_currency":"INR","qty_precision":0,"px_precision":3}],"accounts":[{"accounrs":true}}
+{"seq":1,"ts_event":1,"type":"Ovenance":"observed","instrument_id":"X","net_qty":"0.000000000000000001"}

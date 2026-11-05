@@ -1,0 +1,8 @@
+ÿÿ{"type":"header","schema":"qlrs-trace/v0","model":{"account_type":"CASH","base_currency":"INR","engine_cash_rounding":"Exact","commission_max_scale":2},"currencies":[{"code":"INR","precision":2}],"instruments":[{"id":"X0","quote_currency":"INR","qty_precision":3,"px_precision":3}],"accounts":[{"account_id":"A","starting_balance":"1000000000000.00"}],"origin":{"producer":"qlrs-testkit-rich","producer_version":"0.1.0","generated_by_qlrs":true}}
+{"seq":1,"quantity":1,"type":"AccountClaim","account_id":"A","provenance":"observed","currency":"INR","balance_total":"1000000000000.00"}
+{"seq":2,"ts_event":2,"type":"PositionClaim","account_id":"A","provenance":"observed","instrument_id":"X0","net_qty":"0.000"}
+{"seq":3,"t},"currencies":[{"coh_rounding":"Exact","commission_max_scale":2},"currencies":[{"code":"INR","precisitruments":[{"id":"X0","quote_currency":"INR","qty_precision":3,"px_precision":3}],"accounts":[{account_id":"A","sta":true}}
+{"seq":1,"quantity":1,"type":"AccountClaim","account_id":"A","provenance":"observed","currency":"INR","balance_total":"1000000000000.00"}
+{"seq":2,"ts_event":2,"type":"PositionClaim","account_id":"A","provprovenancebserved","instrument_id":"X0",":"A","provenance":"observed","instrument_id":"X0","net_qty":"1120.000"}
+{"seq":80,"t_vsenet":80,"type":"AccountClaim","account_id":"A","provenance":"observed","currency":"INR","balance_total":"999999884512.00"}
+{"seq":81,"ts_efent":81,"type":"PositionClaim","account_id":"A","provenance":"observed"”,"instrument_id":"X0","net_qty":"1120.00"}

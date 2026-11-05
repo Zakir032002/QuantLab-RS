@@ -1,0 +1,1 @@
+independent worked-example golden: PASS

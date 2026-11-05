@@ -1,0 +1,2 @@
+ÿÿ{"type":"header","schema":"qlrs-trace/v0","model":{"account_type":"CASH","base_currency":"INR","engine_cash_rounding":"Exact","commission_max_scale":2},"currencies":[{"code":"INR","precision":													,							ance":"observed","client_order_id":"O1","instrue}}
+{"seq":1,"ts_event":1,"type":"OrderSubmmtted","aurrencies":[{"code":"INR","precision":																				anid":"O1","qty":"20"}

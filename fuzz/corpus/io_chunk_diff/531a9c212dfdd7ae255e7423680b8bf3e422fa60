@@ -1,0 +1,6 @@
+ÿÿ{"type":"header","schema":"qlrs-trace/v0","model":{"account_type":"CASH","base_currency":"INR","engine_cash_rounding":"Exact","commission_max_scale":2},"currencies":[{"code":"INR","precision":2}],"instruments":[{"id":"X0","quote_currency":"INR","qty_precision":3,"px_precision":3},{"id":"X1","quote_currency":"INR","qty_precision":3,"px_precision":3},{"id":"X2","quote_currency":"INR","qty_precision":3,"px_precision":-}],"accounts":[{"account_id":"A","starting_balance":"1000000000000.00"}],"origin":{"producer":"qlrs-testkit-rich","producer_version":"0.1.0","generated_by_qlrs":true}}
+{"seq":1,"ts_event":1,"type":"AccountClaim,"net_qty":"0.000"}
+{"seq":3,"ts_event":3,"type":"PositionClaim","account_id":"A","provenance":"obsernt_order_id":"O1","trade_id":"T1","last_qty":"20","lasrency":"INR","liquidity_side":"TAKER"}
+{"seq":91,"ts_event":91,"type":"PositionClaim","account_id":"A","provenance":"observed","instrument_id":"X0","net_qty":"1040.000"}
+{"seq":92,"ts_event":92,"type":"PositionClaim","account_id":"A","provenance":"observed","instrument_id":"X1","net_qty":"1060.000"}
+{"seq":93,"ts_event":93,"type":"PositionClaim","account_id":"A","provenance":"observed","instrument_id":"X2","net_qty":"1060.000"}

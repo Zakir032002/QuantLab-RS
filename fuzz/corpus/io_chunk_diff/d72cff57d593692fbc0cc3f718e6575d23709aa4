@@ -1,0 +1,6 @@
+ÿÿ{"type":"header","schema":"qlrs-trace/v0","model":{"account_type":"CASH","base_currency":"INR","engine_cash_rounding":"Exact","commission_max_scale":2},"currencies":[{"code":"INR","precision":2}],"instruments":[{"id":"X","quote_currency":"INR","qty_precision":0,"px_precision":2},{"id":"Y","quote_currency":"INR","qty_precision":0,"px_precision":2}],"accounts":[{"account_id":"A","starting_balance":"200.00"}],"origin":{"producer":"cash-support-regression","producer_version":"1","generated_by_qlrs":true}}
+{"seq":1,"ts_event":1,"type":"OrderSubmitted","account_id":"A","provenance":"observed","client_order_id":"BOOT","instrument_id":"Y","side":"BUY","order_type":"MARKET","quantity":"1"}
+{"seq":2,"ts_event":2,"type":"OrderAccepted","account_id":"A","provenance":"observed","client_order_id":"BOOT","vid":"A","provenance":"observed","client_order_id":"BOOT","trade_id":"BOOT-T","last_qty":"1","last_px":"15
+00","commission":"0.00","commission_currency"rved","currency":"INR","balance_total":"50.00"}d":"A","provenance":"observed_total":"7990.00"}
+{"seq":5,"ts_event":5,"type":"PositionClaim","instrument_id":"Y","net_qty":"0"}
+","account_id":"A","provenance":"observed","instrument_id":"X","net_qty":"20"}

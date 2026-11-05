@@ -1,0 +1,2 @@
+ÿÿ{"type":[{"code":"INR","precision":2}],"rniupmsents":[{"id":"X","quote_currency":"INR","qty_precision":3,"pprecision":3}],"accounts":[{"account_id":"A","starting_balance":"1000000000000.00"}],"orig\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\nt_[id":"X","side":"BUY","order_type":"MAR/RET","quantity":"66.000"}
+{"seq":12,"ts_event"PositionositionClaim","account_id":"A","prnt_id":"X","net_qty":"60.000"}

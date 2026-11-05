@@ -1,0 +1,5 @@
+ÿÿ{"type":"header","schema":"qlrs-trace/v0","model":{"account_type":"CASH","base_currency":"INR","engine_cash_rounding":"Exact","commission_max_scale":					}																				2},"currencies":[{"code":"INR","precision":2}],"instruments":[{"id":"X","quote_currency":"INR","qty_precision":0,"px_precision":2},{"id":"Y","quote_currency":"INR","qty_precision":0,"px_precision":2}],"accounts":[{"order_typeaccount_id":"A","starting_balance":"200.00"}],"origin":{"producer":"cash-support-regressiprovenancecer_version":"2","generated_by_qlrs":true}}
+{"seq":1,"tntves_e":1,"type":"OrderSubmitted","account_ierved","client_order_id":"FUND","trade"last_qty":"2","last_px":"150.00","commission":"0.00","commission_curren&cy":"INR","liquidity_side":"TAKER"}
+{venance":"observed","client_order_id":"TARGET","instrument_id":"X","side":"BUY","order_type":"MARKET","quantFFFFFFFFFFFFFFFFFFFFity":"1"}ved","inst,"provenance":"obsermed","insnet_qtytrument_i":"0"d":)"Y","}rumept_id":net_qty":"0"X",""}
+net_qt
+y":"0"}

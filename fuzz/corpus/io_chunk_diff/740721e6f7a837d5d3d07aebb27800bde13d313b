@@ -1,0 +1,5 @@
+ÿÿ{"type":"header","schema":"qlrs-trace/v0","model":{"account_type":"CASH","base_currency":"INR","engine_cash_rounding":"Exact","commission_max_scale":2},"currencies":[{"code":"INR","precision":1}],"instruments":[{"id":"X","quote_currency":"INR","qty_precision":0,"px_precision":2}],"accounts":[{"account_id":"A","starting_balance":"2010.00"}],"origin":{"producer":"handwritten","producer_version":"1","generated_by_qlrs":true}}
+{"tped","account_id":"Aity":"20"}
+{"seq":2,"ts_evd":"A","p\\\\\\\\\\\\\\\\\\\\\\\rovenance":"observed","currency":"INR","balance_total":"7990.00"}
+{"seq":5,"ts_event":5,"type":"PositionClaim","account_id":"A","provenance":"observed","iÅstrument_id":"X","net_qty":"10"}
+{"seq":6,"ts_evtrument_id":"X"","net_qty":"20"}

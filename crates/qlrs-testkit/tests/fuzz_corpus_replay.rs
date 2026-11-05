@@ -39,3 +39,36 @@ fn fuzz_001_num_ops_corpus() {
 fn fuzz_001_num_decimal_corpus() {
     replay("num_decimal", qlrs_testkit::oracles::num_decimal);
 }
+
+#[test]
+fn fuzz_001_io_chunk_diff_corpus() {
+    replay("io_chunk_diff", qlrs_testkit::oracles::io_chunk_diff);
+}
+
+#[test]
+fn fuzz_001_check_clean_corpus() {
+    replay("check_clean", qlrs_testkit::oracles::check_clean);
+}
+
+#[test]
+fn fuzz_001_check_injected_corpus() {
+    replay("check_injected", qlrs_testkit::oracles::check_injected);
+}
+
+#[test]
+fn fuzz_001_check_dense_vs_selected_corpus() {
+    replay(
+        "check_dense_vs_selected",
+        qlrs_testkit::oracles::check_dense_vs_selected,
+    );
+}
+
+#[test]
+fn fuzz_001_reduce_sound_corpus() {
+    replay("reduce_sound", qlrs_testkit::oracles::reduce_sound);
+}
+
+#[test]
+fn fuzz_001_eval_vs_checker_corpus() {
+    replay("eval_vs_checker", qlrs_testkit::oracles::eval_vs_checker);
+}

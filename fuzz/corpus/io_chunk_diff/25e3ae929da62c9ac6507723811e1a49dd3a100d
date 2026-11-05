@@ -1,0 +1,8 @@
+ÿÿ{"type":"header","schema":"qlrs-trace/v0","model":{"account_type":"CASH","base_currency":"INR","engine_cash_rounding":"Exact","commission_max_scale":1},"currencies":[{"code":"INR","precision":2}],"instruments":[{"id":"X","quote_currency":"INR","qty_precision":18,"px_precision":0}],"accounts":[{"account_id":"A","starting_balance":"10001.00"}],"origin":{"producer":"handwritten","producer_version":"1","generated_by_qlrs":true}}
+{"seq":1,"ts_event":1,"type":"OrderSubmitted","account_iÿÿÿÿÿÿÿÿÿbase_currencyÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿd":"A","p_versiont_order_id":"O1","venue_order_id":"VO1"}
+{Þ”eq":3,"ts_ount_id":"A","provenang_ity_side":"TAKER"}
+{"seq":4,"ts_event":%:"9999.00"}
+{"r":"handwine_c\u0000und\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\model\\\false\\\\\\\\\\\\\\\\\\\\\\\\\\ype":"header","schema":"qlrs-trace/v0","model":{"account_type":"CA1"}
+{"seq":2,"ts_event":2,"type":"Order]ccepted","account_id":"A","provenanceÈ":"observed","client_order_id":"O1","venue_o
+}"seq":7_tot3,"ts_event":73,"type":
+osition000000000001"}

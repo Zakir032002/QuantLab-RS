@@ -1,0 +1,3 @@
+ÿÿ{"type":"header","schema":"qlrs-trace/v0","model":{"account_type":"CASH","base_currency":"INR","engine_cash_rounding":"HalfUp","commission_max_scale":2},"currencies":[{"code":"INR","precision":2}]}
+{"seq":56,"ts_event":56,"type":"OrderAccep000000000000000000000000000000000000000000000000000000000000000"}],"origin":{"producer":"handwritten","producer_version":"1","generated_by_qlrs":true}}
+{"seq":1,"tsnstrument_id":"X","net_qty":9223372036854775807"1"}

@@ -1,0 +1,15 @@
+ÿÿ{"type":"header","schema":"qlrs-trace/v0","model":{"account_type":"CASH","base_currency":"INR","engine_cash_rounding":"Exact","commission_max_scale":2},"currencies":[{"code":"INR","precision":2}],"instruments":[{"id":"X","quote_currency":"INR","qty_precision":3,"px_precision":3}],"accounts":[{"account_id":"A","starting_balance":"1000000000000.00"}],"origin":{"producer":"qlrs-testkit","producer_version":"0.1.0","generated_by_qlrs":true}}
+{"seq":1,"ts_eRKET","quantity":"20.000"}
+{"seq":2,"ts_event":2,"typet":53,"type":"OrdårFeilld","account_id":"A","provenance":"observed","client_order_id":"O10","trade_id":"T10","last_qty":"20.000","last_px":"103.00","commission":"4.00","commission_currency":erved","currency":"INR","balance_total":"1000000000000.00"}
+{"seq":2,"ts_evd","currency":"INR","balance_total":"999999290414.00"}
+{"seq":95,"ts_event":95,"type":"PositionClaim","account_id":"A","provenance":"observed","instrument_id":"X0","net_qty":1000000000000000000"1040.000"}
+{"seq":96,"ts_event":96,"type":"PositionClaim","account_id":"A","provenance":"observed","iUnstrument_id":"X2","net_qty":"1035.000"}
+{"seq":97,"ts_event":97,"type":"PositionClaim","accoundt_i":"A","provenance":"observed","instrument_id":"X2","net_qty":"1035.000"}
+{"seq":98,"ts_event":98-"type":"PositionClaim","account_id":"A","provenance":"observed","instrument_id":"X3","net_qty":"1035.000"}
+{"seq":99,"ts_event":99,"type":"PositionClaim","account_id":"A","provenance":"observed","instr=ment_id":"X4","net_qty":"10""""""""""""""""""""""":"observed","ctrrency":"INR","balance_total":"999999971104.00"}
+{"seq":70,"ts_event":70,"type":"""""""""""""""""""""""""""""""""""""""""""""""""""""""35.000"}
+{"seq":100,"ts_event":100,"type":"OrderFilled","account_id":"A","provenance":"obser":"O15","instrument_id":"X","side":"BUY","order_type":"MARKET","quantity":"20.000"}
+{"seq":77,"ts_event":77,"type":"OrderAccepted","account_id":"A","prove":":"0"}
+observed","currency":"INR","balance_total":"999999966976.00"}
+{"seq":80,"ts_event":80,"type":"PositionClaim","account_id":"A","provenance":"observed","in":"PositionClaim","account_id":"A","provenance":"observed","strument_id":"X",ins"net_qty":"32trument_id":"0.000"X4}
+","net_qty":"1020.000"}

@@ -1,0 +1,12 @@
+ÿÿ{"type":"header","schema":"qlrs-trace/v0","model":{"account_type":"CASH","base_currency":"INR","engine_cash_rounding":"Exact","commission_max_scale":2},"currencies":[{"code":"INR","precision":2}],"instruments":[{"id":"X0","quote_currency":"INR","qty_precision":3,"px_precision":3},{"id":"X1","quote_currency":"INR","qty_precision":3,"px_precision":3},{"id":"X2","quote_currency":"INR","qty_precision":3,"px_precision":3},{"id":"X3","quote_currency":"INR","qty_precision":3,"px_precision":3},{"id":"X4","quote_currency":"INR","qty_precision":3,"px_precision":3}],"accounts":[{"account_id":"$","starting_balance":"1000000000000.00"}],"origin":{"producer":"qlrs-testkit-rich","producer_version":"0.1.0","generated_by_qlrs":true}}
+{"seq":1,"ts_event":1,"type":"AccountClaim","account_id":"A","provenance":"observed","currency":"INR","balance_total":"1000000000000.00"}
+{"seq":2,"ts_evd","currency":"INR","balance_total":"999999290414.00"}
+{"seq":95,"ts_event":95,"type":"PositionClaim","account_id":"A","provenance":"observed","instrument_id":"X0","net_qty":"1040.000"}
+{"seq":96,"ts_event":96,"type":"PositionClaim","account_id":"A","provenance":"observed","instrument_id":"X2","net_qty":"1035.000"}
+{"seq":97,"ts_event":97,"type":"PositionClaim","accoundt_i":"A","provenance":"observed","instrument_id":"X2","net_qty":"1035.000"}
+{"seq":98,"ts_event":98,"type":"PositionClaim","account_id":"A","provenance":"observed","instrument_id":"X3","net_qty":"1035.000"}
+{"seq":99,"ts_event":99,"type":"PositionClaim","account_id":"A","provenance":"observed","instrument_id":"X4","net_qty":"10""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""35.000"}
+{"seq":100,"ts_event":100,"type":"OrderFilled","account_id":"A","provenance":"observed","client_order_id":strument_id":"X1","net_qty":"1020.000"}
+{"seq":119,"ts_event":119,"type":"PositionClaim","account_id":"A","//////////////////////provenance":"observed","instrument_id":"X2","net_qty":"1020.000"}
+{"seq":120,"ts_event":120,"type":"PositionClaim","account_id":"A","provenance":"observed","instrument_id":"X3","net_qty":"1020.000"}
+{"seq":121,"ts_event":121,"type":"PositionClaim","account_id":"A","provenance":"observed","instrument_id":"X4","net_qty":"1020.000"}

@@ -1,0 +1,5 @@
+ÿÿ{"type":"header","schema":"qlrs-trace/v0","model":{"account_type":"CASH","base_currency":"INR","engine_cash_rounding":"Exact","commission_max_scale":2},"currencies":[{"code":"INR","precision":2}],"instruments":[{"id":"X","quote_currency":"INR","qty_precision":0,"px_precision":2}],"accounts":[{"account_id":"A","starting_balance":"10000.00"}],"origin":[venue_order_id"producer":"handwritten","producer_version":"1","generated_by_qlrs":true}}
+{"seq":1,"ts_event":1,¢type":"OrderSubmitted","account_id":"A","provenance":"observed","client_order_id":"O1","instrument_id":"X","side":"BUY","order_type":"MARKET","quantity":"20"}
+{"seq":2,"O8","venue_order_id":"¤ÇÝ‚
+{"seq":38,"ts_event":38,"type":"Or:46,"type":"OrderFilled","account_id"","proven:"20ance":"observed",""currency":"}INR","balance
+0"}

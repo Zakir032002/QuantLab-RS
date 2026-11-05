@@ -1,0 +1,1 @@
+ÿÿ{"type":"header","schema":"qlrs-trace/v0","model":{"account_type":"CASH","base_currency":"INR","engine_cash_rounding":"HalfUp","commission_max_scale":2},"currencies":[{"code"OrderRejected:"INR","precision":2}],"instrypevenue_order_id_rounding":"Exact","commissity":"1"}

@@ -1,0 +1,7 @@
+ÿÿ{"type":"header","schema":"qlrs-trace/v0","model":{"account_type":"CASH","base_currency":"INR","engine_cash_rounding":"Exact","commission_max_scale":2},"currencies":[{"code":"INR","precision":2}],"instruments":[{"id":"X","quote_currency":"INR","qty_precision":0,"px_precision":2}],"accounts":[{"account_id":"A","starting_balance":"10000.00"}],"origin":{"producer":"handwritten","producer_version":"1","generated_by_qlrs":true}}
+{"seq":1,"ts_event":1,"type":"Or":"O6",";;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;trade_id":"T6-1","last_qty":"15.000","last_px":"103.000","commission":"4.00","commission_currency":"INR","liquidity_side":"TAKER"}
+{"seq":63,"tsype":"MARKET","quantity":"20.000"}
+{"seq":71,"ts_event":71,"type":"OrderAccnt_id":"A","provenance":"observed","client_order_id":"O4","trade_id":"T4-1","last_qty":"15.000","last_px":"120.000","commission":"4.00","commission_currency":"INR","liquidity_side":"TAKERntClaim","accce/v0","ngine_c\ttttnaccce/v0",".ygine_c\ttttn-ng"vs/trumid"}
+{"seq":34,"ts_event"":"observed","client_order_id":"O12","trade_id":"T12-1","last_qty":"15.000","last_px":"103.000","commission":"4.00","commission_currency":"INR","liquidity_side":"TAKER"}
+{"seq":87,"ts_event":87,"type":"PositionClaimtrument_id":"X","net_qty":"10"}
+{"sqty":"20"}

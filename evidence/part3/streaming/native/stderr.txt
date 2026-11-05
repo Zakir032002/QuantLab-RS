@@ -1,0 +1,40 @@
+   Compiling qlrs-io v0.1.0 (/workspace/QuantLab-RS/crates/qlrs-io)
+   Compiling qlrs-bundle v0.1.0 (/workspace/QuantLab-RS/crates/qlrs-bundle)
+   Compiling qlrs-testkit v0.1.0 (/workspace/QuantLab-RS/crates/qlrs-testkit)
+   Compiling qlrs-bench v0.1.0 (/workspace/QuantLab-RS/crates/qlrs-bench)
+   Compiling qlrs-cli v0.1.0 (/workspace/QuantLab-RS/crates/qlrs-cli)
+    Finished `test` profile [optimized + debuginfo] target(s) in 8.21s
+     Running unittests src/lib.rs (target/debug/deps/qlrs_bench-7d5eae3425207a09)
+     Running unittests src/lib.rs (target/debug/deps/qlrs_bundle-5743347084d2e4fd)
+     Running unittests src/lib.rs (target/debug/deps/qlrs_check-59b737edcb2a33fa)
+     Running unittests src/main.rs (target/debug/deps/qlrs-cebd97a91063ce98)
+     Running tests/exit_codes.rs (target/debug/deps/exit_codes-dbc13d80b9e42347)
+     Running unittests src/lib.rs (target/debug/deps/qlrs_io-2326a5099e60b8ed)
+     Running unittests src/lib.rs (target/debug/deps/qlrs_ledger-6a82230714f029cd)
+     Running unittests src/lib.rs (target/debug/deps/qlrs_num-73af12af6431f181)
+     Running tests/overflow_precedence.rs (target/debug/deps/overflow_precedence-c491f8681d76f0d8)
+     Running tests/properties.rs (target/debug/deps/properties-d4cfdff0cfef1d3f)
+     Running unittests src/lib.rs (target/debug/deps/qlrs_reduce-ce0ad880c753ec53)
+     Running unittests src/lib.rs (target/debug/deps/qlrs_schema-51a48eb6f3b86d6f)
+     Running unittests src/lib.rs (target/debug/deps/qlrs_testkit-67f72e5adfef7a6a)
+     Running unittests src/bin/qlrs-gen.rs (target/debug/deps/qlrs_gen-43b9313f10075b17)
+     Running tests/allocations.rs (target/debug/deps/allocations-831339f0d1926d42)
+     Running tests/bundle_limits.rs (target/debug/deps/bundle_limits-183acae9f8f991d4)
+     Running tests/corrections.rs (target/debug/deps/corrections-5d023721f14437d1)
+     Running tests/differential_part2.rs (target/debug/deps/differential_part2-512c4832783d4a73)
+     Running tests/fuzz_corpus_replay.rs (target/debug/deps/fuzz_corpus_replay-6e9b459db41c4b5a)
+     Running tests/invariants.rs (target/debug/deps/invariants-ba7e6eb5393cc6f0)
+     Running tests/limits.rs (target/debug/deps/limits-62a3b2da8e017a8e)
+     Running tests/part2.rs (target/debug/deps/part2-46f8c3f49f9ecd0d)
+     Running tests/reduction.rs (target/debug/deps/reduction-910e0080fc46a380)
+     Running tests/streaming_gen.rs (target/debug/deps/streaming_gen-bf951cb7e21d0cc5)
+     Running tests/streaming_io.rs (target/debug/deps/streaming_io-4d5b3c26db6f6b8d)
+   Doc-tests qlrs_bench
+   Doc-tests qlrs_bundle
+   Doc-tests qlrs_check
+   Doc-tests qlrs_io
+   Doc-tests qlrs_ledger
+   Doc-tests qlrs_num
+   Doc-tests qlrs_reduce
+   Doc-tests qlrs_schema
+   Doc-tests qlrs_testkit

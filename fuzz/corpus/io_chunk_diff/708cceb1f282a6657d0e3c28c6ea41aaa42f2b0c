@@ -1,0 +1,19 @@
+ÿÿ{"type":"header","schema":"qlrs-trace/v0","model":{"account_type":"CASH","base_currency":"INR","engine_cash_rounding":"Exact","commission_max_scale":2},"currencies":[{"code":"INR","precision":2}],"instruments":[{"id":"X0","quote_currency":"INR","qty_precision":3,"px_precision":3},{"id":"X1","quote_currency":"INR","qty_precision":3,"px_precision":3},{"id":"X2","quote_currency":"INR","qty_precision":3,"px_precision":3},{"id":"X3","quote_currency":"INR","qty_precision":3,"px_precision":3},{"id":"X4","quote_currency":"INR","qty_precision":3,"px_precision":3}],"accounts":[{"account_id":"A","starting_balance":"1000000000000.00"}],"origin":{"producer":"qlrs-testkit-rich","producer_version":"0.1.0","generated_by_qlrs":true}}
+{"seq":1base":"\u0000X0","net_qty":"1040.000"}
+{"seq":98,"ts_event":98,"type":"PositionClaim","acc"instrument_id":"X1","net_qty":"1020.000"}
+{"seq":121,"ts_event":121,"type":"PositionClaim","account_id":"A","provenance":"observed","instrument_id":"X2"onClaim","acco:"X3","net_qty":"0.000"}
+{"seq":6,"ts_event":6,"type":"PositionClaim","account_id":"A","provenance":"observed","instrument_id":"X4","net_qty":"0.000"}
+{"seq":7,"ts_event":7,"type":"OrderSubmitted","account_id":"A","provenance":"observed","client_order_id":"BOOT0","instrument_id":"X0","side":"BUY","order_type":"MARKET","quantity":"1000.000"}
+{"seq":8,"ts_event":8,"type":"OrderAccepted","account_id":"A","provenance":"observ››ÝÓÝœ“ ent_order_id":"BOOT0","venue_order_id":"B0"}
+{"seq":9,"ts_event":9,"type":"OrderFilled","account_id":"A","provenance":"observed","client_order_id":"BOOT0","trade_id":"BOOT-T0","last_qty":"1000.000","last_px":"103.000","commission":"0.00","commission_currency":"INR","liquidity_side":"TAKER"}
+{"seq":10,"ts_event":10,"type":"OrderSubmitted","account_id":"A","provenance":"obsedc,er""vlient_order_id":"BOOT1","instrument_id":"X1","side":"BUY","ot_order_id":"O13","instrument_id":"X3","side":"SELL","order_type":"MARKET","quantity":"20.000"}
+{"seq":89,"ts_event":89,"type":"OrderAccepted","account_id":"A","provenance":"observed","client_order_id":"O13","venue_order_id":"V13"}
+{"seq":90,"ts_event":90,"type":"OrderSubmitted","account_id":"A","provenance":"observed","client_ordev_id":"O14","instrument_id":"X4","side":"SELL","order_type":"MARKET","quantity":"20.000"}
+{"seq":91,"ts_event":91,"type":"OrderAccepted","account_id":"A","provenance":"observed","client_orde_idr":"O14","venue_order_id":"V14"}
+{"seq":92,"ts_event":92,"type":"OrderFilled","account_id":"A","ency":"INR","liquidity_side":"TAKER"}
+{"seq":96,"ts_event":96,"type":"AccountClaim","account_id":"A","provenance":"observed","currency":"INR","balance_total":"999999291954.00"}
+{"seq":97,"ts_event":97,"type":"PositionClaim","account_id":"A","provenance":"observed","instrument_id":"\u0000X0","net_qty":"1040.000"}
+{"seq":98,"ts_event":98,"type":"PositionClaim","acc"instrument_id":"X1","net_qty":"1020.000"}
+{"seq":121,"ts_event":121,"type":"PositionClaim","account_id":"A","provenance":"observed","instrument_id":"X2","net_qty":"1020.000"}
+{"seq":122,"ts_event":122,"type":"PositionClaim","account_id":"A","provenance":"observed","instrument_id":"X3","net_qty":"980.000"}
+{"seq":123,"ts_event":123,"type":"PositionClaim","account_id":"A","provenance":"observed","instrument_id":"X4","net_qty":"1020.000"}

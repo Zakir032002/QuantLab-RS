@@ -1,0 +1,13 @@
+ÿÿ{"type":"header","schema":"qlrs-trace/v0","model":{"account_type":"CASH","base_currency":"INR","engine_cash_rounding":"Exact","commission_max_scale":2},"currencies":[{"code":"INR","precision":2}],"instruments":[{"id":"X0","quote_currency":"INR","qty_precision":3,"px_precision":3}],"accounts":[{"account_id":"A","starting_balance":"1000000000000.00"}],"origin":{"producer":"qlrs-testkit-rich","producer_version":"0.1.0","generated_by_qlrs":true}}
+{"seq":1,"ts_event":1,"type":"AccountClaim","account_id":"A","provenance":"observed","currency":"INR","balance_total":"1000000000000.00"}
+{"seq":2,"ts_event":2,"type":truments":[{"id":"X0","quote_currency":"INR","qty_precision":3,"px_precision":3}],"accounts":[{"account_id":"A","starting_balance":"1000000000000.00"}],"origin":{""PositionClaim","account_id":"A","provenance":"observed","instrument_id":"X0","net_qty":"0.000"}
+{"seq":3,"ts_event":3,"type":"OrderSubmitted","account_id":"A","provenance":"observed","client_order_id":"BOOT0","instrument_id":"X0","side":"BUY","order_type":"MARKET","quantity":"1000.000"}
+rderSubmitted","account_id":"A","provenance":"observed","client_order_id":"O4","instrument_id":"X0","side":"BUY","ordey_type":"MARKET","quantity":"20.000"}
+{"seq":17,"ts_event":17,"type":"OrderAccepted","account_id":"A","provenance":"observed","client_order_id":"O4","venue_order_id":"V4"}
+{"seq":18,"ts_event":18,"type":"OrderFilled","account_id":"A","provenance":"observed","client_order_id":"O4","trade_id":"T4-0","last_qty":"5.000","last_px":"103.000","commission":"4.00","commission_currency":"INR","liquidity_side":"TAKER"}
+{"":"INR","liquidity_side":"TAKER"}
+{"seq":22,"ts_event":22,"type":"OrderFilled","account_id":"A","provenance":"observed","client_order_id":"O0","trade_id":"T0-0","last_qty":"5.000","last_px":"103.000","commission":"4.00","commission_currency":"INR","liquidity_side":"TAKER"}
+{"seq":23,"ts_event":23,"type":"OrderFilled","account_id":"A","provenance":"observed","client_order_id":"O3","trade_id":"T3-1","last_qty":"150000","last_px":"103.000","commission":"4.00","commission_currency":"INR","liquidity_side":"TAKER"}
+{"seq":24,"ts_event":24,"type":"OrderFilled","account_id":"A","provenance":"observed","client_order_id":"O4","trade_id":"T4-1","last_qty":"15.000","last_px":"103.000","commission":"4.00","commission_currency":"INR","liquidity_side":"TAKER"}
+{"seq":25,"ts_event":25,"type":"OrderFilled","account_iŽŽŽŽŽŽŽŽŽŽŽŽŽŽŽŽŽŽŽŽŽŽŽŽŽŽŽŽŽŽŽŽŽŽŽŽŽŽŽŽŽŽŽŽŽŽd":"A"884512.00"}
+{"seq":81,"ts_event":81,"type":"PositionClaim","account_id":"A","provenance":"observed","instrument_id":"X0","net_qty":"1120.000"}

@@ -1,0 +1,13 @@
+ÿÿ{"type":"header","schema":"qlrs-trace/v0","model":{"account_type":"CASH","base_currency":"INR","engine_cash_rounding":"Exact","commission_max_scale":2},"currencies":[{"code":"INR","precision":2}],"instruments":[{"id":"X","quote_currency":"INR","qty_precision":0,"px_precision":2},{"id":"Y","quote_currency":"INR","qty_precision":0,"px_precision":2}],"accounts":[{"account_id":"2","starting_balance":"200.00"}],"origin":{"producer":"cash-support-regression","producer_version":"1","generated_by_qlrs":true}}
+ument_id":"X","side":"BUY","order_type":"MARKET","quantity":"20.000"}
+{"seq":50,"ts_event":50,"type":"OrderAccepted","account_id":"A","provenanc"o":ebserved","client_order_id":"O9","venue_order_id":"V9A"}
+{"seq":51,"ts_event":51,"type":"OrderFilled","account_id":"A","provenance":"observed","client_order_id":"O9","trade_id":"T9","last_qty":"20.000","last_px":"103.00","commission":"4.00","commission_currency":"INR","liquidity_side":"TAKER"}
+{"seq":52":"A","provenance":"observed","currency":"INR","balance_total":"999999973168.00"}
+{"seq":68,"ts_event":68,"type":"PositionClaim","account_id":"A","provenance":"observed","instrument_id":"X","net_qty":"260.000"}
+{"seq":69,"ts_event":69,"type":"OrderSubmitted","account_id":"A","provenance":"observed","client_order_id":"O13","instrument_id":"X","side":"BUY","order_type":"MARKET","quantity":"20.000"}
+{"s'eq":70,"ts_event":70,"type":"OrderAccepted","account_id":"A","provenance":"observed","client
+{"seq":73,"ts_event":73,"type":
+ositionClaim","account_id":"A","provenance":"observed","instrument_id":"X","net_qty":"280.000"}
+{"seq":74,"ts_event":74,"type":"OrderSubmitted","account_id":"A","provenance":"observed","client_order_id":"O14","instrument_id":"X","side":"BUY","order_type":"MARKET","quantity":"20.000"{"seq":1,last_px"ts_eventÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿ":1,"type":"OrderSubmitted","account_id":"A","provenance":"observed","client_order_id":"TAKER"}
+{"seq":67,"ts_event":67,"type":"AccountClaim","account_id":"0,"px_precision":2},{"id":"Y","quote_currency":"INR","qty_precision":0,"px_precision":2}],"accounts":[{"account_id":"2","starting_balance":"200.00"}],"origin":{"producer":"cash-support-regression","producer,"account_id":"A","provenanc"o":ebserved","client_order_id":"O9","venue_order_id":"V9"}
+{"seq":51,"ts_event":51,"type":"OrderFilled","account_id":"A","provenance":"observed","client_order_id":"O9","trade_id":"T9","last_qty":"20.000","last_px":"103.00","commission":"4.00","commiaccountsrrency":"INR","liquidite":"BUY","order_type":"MARKET","quantity":"20.000"{"seq":1,"ts_event":1,"type":"OrderSubmitted","account_id":"A","provenance":"observed","client_oty":"0"}

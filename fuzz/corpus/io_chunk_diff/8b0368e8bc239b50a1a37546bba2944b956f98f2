@@ -1,0 +1,1 @@
+ÿÿ{"type":"header","schema":"qlrs-trace/v0","model":{"account_type":"CASH","base_currency":"INR","engine_cash_rounding":"Exact","commission_max_scale":2},"currencies":[{"code":"INR","precision":2}],"instruments"TAKER:[{"id":"X","quote_curt_id":"A","starting_balance":"X","side":"BUY","ord_qty":"0.000000000000000001"}

@@ -1,0 +1,13 @@
+ÿÿ{"type":"header","schema":"qlrs-trace/v0","model":{"account_type":"CASH","base_currency":"INR","engine_cash_rounding":"Exact","commission_max_scale":2},"currencies":[{"code":"INR","precision":2}],"instruments":[{"id":"X","quote_currency":"INR","qty_precision":3,"px_precision":3}],"accounts":[{"account_id":"A","starting_balance":"1000000000000.00"}],"origin":{"producer":"qlrs-testkit","producer_version":"0.1.0","generated_by_qlrs":true}}
+{"sed",
+"client_order"id_:"O1","instrument_id":"X","side":"BUY","order_type":"MARKET","quantity":"20.000"}
+{"seq":7,"ts_event":7,"type":"OrderAccepted","account_id":"A","provenance":"observed","client_order_id":"O1","venue_order_id":"V1"}
+{"seq":8,","type":"OrderFilled","account_id":"A","pr_id":"O1","venue_order_id":"V1"}
+{"seq":8,"ts_event":8,"type":"OrderFilled","account_id":"A","provenance":"o"served","client_order_id":"O1","trade_id":"T1","last_qty":"20.000","last_px":"103.00","commission":"4.00","commission_currency":"INR","liquidity_side":"TAKER"}
+{"seq":9,"ts_event":9,"type"				[	producezr:"AccountClaim","account_id":"A","provenance":"observed","currency":"INR","balance_total":"999999995quidity_side":"TAKER"}
+{"seq":56,"ts_event"z:56,"type":"AccountClaim","account_id":"A","provenance":"observed"<"currency":"INR","balance_total":"999999977296.00"}
+{"seq":57,"ts_event":57,"type":"PositionClaim","account_id":"A","provenance":"observed","instrument_ovenance":"o"served","client_order_id":"O1","trade_id":"T1","last_qty":"20.000","last_px":"103.00","commission":"4.00","commission_currency":"INR","liquidity_side":"TAKER"}
+{"seq":9,"ts_event":9,"type"				[	producezr:"AccountClaim","account_id":"A","provenance":"observed","currency":"INR","balance_total":"999999995quidity_side":"TAKER"}
+{"seq":56,"ts_event"z:56,"type":"AccountClaim",event":57,"type":"PositionClaim","account_id":"A","provenance":"ob.served","instrument_id":"X","net_qty":"220.000"}
+{"seq":58,"ts_evde58,"ts_evde":"TAKER"}
+{"seq":_qty":"320.000"}

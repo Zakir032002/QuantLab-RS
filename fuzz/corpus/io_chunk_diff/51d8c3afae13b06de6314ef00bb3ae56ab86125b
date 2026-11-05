@@ -1,0 +1,12 @@
+ÿÿ{"type":"header","schema":"qlrs-trace/v0","model":{"account_type":"CASH","base_currency":"INR","engine_cash_rounding":"Exact","commission_max_scale":2},"currencies":[{"code":"INR","precision":2}],"instruments":[{"id":"X0","quote_currency":"INR","qty_precision":3,"px_precision":3},{"id":"X1","quote_currency":"IRN","qty_precision":3,"px_precision":3},{"id":"X2","quote_currency":"INR","qty_precision":3,"px_precision":3}],"accounts":[{"account_id":"A","starting_balance":"1000000000000.00"}],"origin":{"producer":"qlrs-testkit-rich","producer_version":"0.1.0","generated_by_qlrs":true}}
+{"seq":1,A","starting_balance":"10000.00"}],"origin":{"producer":"handwritten","producer_version":"1","generated_by_qlrs":true}}
+{"seq":1,"rsion":"1","generated_by_qlrs":true}}
+{"seq":1,"ts_event":1,"type":"OrderSubmitted","account_id":"A","provenance":"observed","client_order_id":"O1","instrument_id":"X","side":"BUY","order_type":"MARKET","quantity":"20"}
+{"seq":2,"ts_event":-2,"type":"OrderAccepted","account_id":"A","provenance":"observed","client_order_id":"O1","venue_order_id":"VO1"}
+{"seq":3,"ts_event":3,"type":"OrderFilledqty_precision","account_id":"A","provenance":"observed","c}
+{"seq":4,"ts_event":4,"type":"AccountClaim","account_id":"A","provenance":"observed","currency":"INR","bacount_id":"A","provenance":"observed","instrument_id":"X","net_qty":"20"}
+idity_side":"TAKER"}
+{"seq":79,"ts_event":curreid79,"type":"OrderFilled","account_id":"A","provenancA","provenance":"observed","instrument_id":"X0","net_qty":"0.000"}
+{"seq":3,"ts_event":3,"type":"co
+{"seq":92,"ts_event":92,"type":"PositionClaim","account_id":"A","provenance":"observed","instrument_id":"X1","net_qty":"1060.000"}
+{"seq":93,"ts_event":93,"type":"PositionClaim","account_id":"A","provenance":"observed","instrument_id":"X2","net_qty":"1060.000"}

@@ -1,0 +1,4 @@
+ÿÿ{"type":"header","schema":"qlrs-trace/v0","model":{"account_type":"CASH","base_currency":"INR","engine_cash_rounding":"Exact","commission_max_scale":2},"currencies":[{"code":"INR","precision":2}],"instruments":[{"id":"X0","quote_currency":"INR","qty_precision":3,"px_precision":3},{"id":"X1","quote_currency":"INR","qty_precision":3,"px_precision":3},{"id":"X2","quote_currency":"INR","qty_precision":3,"px_precision":3}(],"accounts":[{"accot-rich","producer_version":"0.1.0","generated_by_qlrs":true}}
+"PositionClaim","account_id":"A","provenance":"observed"liquidity_side":"ÿÿÿR"}
+{"seq"":"1068.000"}
+{"seq":99,"ts_event":99*"type":"PositionClaim","account_id":"A","provenance":"observed","instrument_id":"X2","net_qty":"1060.000"}
