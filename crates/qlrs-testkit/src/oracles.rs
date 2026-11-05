@@ -512,14 +512,8 @@ pub fn reduce_sound(data: &[u8]) {
         time_limit: std::time::Duration::MAX,
     };
     let reduce = || {
-        qlrs_reduce::reduce_with_limits(
-            &trace.store,
-            &trace.source_digest(),
-            None,
-            input.target_seq,
-            limits,
-        )
-        .unwrap_or_else(|e| panic!("{case:?}: {e}"))
+        qlrs_reduce::reduce_with_limits(&trace.store, &trace.source_digest(), None, None, limits)
+            .unwrap_or_else(|e| panic!("{case:?}: {e}"))
     };
     let left = reduce();
     let right = reduce();
