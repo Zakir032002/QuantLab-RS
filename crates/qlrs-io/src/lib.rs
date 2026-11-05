@@ -5,6 +5,8 @@
     clippy::missing_errors_doc,
     clippy::module_name_repetitions
 )]
+mod limits;
+pub use limits::{Limits, SCHEMA_KEYS, validate_line};
 use qlrs_num::{Fixed, NumericError};
 use qlrs_schema::{Account, AliveMask, Header, Issue, Kind, NONE, Side, Status, TraceStore, Unit};
 use rayon::prelude::*;
@@ -12,9 +14,38 @@ use serde::{Deserialize, Serialize, de::DeserializeOwned};
 use std::borrow::Cow;
 use std::{collections::HashMap, error::Error, fmt, fs, io::Write, path::Path};
 
+/// Stable distinction between malformed input, model capacity and budgets.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize)]
+#[serde(rename_all = "SCREAMING_SNAKE_CASE")]
+pub enum ErrorKind {
+    /// Malformed input or a failed file operation.
+    #[serde(rename = "INPUT_ERROR")]
+    Input,
+    /// A well-formed input exceeds model representation limits.
+    Unsupported,
+    /// A user resource budget was exhausted.
+    #[serde(rename = "INCONCLUSIVE")]
+    Budget,
+}
+impl ErrorKind {
+    /// Fixed CLI exit code for this error category.
+    #[must_use]
+    pub const fn exit_code(self) -> u8 {
+        match self {
+            Self::Input => 1,
+            Self::Unsupported => 4,
+            Self::Budget => 3,
+        }
+    }
+}
 /// A strict boundary error with its one-based source line.
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Serialize)]
 pub struct InputError {
+    /// Typed status category.
+    #[serde(rename = "status")]
+    pub kind: ErrorKind,
+    /// Stable error identifier.
+    pub code: &'static str,
     /// Source line; zero denotes a file I/O error.
     pub line: usize,
     /// Human-readable cause.
@@ -22,14 +53,32 @@ pub struct InputError {
 }
 impl fmt::Display for InputError {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "line {}: {}", self.line, self.message)
+        write!(f, "{}: line {}: {}", self.code, self.line, self.message)
     }
 }
 impl Error for InputError {}
 fn err(line: usize, message: impl Into<String>) -> InputError {
+    let message = message.into();
+    let code = if message.starts_with("duplicate field") {
+        "E-DUPLICATE-KEY"
+    } else if message.starts_with("unknown field") {
+        "E-UNKNOWN-KEY"
+    } else if message.contains("utf-8")
+        || message.contains("unicode")
+        || message.contains("surrogate")
+        || message.contains("hex escape")
+    {
+        "E-UTF8"
+    } else if line == 0 {
+        "E-IO"
+    } else {
+        "E-JSON"
+    };
     InputError {
+        kind: ErrorKind::Input,
+        code,
         line,
-        message: message.into(),
+        message,
     }
 }
 
@@ -84,7 +133,7 @@ pub fn atomic_file<T>(
     result
 }
 
-#[derive(Deserialize)]
+#[derive(Deserialize, Serialize)]
 #[serde(tag = "type", deny_unknown_fields)]
 enum Record<'a> {
     OrderSubmitted {
@@ -244,6 +293,27 @@ fn parse_record(bytes: &[u8], line: usize) -> Result<Record<'_>, InputError> {
         }
     }
 }
+/// Canonicalize one bounded JSON record for adapter/fuzz round-trip checks.
+/// Unknown event kinds normalize to their existing Unsupported representation.
+pub fn canonical_record(bytes: &[u8], limits: Limits) -> Result<Vec<u8>, InputError> {
+    #[derive(Deserialize)]
+    struct Tag<'a> {
+        #[serde(rename = "type", borrow)]
+        kind: Cow<'a, str>,
+    }
+    limits.validate()?;
+    validate_line(bytes, 1, limits)?;
+    let tag: Tag<'_> = serde_json::from_slice(bytes).map_err(|e| err(1, e.to_string()))?;
+    if tag.kind == "header" {
+        let header: Header = decode(bytes)?;
+        if header.schema != "qlrs-trace/v0" {
+            return Err(err(1, "expected header schema qlrs-trace/v0"));
+        }
+        encode(&header)
+    } else {
+        encode(&parse_record(bytes, 1)?)
+    }
+}
 impl Record<'_> {
     fn common(&self) -> (u64, u64, &str, &str) {
         match self {
@@ -387,6 +457,128 @@ impl ParsedTrace {
             lines,
         })
     }
+    /// Parse with explicitly selected resource limits. Existing parse defaults
+    /// remain unchanged pending the recorded R9 review.
+    pub fn parse_with_limits(source: Vec<u8>, limits: Limits) -> Result<Self, InputError> {
+        Self::from_limited_reader(std::io::Cursor::new(source), limits)
+    }
+    /// Read a regular file with line bounds enforced before whole-line buffering.
+    pub fn read_with_limits(path: impl AsRef<Path>, limits: Limits) -> Result<Self, InputError> {
+        limits.validate()?;
+        let metadata = fs::metadata(path.as_ref()).map_err(|e| err(0, e.to_string()))?;
+        if !metadata.is_file() {
+            return Err(limits::error(
+                0,
+                "E-INPUT-NOT-SEEKABLE",
+                "input is not a regular file",
+            ));
+        }
+        if metadata.len() > limits.max_input_bytes {
+            return Err(limits::error(
+                0,
+                "E-LIMIT-INPUT-BYTES",
+                "input exceeds byte limit",
+            ));
+        }
+        let file = fs::File::open(path).map_err(|e| err(0, e.to_string()))?;
+        Self::from_limited_reader(std::io::BufReader::with_capacity(64 << 10, file), limits)
+    }
+    fn from_limited_reader(
+        mut reader: impl std::io::BufRead,
+        limits: Limits,
+    ) -> Result<Self, InputError> {
+        use std::io::{BufRead, Read};
+        limits.validate()?;
+        let mut source = Vec::new();
+        let mut lines = Vec::new();
+        let mut buffer = Vec::new();
+        let mut builder: Option<Builder> = None;
+        loop {
+            buffer.clear();
+            let cap = u64::try_from(limits.max_line_bytes)
+                .map_err(|e| err(0, e.to_string()))?
+                .saturating_add(1);
+            let count = reader
+                .by_ref()
+                .take(cap)
+                .read_until(b'\n', &mut buffer)
+                .map_err(|e| err(0, e.to_string()))?;
+            if count == 0 {
+                break;
+            }
+            let line = lines.len().saturating_add(1);
+            validate_line(&buffer, line, limits)?;
+            if buffer.last() != Some(&b'\n') {
+                return Err(limits::error(
+                    line,
+                    "E-NEWLINE",
+                    "trace must end with a newline",
+                ));
+            }
+            let end = source
+                .len()
+                .checked_add(buffer.len())
+                .ok_or_else(|| limits::error(line, "U-LIMIT-INDEX", "source length overflow"))?;
+            if u64::try_from(end).map_err(|e| err(line, e.to_string()))? > limits.max_input_bytes {
+                return Err(limits::error(
+                    line,
+                    "E-LIMIT-INPUT-BYTES",
+                    "input exceeds byte limit",
+                ));
+            }
+            if limits.memory_budget_bytes.is_some_and(|budget| {
+                u64::try_from(end)
+                    .ok()
+                    .and_then(|bytes| bytes.checked_mul(2))
+                    .and_then(|bytes| {
+                        bytes.checked_add(u64::try_from(line).ok()?.checked_mul(160)?)
+                    })
+                    .and_then(|bytes| bytes.checked_add(64 << 20))
+                    .is_none_or(|estimate| estimate > budget)
+            }) {
+                return Err(limits::error(
+                    line,
+                    "I-BUDGET-MEMORY",
+                    "estimated memory budget exceeded",
+                ));
+            }
+            if let Some(builder) = builder.as_mut() {
+                builder.push(parse_record(&buffer, line)?, line)?;
+            } else {
+                if buffer.starts_with(&[0xef, 0xbb, 0xbf]) {
+                    return Err(err(1, "UTF-8 BOM is forbidden"));
+                }
+                let header: Header = decode(&buffer).map_err(|mut error| {
+                    error.line = line;
+                    error
+                })?;
+                if header.record_type != "header" || header.schema != "qlrs-trace/v0" {
+                    return Err(err(1, "expected header schema qlrs-trace/v0"));
+                }
+                if header.accounts.is_empty() || header.currencies.is_empty() {
+                    return Err(err(1, "accounts and currencies cannot be empty"));
+                }
+                let mut value = Builder::new(header)?;
+                value.limits = Some(limits);
+                builder = Some(value);
+            }
+            source
+                .try_reserve(buffer.len())
+                .map_err(|e| limits::error(line, "I-BUDGET-MEMORY", &e.to_string()))?;
+            lines
+                .try_reserve(1)
+                .map_err(|e| limits::error(line, "I-BUDGET-MEMORY", &e.to_string()))?;
+            lines.push(source.len()..end);
+            source.extend_from_slice(&buffer);
+        }
+        let mut builder = builder.ok_or_else(|| err(1, "missing header"))?;
+        builder.store.compact();
+        Ok(Self {
+            store: builder.store,
+            source,
+            lines,
+        })
+    }
     /// Write the original pinned header and kept observed lines byte-for-byte.
     pub fn write_kept(&self, alive: &AliveMask, mut writer: impl Write) -> Result<(), InputError> {
         for (line, range) in self.lines.iter().enumerate() {
@@ -438,6 +630,7 @@ struct Builder {
     store: TraceStore,
     orders: HashMap<u32, u32>,
     instruments: HashMap<String, u32>,
+    limits: Option<Limits>,
 }
 impl Builder {
     fn new(header: Header) -> Result<Self, InputError> {
@@ -446,7 +639,8 @@ impl Builder {
             if instruments
                 .insert(
                     instrument.id.clone(),
-                    u32::try_from(index).map_err(|_| err(1, "too many instruments"))?,
+                    qlrs_schema::checked_index(index)
+                        .map_err(|_| err(1, "too many instruments"))?,
                 )
                 .is_some()
             {
@@ -457,6 +651,7 @@ impl Builder {
             store: TraceStore::new(header),
             orders: HashMap::new(),
             instruments,
+            limits: None,
         };
         let h = &result.store.header;
         if h.accounts.len() != 1
@@ -503,6 +698,18 @@ impl Builder {
         });
     }
     fn intern(&mut self, text: &str, line: usize) -> Result<u32, InputError> {
+        if let Some(limits) = self.limits {
+            limits.string(text, line)?;
+            if self.store.strings.len() >= limits.max_interned
+                && self.store.strings.lookup(text).is_none()
+            {
+                return Err(limits::error(
+                    line,
+                    "U-LIMIT-INTERNED",
+                    "interner limit exceeded",
+                ));
+            }
+        }
         self.store.strings.intern(text).map_err(|e| err(line, e))
     }
     fn number(
@@ -512,6 +719,9 @@ impl Builder {
         seq: Option<u64>,
         line: usize,
     ) -> Result<Fixed, InputError> {
+        if let Some(limits) = self.limits {
+            limits.number(text, line)?;
+        }
         let parsed = Fixed::parse(text, precision.min(18));
         if parsed.is_err() && !decimal_syntax(text) {
             return Err(err(line, "invalid decimal syntax"));
@@ -548,7 +758,8 @@ impl Builder {
         }
     }
     fn new_unit(&mut self, order: Option<u32>, line: usize) -> Result<u32, InputError> {
-        let id = u32::try_from(self.store.units.len()).map_err(|_| err(line, "too many units"))?;
+        let id = qlrs_schema::checked_index(self.store.units.len())
+            .map_err(|_| limits::error(line, "U-LIMIT-INDEX", "column index exhausted"))?;
         self.store.units.push(Unit {
             order,
             first_event: self.store.len(),
@@ -560,8 +771,8 @@ impl Builder {
         if let Some(id) = self.orders.get(&symbol) {
             return Ok(*id);
         }
-        let id =
-            u32::try_from(self.store.orders.id.len()).map_err(|_| err(line, "too many orders"))?;
+        let id = qlrs_schema::checked_index(self.store.orders.id.len())
+            .map_err(|_| limits::error(line, "U-LIMIT-INDEX", "column index exhausted"))?;
         let unit = self.new_unit(Some(id), line)?;
         self.orders.insert(symbol, id);
         let o = &mut self.store.orders;
@@ -576,6 +787,16 @@ impl Builder {
     // Consume the boundary record so it cannot escape the merge batch.
     #[allow(clippy::needless_pass_by_value)]
     fn push(&mut self, record: Record<'_>, line: usize) -> Result<(), InputError> {
+        if self
+            .limits
+            .is_some_and(|limits| self.store.len() >= limits.max_events)
+        {
+            return Err(limits::error(
+                line,
+                "U-LIMIT-EVENTS",
+                "event limit exceeded",
+            ));
+        }
         let (seq, ts, account, provenance) = record.common();
         if self.store.spine.seq.last().is_some_and(|prev| seq <= *prev) {
             return Err(err(line, "seq must be strictly increasing"));
@@ -719,8 +940,8 @@ impl Builder {
                     self.issue(Status::Unsupported, Some(seq), "liquidity-side");
                 }
                 let trade = self.intern(&trade_id, line)?;
-                let payload = u32::try_from(self.store.fills.order.len())
-                    .map_err(|_| err(line, "too many fills"))?;
+                let payload = qlrs_schema::checked_index(self.store.fills.order.len())
+                    .map_err(|_| limits::error(line, "U-LIMIT-INDEX", "column index exhausted"))?;
                 let f = &mut self.store.fills;
                 f.order.push(order);
                 f.trade.push(trade);
@@ -752,8 +973,8 @@ impl Builder {
                 } else {
                     self.intern(&balance_total, line)?
                 };
-                let payload = u32::try_from(self.store.cash_claims.raw.len())
-                    .map_err(|_| err(line, "too many claims"))?;
+                let payload = qlrs_schema::checked_index(self.store.cash_claims.raw.len())
+                    .map_err(|_| limits::error(line, "U-LIMIT-INDEX", "column index exhausted"))?;
                 let c = &mut self.store.cash_claims;
                 c.raw.push(value.raw());
                 c.scale.push(value.scale());
@@ -779,8 +1000,8 @@ impl Builder {
                 } else {
                     self.intern(&net_qty, line)?
                 };
-                let payload = u32::try_from(self.store.position_claims.raw.len())
-                    .map_err(|_| err(line, "too many claims"))?;
+                let payload = qlrs_schema::checked_index(self.store.position_claims.raw.len())
+                    .map_err(|_| limits::error(line, "U-LIMIT-INDEX", "column index exhausted"))?;
                 let c = &mut self.store.position_claims;
                 c.instrument.push(instrument);
                 c.raw.push(value.raw());

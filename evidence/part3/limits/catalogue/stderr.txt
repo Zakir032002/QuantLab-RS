@@ -1,0 +1,4 @@
+   Compiling qlrs-testkit v0.1.0 (/workspace/QuantLab-RS/crates/qlrs-testkit)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 1.31s
+   Compiling qlrs-cli v0.1.0 (/workspace/QuantLab-RS/crates/qlrs-cli)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.52s

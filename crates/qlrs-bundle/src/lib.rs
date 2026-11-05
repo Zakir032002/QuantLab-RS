@@ -2,11 +2,12 @@
 #![forbid(unsafe_code)]
 #![allow(clippy::missing_errors_doc, clippy::module_name_repetitions)]
 use qlrs_check::{Checker, Finding, InstanceKey};
-use qlrs_io::{ParsedTrace, decode, digest, encode};
+use qlrs_io::{Limits, ParsedTrace, atomic_file, decode, digest, encode};
 use qlrs_reduce::Certificate;
 use qlrs_reduce::Reduction;
 use qlrs_schema::{AliveMask, Model, Status, SyntheticCheckpoint};
 use serde::{Deserialize, Serialize};
+use std::io::{Read, Write};
 use std::{collections::BTreeSet, fs, path::Path};
 
 /// Whether an immutable observed record is asserted or supplies context.
@@ -149,7 +150,7 @@ fn minimality_text(certified: bool) -> &'static str {
     }
 }
 fn put(dir: &Path, name: &str, bytes: &[u8]) -> Result<FileEntry, String> {
-    fs::write(dir.join(name), bytes).map_err(|e| e.to_string())?;
+    atomic_file(dir.join(name), |file| file.write_all(bytes)).map_err(|e| e.to_string())?;
     Ok(FileEntry {
         path: name.into(),
         blake3: digest(bytes),
@@ -162,8 +163,46 @@ pub fn write(
     trace: &ParsedTrace,
     reduction: &Reduction,
 ) -> Result<Manifest, String> {
+    use std::sync::atomic::{AtomicU64, Ordering};
+    static NEXT: AtomicU64 = AtomicU64::new(0);
     let dir = dir.as_ref();
-    fs::create_dir(dir).map_err(|e| format!("cannot create new bundle directory: {e}"))?;
+    if fs::symlink_metadata(dir).is_ok() {
+        return Err("bundle directory already exists".into());
+    }
+    let parent = dir
+        .parent()
+        .filter(|p| !p.as_os_str().is_empty())
+        .unwrap_or(Path::new("."));
+    let temporary = parent.join(format!(
+        ".qlrs.bundle.{}.{}",
+        std::process::id(),
+        NEXT.fetch_add(1, Ordering::Relaxed)
+    ));
+    fs::create_dir(&temporary).map_err(|e| e.to_string())?;
+    let result = (|| {
+        let manifest = write_directory(&temporary, trace, reduction)?;
+        fs::File::open(&temporary)
+            .and_then(|f| f.sync_all())
+            .map_err(|e| e.to_string())?;
+        if fs::symlink_metadata(dir).is_ok() {
+            return Err("bundle directory already exists".into());
+        }
+        fs::rename(&temporary, dir).map_err(|e| e.to_string())?;
+        fs::File::open(parent)
+            .and_then(|f| f.sync_all())
+            .map_err(|e| e.to_string())?;
+        Ok(manifest)
+    })();
+    if result.is_err() {
+        let _ = fs::remove_dir_all(&temporary);
+    }
+    result
+}
+fn write_directory(
+    dir: &Path,
+    trace: &ParsedTrace,
+    reduction: &Reduction,
+) -> Result<Manifest, String> {
     let mut files = Vec::new();
     let mut reduced = Vec::new();
     trace
@@ -241,10 +280,9 @@ pub fn write(
     };
     let bytes = encode(&manifest).map_err(|e| e.to_string())?;
     put(dir, "manifest.json", &bytes)?;
-    fs::write(
-        dir.join("manifest.blake3"),
-        format!("{}  manifest.json\n", digest(&bytes)),
-    )
+    atomic_file(dir.join("manifest.blake3"), |file| {
+        file.write_all(format!("{}  manifest.json\n", digest(&bytes)).as_bytes())
+    })
     .map_err(|e| e.to_string())?;
     verify(dir)?;
     Ok(manifest)
@@ -261,9 +299,61 @@ pub fn verify_with_options(
     dir: impl AsRef<Path>,
     recheck_certificate: bool,
 ) -> Result<Manifest, String> {
+    // Legacy entry keeps existing defaults until the R9 resource review closes.
+    verify_with_limits(
+        dir,
+        recheck_certificate,
+        Limits {
+            max_entries: usize::MAX,
+            max_entry_bytes: u64::MAX,
+            ..Limits::default()
+        },
+    )
+}
+/// Verify with explicit resource limits.
+pub fn verify_with_limits(
+    dir: impl AsRef<Path>,
+    recheck_certificate: bool,
+    limits: Limits,
+) -> Result<Manifest, String> {
+    verify_with_observer(dir, recheck_certificate, limits, |_| {})
+}
+/// Observe every validated file access; used by the confinement fuzz oracle.
+#[allow(clippy::too_many_lines)]
+pub fn verify_with_observer(
+    dir: impl AsRef<Path>,
+    recheck_certificate: bool,
+    limits: Limits,
+    mut observe: impl FnMut(&Path),
+) -> Result<Manifest, String> {
     let dir = dir.as_ref();
-    let manifest_bytes = regular_file(dir, "manifest.json")?;
-    let commitment = regular_file(dir, "manifest.blake3")?;
+    if !fs::symlink_metadata(dir)
+        .map_err(|e| e.to_string())?
+        .file_type()
+        .is_dir()
+    {
+        return Err("E-BUNDLE-PATH: root must be a real directory".into());
+    }
+    let mut actual = BTreeSet::new();
+    for entry in fs::read_dir(dir).map_err(|e| e.to_string())? {
+        let entry = entry.map_err(|e| e.to_string())?;
+        let name = entry
+            .file_name()
+            .into_string()
+            .map_err(|_| "E-BUNDLE-PATH: non-UTF-8 name")?;
+        if !actual.insert(name) || actual.len() > limits.max_entries {
+            return Err("E-BUNDLE-ENTRIES: too many entries".into());
+        }
+        if !entry.file_type().map_err(|e| e.to_string())?.is_file() {
+            return Err("E-BUNDLE-PATH: non-regular entry".into());
+        }
+        if entry.metadata().map_err(|e| e.to_string())?.len() > limits.max_entry_bytes {
+            return Err("E-BUNDLE-ENTRY-BYTES: entry exceeds byte limit".into());
+        }
+    }
+    let mut read = |name: &str| regular_file(dir, name, limits, &mut observe);
+    let manifest_bytes = read("manifest.json")?;
+    let commitment = read("manifest.blake3")?;
     if commitment != format!("{}  manifest.json\n", digest(&manifest_bytes)).as_bytes() {
         return Err("manifest digest mismatch".into());
     }
@@ -297,10 +387,10 @@ pub fn verify_with_options(
             || file.path.as_str() <= previous
             || !names.insert(file.path.clone())
         {
-            return Err("invalid, duplicate or unsorted bundle path".into());
+            return Err("E-BUNDLE-PATH: invalid, duplicate or unsorted bundle path".into());
         }
         previous = &file.path;
-        let bytes = regular_file(dir, &file.path)?;
+        let bytes = read(&file.path)?;
         if digest(&bytes) != file.blake3
             || u64::try_from(bytes.len()).map_err(|_| "file too large")? != file.byte_length
         {
@@ -322,15 +412,11 @@ pub fn verify_with_options(
     {
         return Err("v1 proof files missing".into());
     }
-    let actual: Result<BTreeSet<_>, _> = fs::read_dir(dir)
-        .map_err(|e| e.to_string())?
-        .map(|entry| entry.map(|e| e.file_name().to_string_lossy().into_owned()))
-        .collect();
-    if actual.map_err(|e| e.to_string())? != names {
-        return Err("unexpected bundle contents".into());
+    if actual != names {
+        return Err("E-BUNDLE-PATH: unexpected bundle contents".into());
     }
     let checkpoint: Option<SyntheticCheckpoint> = if names.contains("synthetic_checkpoint.json") {
-        Some(decode(&regular_file(dir, "synthetic_checkpoint.json")?).map_err(|e| e.to_string())?)
+        Some(decode(&read("synthetic_checkpoint.json")?).map_err(|e| e.to_string())?)
     } else {
         None
     };
@@ -339,8 +425,7 @@ pub fn verify_with_options(
     {
         return Err("checkpoint source digest differs from its declared provenance".into());
     }
-    let mut trace =
-        ParsedTrace::parse(regular_file(dir, "reduced_trace.jsonl")?).map_err(|e| e.to_string())?;
+    let mut trace = ParsedTrace::parse(read("reduced_trace.jsonl")?).map_err(|e| e.to_string())?;
     Checker::prepare_with_checkpoint(&mut trace.store, checkpoint.as_ref())?;
     if trace.store.header.model != manifest.model_profile
         || trace.store.len() != manifest.retained_events
@@ -365,16 +450,15 @@ pub fn verify_with_options(
     {
         return Err("replay lacks supported complete evidence".into());
     }
-    let expected: Finding =
-        decode(&regular_file(dir, "violation.json")?).map_err(|e| e.to_string())?;
+    let expected: Finding = decode(&read("violation.json")?).map_err(|e| e.to_string())?;
     if expected.instance_key.as_ref() != Some(&manifest.instance_key)
         || !report.findings.contains(&expected)
     {
         return Err("target instance or evidence not reproduced".into());
     }
     if manifest.schema == "qlrs-bundle/v1" {
-        let certificate: Certificate = decode(&regular_file(dir, "minimality_certificate.json")?)
-            .map_err(|e| e.to_string())?;
+        let certificate: Certificate =
+            decode(&read("minimality_certificate.json")?).map_err(|e| e.to_string())?;
         if certificate.target != manifest.instance_key
             || certificate.complete != manifest.closure_1_minimal
             || Some(certificate.candidates_tested) != manifest.certificate_candidates_tested
@@ -383,7 +467,7 @@ pub fn verify_with_options(
             return Err("certificate and manifest disagree".into());
         }
         let entries: Vec<RoleEntry> =
-            decode(&regular_file(dir, "witness_roles.json")?).map_err(|e| e.to_string())?;
+            decode(&read("witness_roles.json")?).map_err(|e| e.to_string())?;
         if entries.len()
             != trace
                 .store
@@ -437,7 +521,7 @@ pub fn verify_with_options(
     } else if recheck_certificate {
         return Err("legacy v0 bundle has no closure certificate".into());
     }
-    let log_bytes = regular_file(dir, "reduction_log.jsonl")?;
+    let log_bytes = read("reduction_log.jsonl")?;
     let mut entries = 0_usize;
     for line in log_bytes.split_inclusive(|b| *b == b'\n') {
         if manifest.schema == "qlrs-bundle/v1" {
@@ -458,13 +542,39 @@ pub fn verify_with_options(
     }
     Ok(manifest)
 }
-fn regular_file(dir: &Path, name: &str) -> Result<Vec<u8>, String> {
+fn regular_file(
+    dir: &Path,
+    name: &str,
+    limits: Limits,
+    observe: &mut impl FnMut(&Path),
+) -> Result<Vec<u8>, String> {
+    if name.is_empty()
+        || Path::new(name).components().count() != 1
+        || !matches!(
+            Path::new(name).components().next(),
+            Some(std::path::Component::Normal(_))
+        )
+    {
+        return Err("E-BUNDLE-PATH: invalid relative file name".into());
+    }
     let path = dir.join(name);
     let metadata = fs::symlink_metadata(&path).map_err(|e| e.to_string())?;
     if !metadata.file_type().is_file() {
-        return Err(format!("not a regular bundle file: {name}"));
+        return Err(format!("E-BUNDLE-PATH: not a regular bundle file: {name}"));
     }
-    fs::read(path).map_err(|e| e.to_string())
+    if metadata.len() > limits.max_entry_bytes {
+        return Err("E-BUNDLE-ENTRY-BYTES: entry exceeds byte limit".into());
+    }
+    observe(&path);
+    let file = fs::File::open(&path).map_err(|e| e.to_string())?;
+    let mut bytes = Vec::new();
+    file.take(limits.max_entry_bytes.saturating_add(1))
+        .read_to_end(&mut bytes)
+        .map_err(|e| e.to_string())?;
+    if u64::try_from(bytes.len()).map_err(|e| e.to_string())? > limits.max_entry_bytes {
+        return Err("E-BUNDLE-ENTRY-BYTES: entry grew past byte limit".into());
+    }
+    Ok(bytes)
 }
 
 /// Source revision embedded when the product was built.

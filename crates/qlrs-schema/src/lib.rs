@@ -12,6 +12,16 @@ pub type Id = u32;
 /// Sentinel for an unresolved dense reference.
 pub const NONE: u32 = u32::MAX;
 
+/// Convert a column/CSR index without using the reserved u32 sentinel.
+pub fn checked_index(value: usize) -> Result<u32, &'static str> {
+    let value = u32::try_from(value).map_err(|_| "U-LIMIT-INDEX")?;
+    if value == NONE {
+        Err("U-LIMIT-INDEX")
+    } else {
+        Ok(value)
+    }
+}
+
 /// Overall outcome, in decreasing evidence precedence.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "SCREAMING_SNAKE_CASE")]
@@ -174,9 +184,9 @@ impl Interner {
             }
             cursor = self.next.get(cursor as usize).copied().unwrap_or(NONE);
         }
-        let id = u32::try_from(self.offsets.len()).map_err(|_| "too many interned identifiers")?;
-        let offset = u32::try_from(self.bytes.len()).map_err(|_| "string arena exceeds 4 GiB")?;
-        let length = u32::try_from(text.len()).map_err(|_| "identifier exceeds 4 GiB")?;
+        let id = checked_index(self.offsets.len()).map_err(|_| "too many interned identifiers")?;
+        let offset = checked_index(self.bytes.len()).map_err(|_| "string arena exceeds 4 GiB")?;
+        let length = checked_index(text.len()).map_err(|_| "identifier exceeds 4 GiB")?;
         let end = offset
             .checked_add(length)
             .ok_or("string arena exceeds 4 GiB")?;
@@ -195,6 +205,16 @@ impl Interner {
         let start = *self.offsets.get(id as usize)? as usize;
         let len = *self.lengths.get(id as usize)? as usize;
         std::str::from_utf8(self.bytes.get(start..start.checked_add(len)?)?).ok()
+    }
+    /// Number of distinct interned strings.
+    #[must_use]
+    pub fn len(&self) -> usize {
+        self.offsets.len()
+    }
+    /// Whether the interner has no symbols.
+    #[must_use]
+    pub fn is_empty(&self) -> bool {
+        self.offsets.is_empty()
     }
     /// Release spare arena and hash capacity after construction.
     pub fn compact(&mut self) {

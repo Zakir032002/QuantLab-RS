@@ -118,13 +118,13 @@ impl UnitGraph {
             .into_iter()
             .map(|(from, to)| {
                 Ok((
-                    u32::try_from(
+                    qlrs_schema::checked_index(
                         unit_ids
                             .binary_search(&from)
                             .map_err(|_| "missing dependency")?,
                     )
                     .map_err(|_| "too many units")?,
-                    u32::try_from(
+                    qlrs_schema::checked_index(
                         unit_ids
                             .binary_search(&to)
                             .map_err(|_| "missing dependent")?,
@@ -150,7 +150,7 @@ impl UnitGraph {
         let local: Vec<_> = roots
             .iter()
             .filter_map(|unit| {
-                u32::try_from(*unit)
+                qlrs_schema::checked_index(*unit)
                     .ok()
                     .and_then(|id| self.unit_ids.binary_search(&id).ok())
             })
@@ -313,7 +313,7 @@ impl UnitEvents {
             if window.contains_event(store, event) {
                 pairs.push((
                     *store.spine.unit.get(event).ok_or("invalid spine")?,
-                    u32::try_from(event).map_err(|_| "too many events")?,
+                    qlrs_schema::checked_index(event).map_err(|_| "too many events")?,
                 ));
             }
         }
@@ -324,11 +324,12 @@ impl UnitEvents {
         for (unit, event) in pairs {
             if unit_ids.last() != Some(&unit) {
                 unit_ids.push(unit);
-                offsets.push(u32::try_from(events.len()).map_err(|_| "too many events")?);
+                offsets
+                    .push(qlrs_schema::checked_index(events.len()).map_err(|_| "too many events")?);
             }
             events.push(event);
         }
-        offsets.push(u32::try_from(events.len()).map_err(|_| "too many events")?);
+        offsets.push(qlrs_schema::checked_index(events.len()).map_err(|_| "too many events")?);
         Ok(Self {
             unit_ids,
             offsets,
@@ -1170,7 +1171,7 @@ pub fn reduce_with_options(
                 let mut values = Vec::new();
                 let mut costs = Vec::new();
                 for unit in &units {
-                    let value = u32::try_from(*unit)
+                    let value = qlrs_schema::checked_index(*unit)
                         .ok()
                         .and_then(|id| predicate.contributions.units.binary_search(&id).ok())
                         .and_then(|row| predicate.contributions.values.get(row))
@@ -1299,7 +1300,7 @@ pub fn reduce_with_options(
                     .filter(|id| current.contains(*id))
                     .collect();
                 entries.push(ClosureTest {
-                    root: u32::try_from(unit).map_err(|_| "too many units")?,
+                    root: qlrs_schema::checked_index(unit).map_err(|_| "too many units")?,
                     removed_closure: rle(&removed),
                     outcome: rejection,
                     evaluator: "full".into(),
@@ -1443,7 +1444,7 @@ fn build_certificate(
             .copied()
             .ok_or("empty kept unit")?;
         kept_units.push(UnitIdentity {
-            id: u32::try_from(unit).map_err(|_| "too many units")?,
+            id: qlrs_schema::checked_index(unit).map_err(|_| "too many units")?,
             first_original_seq: first,
         });
     }
@@ -1457,7 +1458,7 @@ fn build_certificate(
             .collect();
         if closure.iter().any(|id| pinned.contains(*id)) {
             entries.push(ClosureTest {
-                root: u32::try_from(unit).map_err(|_| "too many units")?,
+                root: qlrs_schema::checked_index(unit).map_err(|_| "too many units")?,
                 removed_closure: rle(&closure),
                 outcome: Rejection::KeyMissing,
                 evaluator: "fast".into(),
@@ -1474,7 +1475,7 @@ fn build_certificate(
         kept_units,
         pinned: pinned
             .iter()
-            .filter_map(|id| u32::try_from(id).ok())
+            .filter_map(|id| qlrs_schema::checked_index(id).ok())
             .collect(),
         entries,
         candidates_tested,
@@ -1562,8 +1563,9 @@ pub fn recheck_certificate(
     let graph = UnitGraph::build_with_checkpoint(store, checkpoint, &all)?;
     let mut local = certificate.kept_units.clone();
     for identity in &mut local {
-        identity.id = u32::try_from(*mapping.get(&identity.id).ok_or("missing mapping")?)
-            .map_err(|_| "too many units")?;
+        identity.id =
+            qlrs_schema::checked_index(*mapping.get(&identity.id).ok_or("missing mapping")?)
+                .map_err(|_| "too many units")?;
     }
     if graph_commitment(&graph, &local)? != certificate.graph_digest {
         return Err("certificate graph digest mismatch".into());

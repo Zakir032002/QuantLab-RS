@@ -1,6 +1,7 @@
 //! QuantLab-RS command-line auditor for synthetic Mode T traces.
 #![forbid(unsafe_code)]
-use clap::{Parser, Subcommand};
+use clap::{Args, Parser, Subcommand};
+pub use qlrs_io::Limits;
 use qlrs_schema::{AliveMask, SyntheticCheckpoint};
 use std::{
     io::{self, Write},
@@ -22,6 +23,8 @@ enum Command {
     /// Verify a synthetic qlrs-trace/v0 JSONL file. Outputs deterministic JSON.
     Verify {
         trace: PathBuf,
+        #[command(flatten)]
+        input: InputOptions,
         #[arg(long)]
         checkpoint: Option<PathBuf>,
         #[arg(long)]
@@ -30,6 +33,8 @@ enum Command {
     /// Reduce a complete violation into a new, verified evidence directory.
     Reduce {
         trace: PathBuf,
+        #[command(flatten)]
+        input: InputOptions,
         #[arg(short, long)]
         output: PathBuf,
         #[arg(long)]
@@ -58,7 +63,76 @@ enum BundleCommand {
         directory: PathBuf,
         #[arg(long)]
         recheck_certificate: bool,
+        #[arg(long)]
+        max_entries: Option<usize>,
+        #[arg(long)]
+        max_entry_bytes: Option<u64>,
     },
+}
+#[derive(Args, Default)]
+struct InputOptions {
+    /// Enable the proposed Part 3 defaults (pending default-verdict review).
+    #[arg(long)]
+    strict_limits: bool,
+    #[arg(long)]
+    max_line_bytes: Option<usize>,
+    #[arg(long)]
+    max_interned: Option<usize>,
+    #[arg(long)]
+    max_events: Option<usize>,
+    #[arg(long)]
+    max_input_bytes: Option<u64>,
+    /// Estimated allocation budget in bytes.
+    #[arg(long)]
+    memory_budget: Option<u64>,
+}
+impl InputOptions {
+    fn read(&self, path: PathBuf) -> Result<qlrs_io::ParsedTrace, qlrs_io::InputError> {
+        if !self.strict_limits
+            && self.max_line_bytes.is_none()
+            && self.max_interned.is_none()
+            && self.max_events.is_none()
+            && self.max_input_bytes.is_none()
+            && self.memory_budget.is_none()
+        {
+            return qlrs_io::ParsedTrace::read(path);
+        }
+        let defaults = Limits::default();
+        qlrs_io::ParsedTrace::read_with_limits(
+            path,
+            Limits {
+                max_line_bytes: self.max_line_bytes.unwrap_or(defaults.max_line_bytes),
+                max_interned: self.max_interned.unwrap_or(defaults.max_interned),
+                max_events: self.max_events.unwrap_or(defaults.max_events),
+                max_input_bytes: self.max_input_bytes.unwrap_or(defaults.max_input_bytes),
+                memory_budget_bytes: self.memory_budget,
+                ..defaults
+            },
+        )
+    }
+}
+struct CliError {
+    code: u8,
+    message: String,
+    json: Option<Vec<u8>>,
+}
+impl From<String> for CliError {
+    fn from(message: String) -> Self {
+        Self {
+            code: 1,
+            message,
+            json: None,
+        }
+    }
+}
+impl From<qlrs_io::InputError> for CliError {
+    fn from(error: qlrs_io::InputError) -> Self {
+        Self {
+            code: error.kind.exit_code(),
+            message: error.to_string(),
+            json: qlrs_io::encode(&error).ok(),
+        }
+    }
 }
 fn checkpoint(path: Option<PathBuf>) -> Result<Option<SyntheticCheckpoint>, String> {
     path.map(|path| {
@@ -68,15 +142,16 @@ fn checkpoint(path: Option<PathBuf>) -> Result<Option<SyntheticCheckpoint>, Stri
     })
     .transpose()
 }
-fn run(cli: Cli) -> Result<u8, String> {
+fn run(cli: Cli) -> Result<u8, CliError> {
     match cli.command {
         Command::Verify {
             trace,
+            input,
             checkpoint: cp,
             partial,
         } => {
             let cp = checkpoint(cp)?;
-            let mut trace = qlrs_io::ParsedTrace::read(trace).map_err(|e| e.to_string())?;
+            let mut trace = input.read(trace)?;
             qlrs_ledger::Ledger::prepare_with_checkpoint(&mut trace.store, cp.as_ref())?;
             if let Some(cp) = &cp {
                 qlrs_ledger::Ledger::initial(&trace.store, Some(cp))?;
@@ -95,6 +170,7 @@ fn run(cli: Cli) -> Result<u8, String> {
         }
         Command::Reduce {
             trace,
+            input,
             output,
             checkpoint: cp,
             target_seq,
@@ -103,7 +179,7 @@ fn run(cli: Cli) -> Result<u8, String> {
             algorithm,
         } => {
             let cp = checkpoint(cp)?;
-            let mut trace = qlrs_io::ParsedTrace::read(trace).map_err(|e| e.to_string())?;
+            let mut trace = input.read(trace)?;
             qlrs_ledger::Ledger::prepare_with_checkpoint(&mut trace.store, cp.as_ref())?;
             let reduction = qlrs_reduce::reduce_with_options(
                 &trace.store,
@@ -132,9 +208,24 @@ fn run(cli: Cli) -> Result<u8, String> {
                 BundleCommand::Verify {
                     directory,
                     recheck_certificate,
+                    max_entries,
+                    max_entry_bytes,
                 },
         } => {
-            let manifest = qlrs_bundle::verify_with_options(directory, recheck_certificate)?;
+            let manifest = if max_entries.is_none() && max_entry_bytes.is_none() {
+                qlrs_bundle::verify_with_options(directory, recheck_certificate)?
+            } else {
+                let defaults = Limits::default();
+                qlrs_bundle::verify_with_limits(
+                    directory,
+                    recheck_certificate,
+                    Limits {
+                        max_entries: max_entries.unwrap_or(defaults.max_entries),
+                        max_entry_bytes: max_entry_bytes.unwrap_or(defaults.max_entry_bytes),
+                        ..defaults
+                    },
+                )?
+            };
             io::stdout()
                 .lock()
                 .write_all(&qlrs_io::encode(&manifest).map_err(|e| e.to_string())?)
@@ -147,8 +238,11 @@ fn main() -> ExitCode {
     match run(Cli::parse()) {
         Ok(code) => ExitCode::from(code),
         Err(error) => {
-            eprintln!("qlrs: {error}");
-            ExitCode::from(1)
+            eprintln!("qlrs: {}", error.message);
+            if let Some(json) = error.json {
+                let _ = io::stdout().lock().write_all(&json);
+            }
+            ExitCode::from(error.code)
         }
     }
 }
