@@ -1,0 +1,28 @@
+   Compiling num-traits v0.2.19
+   Compiling qlrs-num v0.1.0 (/workspace/QuantLab-RS/crates/qlrs-num)
+   Compiling utf8parse v0.2.2
+   Compiling anstyle-parse v1.0.0
+   Compiling qlrs-schema v0.1.0 (/workspace/QuantLab-RS/crates/qlrs-schema)
+   Compiling is_terminal_polyfill v1.70.2
+   Compiling colorchoice v1.0.5
+   Compiling anstyle-query v1.1.5
+   Compiling anstream v1.0.0
+   Compiling strsim v0.11.1
+   Compiling qlrs-ledger v0.1.0 (/workspace/QuantLab-RS/crates/qlrs-ledger)
+   Compiling clap_derive v4.6.7
+   Compiling qlrs-check v0.1.0 (/workspace/QuantLab-RS/crates/qlrs-check)
+   Compiling clap_builder v4.6.7
+   Compiling qlrs-bundle v0.1.0 (/workspace/QuantLab-RS/crates/qlrs-bundle)
+   Compiling qlrs-reduce v0.1.0 (/workspace/QuantLab-RS/crates/qlrs-reduce)
+   Compiling num-integer v0.1.47
+   Compiling qlrs-io v0.1.0 (/workspace/QuantLab-RS/crates/qlrs-io)
+   Compiling clap v4.6.7
+   Compiling num-bigint v0.4.8
+   Compiling arbitrary v1.5.0
+   Compiling plotters v0.3.7
+   Compiling qlrs-testkit v0.1.0 (/workspace/QuantLab-RS/crates/qlrs-testkit)
+   Compiling criterion v0.8.2
+   Compiling qlrs-bench v0.1.0 (/workspace/QuantLab-RS/crates/qlrs-bench)
+    Finished `bench` profile [optimized + debuginfo] target(s) in 38.81s
+     Running benches/instructions.rs (target/release/deps/instructions-d90fbe905e73dd27)
+gungraun_runner: Warn : The RUST_LOG environment variable to set the log level changed to GUNGRAUN_LOG

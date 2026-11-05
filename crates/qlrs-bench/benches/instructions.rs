@@ -58,9 +58,83 @@ fn replay_1000(input: &mut ReplayInput) -> i128 {
     std::hint::black_box(input.state.cash)
 }
 #[cfg(target_os = "linux")]
+fn setup_parse() -> &'static mut Vec<u8> {
+    Box::leak(Box::new(
+        qlrs_testkit::generate(20_000, 42, None).unwrap().bytes,
+    ))
+}
+#[cfg(target_os = "linux")]
+#[library_benchmark]
+#[bench::source(setup_parse())]
+fn parse_100k(bytes: &mut Vec<u8>) -> usize {
+    std::hint::black_box(
+        qlrs_io::ParsedTrace::parse(std::hint::black_box(bytes.clone()))
+            .unwrap()
+            .store
+            .len(),
+    )
+}
+#[cfg(target_os = "linux")]
+struct LargeInput {
+    trace: qlrs_io::ParsedTrace,
+    alive: qlrs_schema::AliveMask,
+    digest: String,
+}
+#[cfg(target_os = "linux")]
+fn setup_large(defect: Option<qlrs_testkit::Defect>) -> &'static mut LargeInput {
+    let fixture = qlrs_testkit::generate(20_000, 42, defect.map(|d| (d, 12_000))).unwrap();
+    let mut trace = qlrs_io::ParsedTrace::parse(fixture.bytes).unwrap();
+    qlrs_check::Checker::prepare(&mut trace.store);
+    let alive = qlrs_schema::AliveMask::all(trace.store.units.len());
+    let digest = qlrs_io::digest(&trace.source);
+    Box::leak(Box::new(LargeInput {
+        trace,
+        alive,
+        digest,
+    }))
+}
+#[cfg(target_os = "linux")]
+#[library_benchmark]
+#[bench::prepared(setup_large(None))]
+fn check_100k(input: &mut LargeInput) -> qlrs_check::Report {
+    std::hint::black_box(qlrs_check::Checker::check(
+        std::hint::black_box(&input.trace.store),
+        &input.alive,
+        None,
+        false,
+    ))
+}
+#[cfg(target_os = "linux")]
+#[library_benchmark]
+#[bench::prepared(setup_large(Some(qlrs_testkit::Defect::D03)))]
+fn reduce_100k(input: &mut LargeInput) -> qlrs_reduce::Reduction {
+    std::hint::black_box(
+        qlrs_reduce::reduce_with_limits(
+            &input.trace.store,
+            &input.digest,
+            None,
+            None,
+            qlrs_reduce::ReductionLimits {
+                max_calls: 1024,
+                time_limit: std::time::Duration::MAX,
+            },
+        )
+        .unwrap(),
+    )
+}
+#[cfg(target_os = "linux")]
+#[library_benchmark]
+fn generate_100k() -> usize {
+    let mut bytes = Vec::new();
+    qlrs_testkit::generate_into(20_000, 42, None, &mut bytes).unwrap();
+    std::hint::black_box(bytes).len()
+}
+#[cfg(target_os = "linux")]
+library_benchmark_group!(name=pipeline;benchmarks=parse_100k,check_100k,reduce_100k,generate_100k);
+#[cfg(target_os = "linux")]
 library_benchmark_group!(name=numeric;benchmarks=decimal_parse,mul_rescale,replay_1000);
 #[cfg(target_os = "linux")]
-main!(library_benchmark_groups = numeric);
+main!(library_benchmark_groups = numeric, pipeline);
 #[cfg(not(target_os = "linux"))]
 fn main() {
     eprintln!("instruction benchmark requires Linux Valgrind");
