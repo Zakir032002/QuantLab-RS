@@ -81,7 +81,7 @@ fn pipeline(c: &mut Criterion) {
         qlrs_testkit::generate(20_000, 42, Some((qlrs_testkit::Defect::D03, 12_000))).unwrap();
     let mut input = qlrs_io::ParsedTrace::parse(fixture.bytes).unwrap();
     qlrs_ledger::Ledger::prepare(&mut input.store);
-    let digest = qlrs_io::digest(&input.source);
+    let digest = input.source_digest();
     c.bench_function("reduce_100k", |b| {
         b.iter(|| {
             black_box(
@@ -114,7 +114,7 @@ fn algebra(c: &mut Criterion) {
         key.clone(),
         &original,
         None,
-        &qlrs_io::digest(&trace.source),
+        &trace.source_digest(),
     )
     .unwrap();
     let mask = predicate.candidate_mask(&AliveMask::all(trace.store.units.len()));

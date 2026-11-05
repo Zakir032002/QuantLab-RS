@@ -23,7 +23,7 @@ fn req_reduce_001_three_defects_exact_replay_and_idempotence() {
     for defect in [Defect::D01, Defect::D03, Defect::D07] {
         let fixture = generate(100, 42, Some((defect, 60))).unwrap();
         let input = prepared(fixture.bytes);
-        let digest = qlrs_io::digest(&input.source);
+        let digest = input.source_digest();
         let reduced = qlrs_reduce::reduce(&input.store, &digest, None, fixture.target_seq).unwrap();
         assert!(reduced.closure_1_minimal);
         assert!(
@@ -62,7 +62,7 @@ fn req_reduce_001_three_defects_exact_replay_and_idempotence() {
         }
         let again = qlrs_reduce::reduce(
             &output.store,
-            &qlrs_io::digest(&output.source),
+            &output.source_digest(),
             Some(cp),
             Some(target.anchor_claim_original_seq),
         )
@@ -77,7 +77,7 @@ fn req_reduce_001_three_defects_exact_replay_and_idempotence() {
 fn req_reduce_002_actual_closure_minimality_certificate() {
     let fixture = generate(15, 0, Some((Defect::D11, 10))).unwrap();
     let input = prepared(fixture.bytes);
-    let digest = qlrs_io::digest(&input.source);
+    let digest = input.source_digest();
     let original = Checker::check(
         &input.store,
         &AliveMask::all(input.store.units.len()),
@@ -111,7 +111,7 @@ proptest! {
  #![proptest_config(ProptestConfig {cases:100,..ProptestConfig::default()})]
  #[test]
  fn req_reduce_003_property_preserves_instance_and_source(seed in any::<u64>(),index in 1usize..19){
-  let fixture=generate(20,seed,Some((Defect::D03,index))).unwrap();let input=prepared(fixture.bytes);let reduced=qlrs_reduce::reduce(&input.store,&qlrs_io::digest(&input.source),None,fixture.target_seq).unwrap();let report=Checker::check(&input.store,&reduced.alive,reduced.checkpoint.as_ref(),false);prop_assert!(report.keys().any(|key|Some(key)==reduced.target.instance_key.as_ref()));prop_assert!(reduced.retained_events<=6);
+  let fixture=generate(20,seed,Some((Defect::D03,index))).unwrap();let input=prepared(fixture.bytes);let reduced=qlrs_reduce::reduce(&input.store,&input.source_digest(),None,fixture.target_seq).unwrap();let report=Checker::check(&input.store,&reduced.alive,reduced.checkpoint.as_ref(),false);prop_assert!(report.keys().any(|key|Some(key)==reduced.target.instance_key.as_ref()));prop_assert!(reduced.retained_events<=6);
  }
 }
 #[test]
@@ -120,7 +120,7 @@ fn req_bundle_001_deterministic_roundtrip_and_every_file_tamper() {
     let input = prepared(fixture.bytes);
     let reduction = qlrs_reduce::reduce(
         &input.store,
-        &qlrs_io::digest(&input.source),
+        &input.source_digest(),
         None,
         fixture.target_seq,
     )
@@ -155,7 +155,7 @@ fn req_reduce_004_sparse_fast_predicate_matches_full_replay() {
     use qlrs_schema::Status;
     let fixture = generate(40, 42, Some((Defect::D03, 25))).unwrap();
     let input = prepared(fixture.bytes);
-    let digest = qlrs_io::digest(&input.source);
+    let digest = input.source_digest();
     let store = &input.store;
     let original = Checker::check(store, &AliveMask::all(store.units.len()), None, true);
     let key = original

@@ -71,6 +71,18 @@ enum BundleCommand {
 }
 #[derive(Args, Default)]
 struct InputOptions {
+    /// Chunk size in bytes; records are never split during parsing.
+    #[arg(long, default_value_t = 8 << 20)]
+    io_chunk_bytes: usize,
+    /// Reject stdin and pipes instead of copying to an owned temporary file.
+    #[arg(long)]
+    no_spool: bool,
+    /// Include retained-memory statistics in the JSON result.
+    #[arg(long)]
+    stats: bool,
+    /// The `serde_json` reference remains the product parser.
+    #[arg(long, default_value = "reference", value_parser = ["reference"])]
+    parser: String,
     /// Enable the proposed Part 3 defaults (pending default-verdict review).
     #[arg(long)]
     strict_limits: bool,
@@ -88,29 +100,48 @@ struct InputOptions {
 }
 impl InputOptions {
     fn read(&self, path: PathBuf) -> Result<qlrs_io::ParsedTrace, qlrs_io::InputError> {
-        if !self.strict_limits
-            && self.max_line_bytes.is_none()
-            && self.max_interned.is_none()
-            && self.max_events.is_none()
-            && self.max_input_bytes.is_none()
-            && self.memory_budget.is_none()
-        {
-            return qlrs_io::ParsedTrace::read(path);
-        }
+        let enabled = self.strict_limits
+            || self.max_line_bytes.is_some()
+            || self.max_interned.is_some()
+            || self.max_events.is_some()
+            || self.max_input_bytes.is_some()
+            || self.memory_budget.is_some();
         let defaults = Limits::default();
-        qlrs_io::ParsedTrace::read_with_limits(
-            path,
-            Limits {
-                max_line_bytes: self.max_line_bytes.unwrap_or(defaults.max_line_bytes),
-                max_interned: self.max_interned.unwrap_or(defaults.max_interned),
-                max_events: self.max_events.unwrap_or(defaults.max_events),
-                max_input_bytes: self.max_input_bytes.unwrap_or(defaults.max_input_bytes),
-                memory_budget_bytes: self.memory_budget,
-                ..defaults
-            },
-        )
+        let limits = enabled.then_some(Limits {
+            max_line_bytes: self.max_line_bytes.unwrap_or(defaults.max_line_bytes),
+            max_interned: self.max_interned.unwrap_or(defaults.max_interned),
+            max_events: self.max_events.unwrap_or(defaults.max_events),
+            max_input_bytes: self.max_input_bytes.unwrap_or(defaults.max_input_bytes),
+            memory_budget_bytes: self.memory_budget,
+            ..defaults
+        });
+        let stdin = path.as_os_str() == "-";
+        let regular = !stdin && std::fs::metadata(&path).is_ok_and(|m| m.is_file());
+        if regular {
+            return qlrs_io::ParsedTrace::read_chunked(path, limits, self.io_chunk_bytes);
+        }
+        if self.no_spool {
+            return Err(qlrs_io::InputError {
+                kind: qlrs_io::ErrorKind::Input,
+                code: "E-INPUT-NOT-SEEKABLE",
+                line: 0,
+                message: "input requires spooling".into(),
+            });
+        }
+        if stdin {
+            qlrs_io::ParsedTrace::spool(io::stdin().lock(), limits, self.io_chunk_bytes)
+        } else {
+            let file = std::fs::File::open(path).map_err(|e| qlrs_io::InputError {
+                kind: qlrs_io::ErrorKind::Input,
+                code: "E-IO",
+                line: 0,
+                message: e.to_string(),
+            })?;
+            qlrs_io::ParsedTrace::spool(file, limits, self.io_chunk_bytes)
+        }
     }
 }
+
 struct CliError {
     code: u8,
     message: String,
@@ -142,6 +173,19 @@ fn checkpoint(path: Option<PathBuf>) -> Result<Option<SyntheticCheckpoint>, Stri
     })
     .transpose()
 }
+fn with_stats(mut bytes: Vec<u8>, stats: Option<qlrs_io::TraceStats>) -> Result<Vec<u8>, String> {
+    if let Some(stats) = stats {
+        bytes.pop();
+        let stats = qlrs_io::encode(&stats).map_err(|e| e.to_string())?;
+        let mut out = b"{\"report\":".to_vec();
+        out.extend_from_slice(&bytes);
+        out.extend_from_slice(b",\"stats\":");
+        out.extend_from_slice(stats.strip_suffix(b"\n").unwrap_or(&stats));
+        out.extend_from_slice(b"}\n");
+        bytes = out;
+    }
+    Ok(bytes)
+}
 fn run(cli: Cli) -> Result<u8, CliError> {
     match cli.command {
         Command::Verify {
@@ -162,9 +206,13 @@ fn run(cli: Cli) -> Result<u8, CliError> {
                 cp.as_ref(),
                 partial,
             );
+            let bytes = with_stats(
+                qlrs_io::encode(&report).map_err(|e| e.to_string())?,
+                input.stats.then(|| trace.stats()),
+            )?;
             io::stdout()
                 .lock()
-                .write_all(&qlrs_io::encode(&report).map_err(|e| e.to_string())?)
+                .write_all(&bytes)
                 .map_err(|e| e.to_string())?;
             Ok(report.status.exit_code())
         }
@@ -183,7 +231,7 @@ fn run(cli: Cli) -> Result<u8, CliError> {
             qlrs_ledger::Ledger::prepare_with_checkpoint(&mut trace.store, cp.as_ref())?;
             let reduction = qlrs_reduce::reduce_with_options(
                 &trace.store,
-                &qlrs_io::digest(&trace.source),
+                &trace.source_digest(),
                 cp.as_ref(),
                 target_seq,
                 qlrs_reduce::ReductionLimits {
@@ -197,9 +245,13 @@ fn run(cli: Cli) -> Result<u8, CliError> {
                 },
             )?;
             let manifest = qlrs_bundle::write(output, &trace, &reduction)?;
+            let bytes = with_stats(
+                qlrs_io::encode(&manifest).map_err(|e| e.to_string())?,
+                input.stats.then(|| trace.stats()),
+            )?;
             io::stdout()
                 .lock()
-                .write_all(&qlrs_io::encode(&manifest).map_err(|e| e.to_string())?)
+                .write_all(&bytes)
                 .map_err(|e| e.to_string())?;
             Ok(0)
         }

@@ -89,7 +89,7 @@ fn main() {
                         Checker::check(store, &AliveMask::all(store.units.len()), None, true);
                     assert_eq!(original.status, Status::Violation);
                     let finding = original.at_seq(fixture.target_seq.unwrap()).unwrap();
-                    let digest = qlrs_io::digest(&trace.source);
+                    let digest = trace.source_digest();
                     let key = finding.instance_key.as_ref().unwrap();
                     let mut canonical: Option<Vec<(String, Vec<u8>)>> = None;
                     let mut kept = 0;

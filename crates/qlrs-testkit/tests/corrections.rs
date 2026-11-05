@@ -114,13 +114,8 @@ fn req_check_012_i2_uses_local_claim_windows_for_carried_errors() {
         findings.first().unwrap().residual.as_deref(),
         Some("-10.000")
     );
-    let reduced = qlrs_reduce::reduce(
-        &trace.store,
-        &qlrs_io::digest(&trace.source),
-        None,
-        Some(anchor),
-    )
-    .unwrap();
+    let reduced =
+        qlrs_reduce::reduce(&trace.store, &trace.source_digest(), None, Some(anchor)).unwrap();
     let fill = trace.store.spine.seq.binary_search(&8).unwrap();
     assert!(reduced.alive.contains_event(&trace.store, fill));
     let predecessor = trace.store.spine.seq.binary_search(&5).unwrap();
@@ -132,7 +127,7 @@ fn req_check_012_i2_uses_local_claim_windows_for_carried_errors() {
         reduced.target.instance_key.clone().unwrap(),
         &result,
         None,
-        &qlrs_io::digest(&trace.source),
+        &trace.source_digest(),
     )
     .unwrap();
     assert!(
@@ -192,13 +187,8 @@ fn req_checkpoint_001_earlier_bad_claim_is_an_opening_boundary() {
             .count(),
         2
     );
-    let reduced = qlrs_reduce::reduce(
-        &trace.store,
-        &qlrs_io::digest(&trace.source),
-        None,
-        Some(14),
-    )
-    .unwrap();
+    let reduced =
+        qlrs_reduce::reduce(&trace.store, &trace.source_digest(), None, Some(14)).unwrap();
     let cp = reduced.checkpoint.as_ref().unwrap();
     assert_eq!(cp.cut_seq, 9);
     assert_eq!(cp.cash_window.as_ref().unwrap().observed, earlier);
@@ -241,7 +231,7 @@ fn req_checkpoint_002_open_and_terminal_orders_and_prior_trades_survive_cut() {
         let trace = parse(fixture.bytes, None);
         let reduced = qlrs_reduce::reduce(
             &trace.store,
-            &qlrs_io::digest(&trace.source),
+            &trace.source_digest(),
             None,
             fixture.target_seq,
         )
@@ -312,7 +302,7 @@ fn req_checkpoint_002_open_and_terminal_orders_and_prior_trades_survive_cut() {
         }
         let again = qlrs_reduce::reduce(
             &witness.store,
-            &qlrs_io::digest(&witness.source),
+            &witness.source_digest(),
             Some(cp),
             fixture.target_seq,
         )
@@ -349,7 +339,7 @@ fn req_checkpoint_002_open_and_terminal_orders_and_prior_trades_survive_cut() {
     assert!(trace.store.order_index(alias).is_some());
     let reduced = qlrs_reduce::reduce(
         &trace.store,
-        &qlrs_io::digest(&trace.source),
+        &trace.source_digest(),
         None,
         fixture.target_seq,
     )
@@ -381,7 +371,7 @@ fn req_graph_002_checkpoint_inventory_replaces_historical_buy_dependencies() {
     let trace = parse(fixture.bytes, None);
     let reduced = qlrs_reduce::reduce(
         &trace.store,
-        &qlrs_io::digest(&trace.source),
+        &trace.source_digest(),
         None,
         fixture.target_seq,
     )
@@ -442,7 +432,7 @@ fn req_reduce_005_limits_return_best_verified_uncertified_bundles() {
     ] {
         let reduced = qlrs_reduce::reduce_with_limits(
             &trace.store,
-            &qlrs_io::digest(&trace.source),
+            &trace.source_digest(),
             None,
             fixture.target_seq,
             qlrs_reduce::ReductionLimits {
@@ -515,7 +505,7 @@ fn req_gate_001_all_eleven_defects_on_rich_profiles() {
             );
             let reduced = qlrs_reduce::reduce_with_limits(
                 &trace.store,
-                &qlrs_io::digest(&trace.source),
+                &trace.source_digest(),
                 None,
                 Some(anchor),
                 qlrs_reduce::ReductionLimits {
@@ -661,7 +651,7 @@ fn req_reduce_006_sparse_dense_and_incremental_patterns_match_on_all_defects() {
             key.clone(),
             &original,
             None,
-            &qlrs_io::digest(&trace.source),
+            &trace.source_digest(),
         )
         .unwrap();
         let mut random = 41_u64;
@@ -781,7 +771,7 @@ fn req_checkpoint_003_invalid_context_never_becomes_a_financial_accusation() {
     let trace = parse(fixture.bytes, None);
     let reduced = qlrs_reduce::reduce(
         &trace.store,
-        &qlrs_io::digest(&trace.source),
+        &trace.source_digest(),
         None,
         fixture.target_seq,
     )
@@ -936,7 +926,7 @@ fn req_reduce_007_other_lifecycle_breaches_are_not_admitted_or_returned_on_limit
         assert!(
             qlrs_reduce::reduce_with_limits(
                 &trace.store,
-                &qlrs_io::digest(&trace.source),
+                &trace.source_digest(),
                 None,
                 Some(anchor),
                 qlrs_reduce::ReductionLimits {

@@ -161,6 +161,12 @@ pub struct Interner {
     heads: HashMap<u64, Id, foldhash::fast::RandomState>,
     hasher: foldhash::fast::RandomState,
 }
+impl PartialEq for Interner {
+    fn eq(&self, other: &Self) -> bool {
+        self.bytes == other.bytes && self.offsets == other.offsets && self.lengths == other.lengths
+    }
+}
+impl Eq for Interner {}
 impl Interner {
     /// Find an existing symbol without inserting or allocating.
     #[must_use]
@@ -285,7 +291,7 @@ pub enum OrderState {
     Rejected,
 }
 /// Event spine; all columns have identical lengths.
-#[derive(Debug, Clone, Default)]
+#[derive(Debug, Clone, Default, PartialEq, Eq)]
 pub struct Spine {
     #[doc = "seq column or schema field."]
     pub seq: Vec<u64>,
@@ -299,7 +305,7 @@ pub struct Spine {
     pub payload_idx: Vec<u32>,
 }
 /// Submitted order metadata, referenced by all lifecycle events.
-#[derive(Debug, Clone, Default)]
+#[derive(Debug, Clone, Default, PartialEq, Eq)]
 pub struct Orders {
     /// Prepared submitted quantities at each instrument quantity precision.
     pub quantity_limit: Vec<Option<i128>>,
@@ -317,7 +323,7 @@ pub struct Orders {
     pub unit: Vec<u32>,
 }
 /// Fill payload columns; scale remains per numeric value.
-#[derive(Debug, Clone, Default)]
+#[derive(Debug, Clone, Default, PartialEq, Eq)]
 pub struct Fills {
     #[doc = "order column or schema field."]
     pub order: Vec<u32>,
@@ -337,7 +343,7 @@ pub struct Fills {
     pub fee_scale: Vec<u8>,
 }
 /// Observed account claim payloads, including verbatim decimal text IDs.
-#[derive(Debug, Clone, Default)]
+#[derive(Debug, Clone, Default, PartialEq, Eq)]
 pub struct CashClaims {
     #[doc = "raw column or schema field."]
     pub raw: Vec<i128>,
@@ -347,7 +353,7 @@ pub struct CashClaims {
     pub text: Vec<Id>,
 }
 /// Observed signed position claims.
-#[derive(Debug, Clone, Default)]
+#[derive(Debug, Clone, Default, PartialEq, Eq)]
 pub struct PositionClaims {
     #[doc = "instrument column or schema field."]
     pub instrument: Vec<u32>,
@@ -359,7 +365,7 @@ pub struct PositionClaims {
     pub text: Vec<Id>,
 }
 /// A lifecycle unit or an individual observed claim.
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Unit {
     #[doc = "order column or schema field."]
     pub order: Option<u32>,
@@ -378,7 +384,7 @@ pub struct Issue {
 }
 
 /// Compact representation used by replay, checking and reduction; no JSON DOM.
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub struct TraceStore {
     #[doc = "header column or schema field."]
     pub header: Header,
@@ -539,6 +545,7 @@ impl TraceStore {
             + self.spine.payload_idx.capacity() * 4
             + self.delta_cash.capacity() * 16
             + self.fill_qty.capacity() * 16
+            + self.orders.quantity_limit.capacity() * std::mem::size_of::<Option<i128>>()
             + self.orders.id.capacity() * 4
             + self.orders.instrument.capacity() * 4
             + self.orders.side.capacity()

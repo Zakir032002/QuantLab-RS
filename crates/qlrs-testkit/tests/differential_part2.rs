@@ -31,7 +31,7 @@ fn req_reduce_013_algebra_matches_full_checker_on_closed_subsets_per_shape() {
                 key.clone(),
                 &original,
                 None,
-                &qlrs_io::digest(&trace.source),
+                &trace.source_digest(),
             )
             .unwrap();
             let window = predicate.candidate_mask(&AliveMask::all(store.units.len()));

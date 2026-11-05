@@ -5,6 +5,6 @@
     "verify-s1m": "CP3.1 original seed-42 bytes; baseline-before/input-digests.json",
     "verify-s10m": "gen/s10m; BLAKE3 fbff133b7cc91d0c8e66b4e7ef0b67c64bafedb4736eda16c9ca1d9bdb0b7f40"
   },
-  "rss_gate_s1m": "pass: 153868 KiB <180 MiB",
+  "rss_gate_s1m": "pass: 153760 KiB <180 MiB",
   "rss_gate_s10m": "fail: 1561384 KiB exceeds 1400000000+67108864 bytes; optimization pending"
 }

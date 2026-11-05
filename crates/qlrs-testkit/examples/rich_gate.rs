@@ -24,7 +24,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         println!(
             "profile={profile} clean=true seed=42 events={} source_blake3={} status=CONSISTENT",
             parsed.store.len(),
-            qlrs_io::digest(&parsed.source)
+            parsed.source_digest()
         );
         drop(parsed);
         for defect in qlrs_testkit::DEFECTS.into_iter().take(11) {

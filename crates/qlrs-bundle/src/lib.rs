@@ -41,8 +41,7 @@ fn roles(trace: &ParsedTrace, reduction: &Reduction) -> Result<Vec<RoleEntry>, S
         }
         let seq = *trace.store.spine.seq.get(event).ok_or("missing sequence")?;
         let range = trace
-            .lines
-            .get(event.saturating_add(1))
+            .line_range(event.saturating_add(1))
             .ok_or("missing source range")?;
         out.push(RoleEntry {
             original_seq: Some(seq),
@@ -256,8 +255,8 @@ fn write_directory(
         model_profile: trace.store.header.model.clone(),
         verdict: Status::Violation,
         original_trace: SourceTrace {
-            blake3: digest(&trace.source),
-            byte_length: u64::try_from(trace.source.len()).map_err(|_| "input too large")?,
+            blake3: trace.source_digest(),
+            byte_length: trace.source_len(),
         },
         checkpoint_source_digest: reduction
             .checkpoint
@@ -490,8 +489,7 @@ pub fn verify_with_observer(
             };
             let [first, last] = entry.source_range.ok_or("missing observed range")?;
             let local = trace
-                .lines
-                .get(event.saturating_add(1))
+                .line_range(event.saturating_add(1))
                 .ok_or("missing observed bytes")?;
             if entry.original_seq != Some(*seq)
                 || entry.role != wanted

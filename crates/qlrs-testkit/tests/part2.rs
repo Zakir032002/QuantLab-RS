@@ -45,7 +45,7 @@ fn req_check_014_violation_dominates_uncovered_tail_and_is_reducible() {
     let target = report.at_seq(fixture.target_seq.unwrap()).unwrap();
     let reduced = qlrs_reduce::reduce(
         &trace.store,
-        &qlrs_io::digest(&trace.source),
+        &trace.source_digest(),
         None,
         fixture.target_seq,
     )
@@ -82,7 +82,7 @@ fn req_reduce_009_i2_witness_needs_only_its_instrument_and_position_claims() {
     assert_eq!(original.status, Status::Violation);
     let reduced = qlrs_reduce::reduce(
         &trace.store,
-        &qlrs_io::digest(&trace.source),
+        &trace.source_digest(),
         None,
         fixture.target_seq,
     )
@@ -137,7 +137,7 @@ fn req_reduce_010_r1_d04_sizes_finish_under_existing_budgets() {
         let trace = prepared(fixture.bytes);
         let result = qlrs_reduce::reduce_with_limits(
             &trace.store,
-            &qlrs_io::digest(&trace.source),
+            &trace.source_digest(),
             None,
             fixture.target_seq,
             qlrs_reduce::ReductionLimits {
@@ -165,7 +165,7 @@ fn req_gate_002_shapes_have_real_removals_and_recheckable_certificates() {
             let trace = prepared(fixture.bytes);
             let result = qlrs_reduce::reduce(
                 &trace.store,
-                &qlrs_io::digest(&trace.source),
+                &trace.source_digest(),
                 None,
                 fixture.target_seq,
             )
@@ -210,7 +210,7 @@ fn req_reduce_012_long_lived_and_second_carried_error_are_bounded() {
         );
         let result = qlrs_reduce::reduce_with_limits(
             &trace.store,
-            &qlrs_io::digest(&trace.source),
+            &trace.source_digest(),
             None,
             fixture.target_seq,
             qlrs_reduce::ReductionLimits {
@@ -245,7 +245,7 @@ fn req_reduce_012_long_lived_and_second_carried_error_are_bounded() {
     let trace = prepared(fixture.bytes);
     let result = qlrs_reduce::reduce_with_limits(
         &trace.store,
-        &qlrs_io::digest(&trace.source),
+        &trace.source_digest(),
         None,
         fixture.target_seq,
         qlrs_reduce::ReductionLimits {
@@ -265,7 +265,7 @@ fn req_bundle_002_v1_roles_and_certificates_reject_false_proofs() {
     let trace = prepared(fixture.bytes);
     let result = qlrs_reduce::reduce(
         &trace.store,
-        &qlrs_io::digest(&trace.source),
+        &trace.source_digest(),
         None,
         fixture.target_seq,
     )
@@ -364,14 +364,14 @@ fn req_reduce_016_unit_renaming_preserves_observed_witness() {
     }
     let a = qlrs_reduce::reduce(
         &first.store,
-        &qlrs_io::digest(&first.source),
+        &first.source_digest(),
         None,
         fixture.target_seq,
     )
     .unwrap();
     let b = qlrs_reduce::reduce(
         &second.store,
-        &qlrs_io::digest(&second.source),
+        &second.source_digest(),
         None,
         fixture.target_seq,
     )
@@ -402,7 +402,7 @@ fn req_reduce_017_nonmonotone_superset_is_saved_and_seed_recovers() {
         key.clone(),
         &original,
         None,
-        &qlrs_io::digest(&trace.source),
+        &trace.source_digest(),
     )
     .unwrap();
     let b = predicate.candidate_mask(&AliveMask::all(trace.store.units.len()));
@@ -412,8 +412,7 @@ fn req_reduce_017_nonmonotone_superset_is_saved_and_seed_recovers() {
     assert!(a.iter().all(|unit| b.contains(unit)));
     assert!(predicate.test(&a).unwrap().accepted);
     assert!(!predicate.test(&b).unwrap().accepted);
-    let result =
-        qlrs_reduce::reduce(&trace.store, &qlrs_io::digest(&trace.source), None, Some(7)).unwrap();
+    let result = qlrs_reduce::reduce(&trace.store, &trace.source_digest(), None, Some(7)).unwrap();
     assert!(result.closure_1_minimal);
     assert_eq!(result.target.instance_key, Some(key));
     assert!(
@@ -446,7 +445,7 @@ fn req_bundle_003_original_v0_writer_bundle_still_verifies() {
 fn req_reduce_020_i2_keeps_other_asset_fills_only_for_required_cash_support() {
     use qlrs_reduce::{Predicate, ReductionPredicate};
     let trace = prepared(include_bytes!("../../../fixtures/part2/i2-cash-support.jsonl").to_vec());
-    let digest = qlrs_io::digest(&trace.source);
+    let digest = trace.source_digest();
     let original = Checker::check(
         &trace.store,
         &AliveMask::all(trace.store.units.len()),
@@ -485,7 +484,7 @@ fn req_reduce_021_small_window_quality_matches_exhaustive_ground_truth() {
     use qlrs_reduce::{Predicate, ReductionPredicate};
     let fixture = qlrs_testkit::generate_shape("S2", 3, 1000, Some(Defect::D06)).unwrap();
     let trace = prepared(fixture.bytes);
-    let digest = qlrs_io::digest(&trace.source);
+    let digest = trace.source_digest();
     let original = Checker::check(
         &trace.store,
         &AliveMask::all(trace.store.units.len()),
@@ -543,7 +542,7 @@ fn req_gate_003_sparse_required_evidence_can_exceed_thirty_two_events() {
     let trace = prepared(fixture.bytes);
     let result = qlrs_reduce::reduce_with_limits(
         &trace.store,
-        &qlrs_io::digest(&trace.source),
+        &trace.source_digest(),
         None,
         fixture.target_seq,
         qlrs_reduce::ReductionLimits {

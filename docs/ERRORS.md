@@ -31,3 +31,7 @@ see ADR-0017 and the pending default-verdict review.
 
 Existing arithmetic overflow and model findings retain their established SPEC
 verdicts. A resource error never truncates a trace into a successful result.
+
+`E-INPUT-CHANGED` (exit 1) means the source digest, length or a positioned-read
+block differs from the ingest commitment. Witness extraction fails rather than
+silently substituting changed source bytes.

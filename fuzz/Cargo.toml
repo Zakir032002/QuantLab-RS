@@ -45,3 +45,45 @@ path = "fuzz_targets/num_decimal.rs"
 test = false
 doc = false
 bench = false
+
+[[bin]]
+name = "io_chunk_diff"
+path = "fuzz_targets/io_chunk_diff.rs"
+test = false
+doc = false
+bench = false
+
+[[bin]]
+name = "check_clean"
+path = "fuzz_targets/check_clean.rs"
+test = false
+doc = false
+bench = false
+
+[[bin]]
+name = "check_injected"
+path = "fuzz_targets/check_injected.rs"
+test = false
+doc = false
+bench = false
+
+[[bin]]
+name = "check_dense_vs_selected"
+path = "fuzz_targets/check_dense_vs_selected.rs"
+test = false
+doc = false
+bench = false
+
+[[bin]]
+name = "reduce_sound"
+path = "fuzz_targets/reduce_sound.rs"
+test = false
+doc = false
+bench = false
+
+[[bin]]
+name = "eval_vs_checker"
+path = "fuzz_targets/eval_vs_checker.rs"
+test = false
+doc = false
+bench = false

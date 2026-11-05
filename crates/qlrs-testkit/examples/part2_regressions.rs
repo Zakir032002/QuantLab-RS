@@ -34,7 +34,7 @@ fn main() {
     for (name, fixture) in cases {
         let mut trace = qlrs_io::ParsedTrace::parse(fixture.bytes).unwrap();
         qlrs_ledger::Ledger::prepare(&mut trace.store);
-        let digest = qlrs_io::digest(&trace.source);
+        let digest = trace.source_digest();
         let start = Instant::now();
         let result = pool
             .install(|| {

@@ -19,7 +19,7 @@ fn bundle() -> PathBuf {
     qlrs_check::Checker::prepare(&mut trace.store);
     let reduced = qlrs_reduce::reduce(
         &trace.store,
-        &qlrs_io::digest(&trace.source),
+        &trace.source_digest(),
         None,
         fixture.target_seq,
     )
