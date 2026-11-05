@@ -1,0 +1,24 @@
+Evidence: Revalidation of committed Part 2 timing samples; not a new benchmark or third R4 optimization attempt
+Observed UTC: 2026-11-05T08:44:05.463559+00:00
+Host: ebff031d74eb
+OS: Linux-6.18.57-x86_64-with-glibc2.41
+CPU: AMD EPYC 9V74 80-Core Processor
+Source commit: 4f8bcbc0a5828eba10b8ba81bfc05de3971f36fc
+Python: 3.12.14
+Rust toolchain:
+rustc 1.99.1 (58cf8f9c3 2026-10-13)
+binary: rustc
+commit-hash: 58cf8f9c35b355199727627d07ae34a4e2846d67
+commit-date: 2026-10-13
+host: x86_64-unknown-linux-gnu
+release: 1.99.1
+LLVM version: 23.1.1
+Command: python3 ci/r4-scaling.py bench/results/CP2.2/dense-checker-after-reserve.jsonl
+Exit code: 1
+
+R4 medians: 2206738 ns -> 26998455 ns; ratio 12.234554; limit 12
+Traceback (most recent call last):
+  File "/workspace/QuantLab-RS/ci/r4-scaling.py", line 13, in <module>
+    assert large['median_ns']<=12*small['median_ns'],'R4 scaling criterion missed (threshold unchanged)'
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: R4 scaling criterion missed (threshold unchanged)
