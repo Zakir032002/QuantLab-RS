@@ -1,0 +1,56 @@
+decimal_parse           time:   [81.263 ns 83.228 ns 85.663 ns]
+                        change: [+19.291% +23.391% +27.647%] (p = 0.00 < 0.05)
+                        Performance has regressed.
+Found 2 outliers among 50 measurements (4.00%)
+  2 (4.00%) high mild
+
+mul_rescale_i128        time:   [12.325 ns 12.695 ns 13.177 ns]
+                        change: [+2.2323% +5.2956% +8.7697%] (p = 0.00 < 0.05)
+                        Performance has regressed.
+Found 5 outliers among 50 measurements (10.00%)
+  4 (8.00%) high mild
+  1 (2.00%) high severe
+
+mul_rescale_wide        time:   [477.72 ns 491.72 ns 506.87 ns]
+                        change: [−5.7224% −1.0275% +3.5451%] (p = 0.67 > 0.05)
+                        No change in performance detected.
+Found 5 outliers among 50 measurements (10.00%)
+  5 (10.00%) high mild
+
+pipeline/parse_100k     time:   [56.382 ms 57.772 ms 59.232 ms]
+                        thrpt:  [282.36 MiB/s 289.49 MiB/s 296.63 MiB/s]
+                 change:
+                        time:   [−22.240% −18.070% −13.897%] (p = 0.00 < 0.05)
+                        thrpt:  [+16.140% +22.055% +28.601%]
+                        Performance has improved.
+pipeline/replay_100k    time:   [194.24 µs 198.61 µs 203.87 µs]
+                        thrpt:  [490.51 Melem/s 503.50 Melem/s 514.84 Melem/s]
+                 change:
+                        time:   [+9.4944% +13.823% +18.915%] (p = 0.00 < 0.05)
+                        thrpt:  [−15.906% −12.144% −8.6711%]
+                        Performance has regressed.
+Found 2 outliers among 50 measurements (4.00%)
+  2 (4.00%) high mild
+pipeline/check_100k     time:   [2.4618 ms 2.5104 ms 2.5596 ms]
+                        thrpt:  [39.068 Melem/s 39.834 Melem/s 40.620 Melem/s]
+                 change:
+                        time:   [+5.3813% +8.7385% +12.086%] (p = 0.00 < 0.05)
+                        thrpt:  [−10.783% −8.0363% −5.1065%]
+                        Performance has regressed.
+Found 1 outliers among 50 measurements (2.00%)
+  1 (2.00%) high mild
+
+reduce_100k             time:   [4.7353 ms 4.8017 ms 4.8682 ms]
+                        change: [−1.6780% +1.1102% +3.8045%] (p = 0.44 > 0.05)
+                        No change in performance detected.
+Found 2 outliers among 50 measurements (4.00%)
+  1 (2.00%) high mild
+  1 (2.00%) high severe
+
+prefix_residual         time:   [7.2490 ns 7.4017 ns 7.5655 ns]
+                        change: [−0.2752% +1.0862% +2.6324%] (p = 0.14 > 0.05)
+                        No change in performance detected.
+Found 5 outliers among 50 measurements (10.00%)
+  2 (4.00%) high mild
+  3 (6.00%) high severe
+

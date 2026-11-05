@@ -1,0 +1,23 @@
+instructions::numeric::decimal_parse
+  Instructions:                                       1297|1297                 (No change)
+  L1 Hits:                                            1343|1343                 (No change)
+  LL Hits:                                               0|0                    (No change)
+  RAM Hits:                                             12|12                   (No change)
+  Total read+write:                                   1355|1355                 (No change)
+  Estimated Cycles:                                   1763|1763                 (No change)
+instructions::numeric::mul_rescale
+  Instructions:                                        125|125                  (No change)
+  L1 Hits:                                             145|145                  (No change)
+  LL Hits:                                               0|0                    (No change)
+  RAM Hits:                                              8|8                    (No change)
+  Total read+write:                                    153|153                  (No change)
+  Estimated Cycles:                                    425|425                  (No change)
+instructions::numeric::replay_1000 prepared:(setup_replay())
+  Instructions:                                      33519|33519                (No change)
+  L1 Hits:                                           48060|48060                (No change)
+  LL Hits:                                             544|544                  (No change)
+  RAM Hits:                                              4|4                    (No change)
+  Total read+write:                                  48608|48608                (No change)
+  Estimated Cycles:                                  50920|50920                (No change)
+
+Gungraun result: Ok. 3 without regressions; 0 regressed; 0 filtered; 3 benchmarks finished in 0.96072s

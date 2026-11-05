@@ -80,3 +80,10 @@ reports 2026-10-15, so no 1.100 toolchain bump is made. Existing dated nightly
 | cargo-auditable | 0.7.7 | 2026-10-02 | https://crates.io/api/v1/crates/cargo-auditable |
 | cargo-vet | 0.10.3 | 2026-10-22 | https://crates.io/api/v1/crates/cargo-vet |
 | blake3 | 1.8.7 | 2026-08-20 | https://crates.io/api/v1/crates/blake3 |
+
+GNU time: Debian package `time 1.9-0.2`, packaging changelog dated 2022-09-22,
+verified from the official Debian archive and extracted into the workspace.
+The binary reports upstream version UNKNOWN; the package version and SHA256,
+not an invented binary version, are recorded in evidence/part3/cp3.0/gnu-time-package.json.
+The prescribed RSS tool was absent from /usr/bin; its workspace path is recorded
+in every command. Hyperfine 2.0.0 was installed with --locked after registry verification.

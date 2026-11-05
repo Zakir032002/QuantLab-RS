@@ -1,0 +1,38 @@
+   Compiling qlrs-bench v0.1.0 (/workspace/QuantLab-RS/crates/qlrs-bench)
+    Finished `bench` profile [optimized + debuginfo] target(s) in 32.77s
+     Running benches/throughput.rs (target/release/deps/throughput-4247006ef8f5ff01)
+Gnuplot not found, using plotters backend
+Benchmarking decimal_parse
+Benchmarking decimal_parse: Warming up for 3.0000 s
+Benchmarking decimal_parse: Collecting 50 samples in estimated 5.0001 s (61M iterations)
+Benchmarking decimal_parse: Analyzing
+Benchmarking mul_rescale_i128
+Benchmarking mul_rescale_i128: Warming up for 3.0000 s
+Benchmarking mul_rescale_i128: Collecting 50 samples in estimated 5.0000 s (355M iterations)
+Benchmarking mul_rescale_i128: Analyzing
+Benchmarking mul_rescale_wide
+Benchmarking mul_rescale_wide: Warming up for 3.0000 s
+Benchmarking mul_rescale_wide: Collecting 50 samples in estimated 5.0001 s (10M iterations)
+Benchmarking mul_rescale_wide: Analyzing
+Benchmarking pipeline/parse_100k
+Benchmarking pipeline/parse_100k: Warming up for 3.0000 s
+Benchmarking pipeline/parse_100k: Collecting 50 samples in estimated 6.1057 s (100 iterations)
+Benchmarking pipeline/parse_100k: Analyzing
+Benchmarking pipeline/replay_100k
+Benchmarking pipeline/replay_100k: Warming up for 3.0000 s
+Benchmarking pipeline/replay_100k: Collecting 50 samples in estimated 5.0321 s (26k iterations)
+Benchmarking pipeline/replay_100k: Analyzing
+Benchmarking pipeline/check_100k
+Benchmarking pipeline/check_100k: Warming up for 3.0000 s
+Benchmarking pipeline/check_100k: Collecting 50 samples in estimated 6.4122 s (2550 iterations)
+Benchmarking pipeline/check_100k: Analyzing
+Benchmarking reduce_100k
+Benchmarking reduce_100k: Warming up for 3.0000 s
+
+Warning: Unable to complete 50 samples in 5.0s. You may wish to increase target time to 6.4s, enable flat sampling, or reduce sample count to 30.
+Benchmarking reduce_100k: Collecting 50 samples in estimated 6.3567 s (1275 iterations)
+Benchmarking reduce_100k: Analyzing
+Benchmarking prefix_residual
+Benchmarking prefix_residual: Warming up for 3.0000 s
+Benchmarking prefix_residual: Collecting 50 samples in estimated 5.0000 s (647M iterations)
+Benchmarking prefix_residual: Analyzing

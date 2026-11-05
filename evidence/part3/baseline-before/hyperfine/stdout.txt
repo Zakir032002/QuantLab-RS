@@ -1,0 +1,5 @@
+Benchmark 1: target/release/qlrs verify /tmp/qlrs-part3-inputs/s1m.jsonl (10 runs)
+                mean     ±       σ          min     …     max
+  Wall Time    950.8 ms  ±   314.5 ms     751.6 ms  …  1802.9 ms
+  Memory       324.5 MiB ±     0.1 MiB    324.3 MiB …   324.6 MiB
+ 
