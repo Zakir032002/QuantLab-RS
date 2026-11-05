@@ -1,0 +1,2 @@
+{"type":"header","schema":"qlrs-trace/v1","model":{"account_type":"CASH","base_currency":"INR","engine_cash_rounding":"Exact","commission_max_scale":2},"currencies":[{"code":"INR","precision":2}],"instruments":[
+{"id":","currencies"N[{"code":"INR","pre=ision":2}]20"}

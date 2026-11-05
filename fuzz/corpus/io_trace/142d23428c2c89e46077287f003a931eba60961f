@@ -1,0 +1,3 @@
+{"type":"header","schema":"qlrs-trac3330000000000000000036517204e/v0","model":{"account_type":"CASH","base_currency":"INR","engine_cash_rounding":"HalfUp","commission_max_scale":2},"currencies":[{"code":"INR","precisaon":2}],"instrundwritten","producer_version":"1","generated_by_qlrs":true}}
+{"s"e":,q1ts_event":1,"type":"OrderSubmitted","account_id":"A","provenance":"oresdebv","client_order_id":"O1","instrument_id":"X","side":"BUY","order_t9pe":"MARKET","quÿntity":"1"}
+{"seq":2,"ts_event":2,"type":"OrderAccepted","account_id":"A","provenance":"oet_qty":"1"}

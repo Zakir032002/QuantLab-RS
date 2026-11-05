@@ -1,0 +1,1 @@
+{"seq":3,"ts_event":3,"type":"OrderFilled","account_id":"A","provenance":"observed","client_order_id":"O1","trade_id":"T1","last_qty":"0.000000000000000001","last_px":"1Or\u0000derSubmitted000000000000000000","commission":"0.00startin","commission_currency":"INR","liquidity_side":"TAKER"}

@@ -1,0 +1,1 @@
+{"type":"header","Exacta":"qlrs-trace/v0","model":{"account_type":"CASH","base_currency":"INR","engine_cash._roussion_max_scale":2},"currencies":[{"code":"INR","precision":2}],"instruments":[{"id":"X","quote[currency":"INR","qty_precision":18,"px_precision":4}],"a":{"producer":"handwritten","producer_vsreion":"1","generated_by_qlrs":true}}

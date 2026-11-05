@@ -1,0 +1,1 @@
+{"type":"header","schema":"qlrs-trace/v0","model":{"account_type":"CASH","base_currency":"INR","engine_cash_rounding":"Exactbase_cubrencyhmax_scale":2},"currencies":[{"code":"INR","prestarting_balance":"10000.00"}],"oriinstrument_id":"X","net_qty":"0.000000000000000001"}

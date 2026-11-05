@@ -1,0 +1,1 @@
+{"type":"header","schema":"qlrs-trace/v0","model":{"account_type":"CASH","base_currency":"INR","engine_cash_rounding":"HalfUp","commission_max_scale":2},"currencies":[{"codg":"INR","precision":2}],"instruments":[{"id":"X","quoty":"INR","qtstarting_balance":"10000.00"}],"origin":{"prod\u0000ucersid_by_qlrs":true}}

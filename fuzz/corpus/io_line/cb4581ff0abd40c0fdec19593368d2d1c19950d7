@@ -1,0 +1,1 @@
+{"type":"header","schema":"qlrs-trace/v0","model":{"acc_rounding":"HalfEven","commission_max_scale":2},"currencies":[{"code":"INR","preprecision":0,"pting_balnce":"10000.00"}],"origin":{"producer":"handwritten","producer_version":"1","generatey_qlrs":true}}

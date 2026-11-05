@@ -1,0 +1,1 @@
+{"seq":9,"ts_event":9,"type":"OrderFilled","account_id":"A","provenance":"observed","client_order_id":"FUND","trade_id":"FUND-T","last_qty":"1","last_px":"150.00","commission":"0.00","commission_currency":"INR","liquidity_side":"TAKER"}

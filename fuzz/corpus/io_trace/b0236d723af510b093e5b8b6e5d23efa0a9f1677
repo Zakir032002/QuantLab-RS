@@ -1,0 +1,2 @@
+{"type":"header","schema":"qlrs-trace/v0","model":{"account_type":"CASH","base_currency":"INR","engine_cash_rounding":"Exact","com00000000000000002"}
+{"seq":2,"ts_event":2,"t01"}

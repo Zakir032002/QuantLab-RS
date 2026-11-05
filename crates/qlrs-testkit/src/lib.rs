@@ -302,3 +302,6 @@ pub use shapes::{SHAPES, generate_shape, shape_config};
 
 /// Stable seed expansion and generator stream.
 pub mod rng;
+
+/// Shared bounded fuzzing and stable corpus-replay oracles.
+pub mod oracles;

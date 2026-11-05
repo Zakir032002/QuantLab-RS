@@ -1,0 +1,49 @@
+name: Part 3 fuzz smoke and nightly
+on:
+  pull_request:
+  push:
+    branches: [main, codex/part3-fuzz]
+  schedule:
+    - cron: '17 2 * * *'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  fuzz:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 40
+    strategy:
+      fail-fast: false
+      matrix:
+        target: [io_line, io_trace, num_ops, num_decimal]
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - name: Pinned toolchain and tool
+        run: |
+          rustup toolchain install nightly-2026-11-04 --profile minimal --component llvm-tools-preview
+          cargo +nightly-2026-11-04 install cargo-fuzz --version 0.13.2 --locked
+      - name: Fuzz with bounded resources and final statistics
+        shell: bash
+        env:
+          QLRS_TARGET: ${{ matrix.target }}
+          QLRS_NIGHTLY: ${{ github.event_name == 'schedule' || github.event_name == 'workflow_dispatch' }}
+        run: |
+          set -euo pipefail
+          qlrs_seconds=60
+          if [[ "$QLRS_NIGHTLY" == true ]]; then qlrs_seconds=1200; fi
+          qlrs_sanitizer=none
+          qlrs_flags=(-max_len=4096)
+          case "$QLRS_TARGET" in
+            io_line) qlrs_sanitizer=address; qlrs_flags+=(-dict=fuzz/dict/qlrs_trace_v0.dict);;
+            io_trace) qlrs_sanitizer=address; qlrs_flags=(-max_len=1048576 -dict=fuzz/dict/qlrs_trace_v0.dict);;
+            num_decimal) qlrs_flags+=(-dict=fuzz/dict/decimal.dict);;
+          esac
+          scripts/bench_record.sh "evidence/part3/fuzz-ci/$QLRS_TARGET" cargo +nightly-2026-11-04 fuzz run --fuzz-dir fuzz --release -s "$qlrs_sanitizer" "$QLRS_TARGET" -- -max_total_time="$qlrs_seconds" -rss_limit_mb=2048 -timeout=10 -print_final_stats=1 "${qlrs_flags[@]}"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: fuzz-${{ matrix.target }}
+          path: |
+            evidence/part3/fuzz-ci/
+            fuzz/artifacts/
+          retention-days: 90

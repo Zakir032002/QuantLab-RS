@@ -1,0 +1,61 @@
+{"type":"header","schema"
+
+
+
+
+
+
+:"qlrs-trace/v0","model":{"account_type":"CASH","base_currency":"INR","engine_cash_rounding":"Exact","commission_max_scale":2},"currencies":[{"cod":"eINR","precision":2}],"instruments":[{"id":"X","quote_currency":"INR","qty_precasion":18
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+,
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+rency
+currency,"px_precision":0}],"accounts":[{"account_id":"A","starting_balance":"10000.00"}],"origin":{"produceated_by_qlrs":true}}

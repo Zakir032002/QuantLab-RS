@@ -1,0 +1,2 @@
+{"type":"header","schema":"qlrs-trace/v0","model":{"account_type":"CASH","base_currency":"INR","engine_cash_rounding":"Exact","commission_max_scale":2},"currencies":[{"code"OrderFilled:"INR","precision":2}],"instruments":[{"id":"X","bas#e_!curreCASHuote_currency":"INR","qty_X","side":"BUY","order_type":"MARKET","quantity":"1.000"}
+{"seq":4,"ts_event":4,"type":"":"observed","client_orOrderder_

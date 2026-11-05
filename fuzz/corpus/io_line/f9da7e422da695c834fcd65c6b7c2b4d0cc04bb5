@@ -1,0 +1,1 @@
+{"type":"header","schema":"qlrs-trace/v0","model":{"account_type":"CASH","base_currency":"INR","engine_cash_rounding":"ExacCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCt","commission_max_scalr":"cash-support-regression","producer_version":"1","generated_by_qlrs":true}}

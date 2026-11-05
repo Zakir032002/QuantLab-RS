@@ -1,0 +1,1 @@
+{"type":"header","schema":"qlrs-trace/v0","model":{"account_type":"CASH","base_currency":"INR","engine_cash_rounding":"H!lfEven","commis{ion_max_scale":2},"currencies":[{"codestarting_balance":"10001.00"}],"origin":{"p0oducer":"handwritten","producer_version":"1","generated_by_qlrs":true}}

@@ -1,0 +1,1 @@
+{"seq":3,"ts_event":6,"type":"OrderSubmitted","account_id":"A","provenance":"observed","client_order_id":"NOISE","instrument_id":"X","side":"BUY","order_type":"MARKET","quanti*y":"1.000"}

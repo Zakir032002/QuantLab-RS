@@ -1,0 +1,2 @@
+{"type":"header","schema":"qlrtrace/v0","model":{"account_type":"CASH","base_currency":"INR","engine_cash_rounding":"Exact","commission_max_scale":2},"currencies":[{"code":"INR","precision":2}],"instruments":      z               [{"id":"X","quote_currency":"INR","qty_precision":1,"px_precision":2}],"accounts":[{"account_id":"A","staKET","quantity":"20"}
+{"seq":2,"ts_evd":"A","p\\\\\\\\\\\\\1701411834604692317316873037158841057271","generated_by_qlnicity-reAccepted","account_id":"A","pr

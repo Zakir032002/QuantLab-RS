@@ -1,0 +1,1 @@
+    CARGO_TARGET_DIR=/tm/qlrs-v0-target cargo build --manifest-path /tmp/qlrs-v0-source/Cal --locked -p qlrs-testkit --example generate

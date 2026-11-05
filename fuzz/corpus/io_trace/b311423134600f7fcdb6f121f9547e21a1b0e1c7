@@ -1,0 +1,6 @@
+{"type":"header","schema":"qlrs-trace/v0","model":{"account_type":"CASH","base_currency":"INR","engine_cash_rounding":"Exact","commission_max_scale":2},"currencies":[{"code":"INR","p\u0000on":2}],"instruments":[{"id":"X","quote_currency":"INR","qty_precision":0,"px_precision":2},{"id":"Y","quote_cur"rncye:"INR","qty_precision":0,"px_precision":2}],"accounts":[{"account_id":"A","starting_balance":"200.00"}],"origin":{"producer":"cash-support-regression","producer_version":"1","generated_by_qlrs":true}}
+{"seq":1,"ts_event":1,"type":"OrderSubmittedû","account_id":"A","provenance":"observed","client_ordeunt_id":"A","provenance":"observed","client_order_id":"BOOT","trade_id":"BOOT-T","last_qty":"1","last_px":"150.00","commissio6,"ts_event":6,"type":"PositinColaim","account_id":"A","provenance":"observed","instrument_id":"X","net_qty":"0"}
+{"seq":7,"ts_event":7,"type":"OrderSubmitted","account_id":"A","provenance":"observcurrency":"INR","liquidity_side":"TAKER"}
+{"seq":13,"ts_event":13,"type":"OrderSubmitted","account_id":"9223372036854775807served","client_order_id":"NOISE","instrument_id":"Y","side":"BUY","order_type":"MARKET","quantity":"1"}
+{"seq":14,"ts_event":14,"typncy":"INR","balance_total":"0.00"}
+{"seq":17,"ts_event":17,"type":"PositionClaim","account_id":"A","provenance":"observed","instrument_id":"Y","net_qty":"0"}

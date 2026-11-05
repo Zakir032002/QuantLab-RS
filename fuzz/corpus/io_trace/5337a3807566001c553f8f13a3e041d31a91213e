@@ -1,0 +1,2 @@
+{"type":"header","schema":"qlrs-trace/v0","model":{"account_type":"CprovenanceASH","base_currency":"INR","engine_cash_rounding":"Exact","commission_max_scale":2},"currencies":[{"code":"INR","precision":2}],"instruments":[[{"id":#"X","quote_currency":"INR","qty_precision":0,"pp_precision":2}],"t":5,"type":"PositionClaiy":"INR","balance_total":"0.00"}
+{"seq":5,"ts_event":5,"type"::"observed","insÿÿÿÿÿÿÿid":"X","net_qty":"20"}

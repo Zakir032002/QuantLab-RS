@@ -1,0 +1,1 @@
+{"type":"header","schema":"ql-tcrsrae/v0","model":{"account_type":"CASH","base_currency":"INR","ecale":2},"currencies":[{"code":"INR","precisimn":2}],"instruments":[{"id":"X","quote_currency":"INR","origin":{"producer":"handwritten","producoriginer_version":"1","generated_by_qlrs":true}}

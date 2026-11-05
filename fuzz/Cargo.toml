@@ -1,0 +1,47 @@
+[package]
+name = "qlrs-fuzz"
+version = "0.1.0"
+publish = false
+edition = "2024"
+
+[package.metadata]
+cargo-fuzz = true
+
+[workspace]
+members = ["."]
+
+[dependencies]
+libfuzzer-sys = "=0.4.13"
+qlrs-testkit = { path = "../crates/qlrs-testkit" }
+
+[profile.release]
+overflow-checks = true
+panic = "abort"
+
+[[bin]]
+name = "io_line"
+path = "fuzz_targets/io_line.rs"
+test = false
+doc = false
+bench = false
+
+[[bin]]
+name = "io_trace"
+path = "fuzz_targets/io_trace.rs"
+test = false
+doc = false
+bench = false
+
+[[bin]]
+name = "num_ops"
+path = "fuzz_targets/num_ops.rs"
+test = false
+doc = false
+bench = false
+
+[[bin]]
+name = "num_decimal"
+path = "fuzz_targets/num_decimal.rs"
+test = false
+doc = false
+bench = false

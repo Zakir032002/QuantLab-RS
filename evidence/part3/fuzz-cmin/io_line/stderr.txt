@@ -1,0 +1,32 @@
+    Finished `release` profile [optimized + debuginfo] target(s) in 0.03s
+    Finished `release` profile [optimized + debuginfo] target(s) in 0.03s
+     Running `fuzz/target/x86_64-unknown-linux-gnu/release/io_line -artifact_prefix=fuzz/artifacts/io_line/ -rss_limit_mb=2048 -timeout=10 -print_final_stats=1 -merge=1 /workspace/QuantLab-RS/fuzz/.tmpfanBzg/corpus fuzz/corpus/io_line`
+INFO: Running with entropic power schedule (0xFF, 100).
+INFO: Seed: 3038872222
+INFO: Loaded 1 modules   (15830 inline 8-bit counters): 15830 [0x561c9f230f90, 0x561c9f234d66), 
+INFO: Loaded 1 PC tables (15830 PCs): 15830 [0x561c9f234d68,0x561c9f272ac8), 
+MERGE-OUTER: 2002 files, 0 in the initial corpus, 0 processed earlier
+MERGE-OUTER: attempt 1
+INFO: Running with entropic power schedule (0xFF, 100).
+INFO: Seed: 3066701948
+INFO: Loaded 1 modules   (15830 inline 8-bit counters): 15830 [0x55655d942f90, 0x55655d946d66), 
+INFO: Loaded 1 PC tables (15830 PCs): 15830 [0x55655d946d68,0x55655d984ac8), 
+INFO: -max_len is not provided; libFuzzer will not generate inputs larger than 1048576 bytes
+MERGE-INNER: using the control file '/tmp/libFuzzerTemp.Merge1335878.txt'
+MERGE-INNER: 2002 total files; 0 processed earlier; will process 2002 files now
+#1	pulse  cov: 107 ft: 108 exec/s: 0 rss: 32Mb
+#2	pulse  cov: 118 ft: 133 exec/s: 0 rss: 32Mb
+#4	pulse  cov: 128 ft: 145 exec/s: 0 rss: 32Mb
+#8	pulse  cov: 211 ft: 248 exec/s: 0 rss: 33Mb
+#16	pulse  cov: 281 ft: 348 exec/s: 0 rss: 34Mb
+#32	pulse  cov: 351 ft: 426 exec/s: 0 rss: 34Mb
+#64	pulse  cov: 477 ft: 608 exec/s: 0 rss: 35Mb
+#128	pulse  cov: 690 ft: 952 exec/s: 0 rss: 38Mb
+#256	pulse  cov: 952 ft: 1475 exec/s: 0 rss: 41Mb
+#512	pulse  cov: 1229 ft: 2340 exec/s: 0 rss: 46Mb
+#1024	pulse  cov: 1647 ft: 3965 exec/s: 0 rss: 54Mb
+#2002	DONE   cov: 2952 ft: 7700 exec/s: 0 rss: 72Mb
+MERGE-OUTER: successful in 1 attempt(s)
+MERGE-OUTER: the control file has 254588 bytes
+MERGE-OUTER: consumed 0Mb (40Mb rss) to parse the control file
+MERGE-OUTER: 1484 new files with 7700 new features added; 2952 new coverage edges

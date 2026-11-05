@@ -1,0 +1,1 @@
+{"type":"header","schema":"qlrs-trace/v0","model":{"account_type":"CASH","base_currency":"Iown","commission_max_scale":2},"currencies":[{"code":"INR","precision":2}],"instruments":[{"id":"Xcommission_cu00"}],"origin":{"produc[r":"handwritten","producer_version":"1","geted_by_qlrs":true}}

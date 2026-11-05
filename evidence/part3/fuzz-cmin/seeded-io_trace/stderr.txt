@@ -1,0 +1,33 @@
+   Compiling qlrs-fuzz v0.1.0 (/workspace/QuantLab-RS/fuzz)
+    Finished `release` profile [optimized + debuginfo] target(s) in 0.17s
+    Finished `release` profile [optimized + debuginfo] target(s) in 0.03s
+     Running `fuzz/target/x86_64-unknown-linux-gnu/release/io_trace -artifact_prefix=fuzz/artifacts/io_trace/ -rss_limit_mb=2048 -timeout=10 -print_final_stats=1 -merge=1 /workspace/QuantLab-RS/fuzz/.tmpLnjRpS/corpus fuzz/corpus/io_trace`
+INFO: Running with entropic power schedule (0xFF, 100).
+INFO: Seed: 3232703192
+INFO: Loaded 1 modules   (17101 inline 8-bit counters): 17101 [0x5611c39253c0, 0x5611c392968d), 
+INFO: Loaded 1 PC tables (17101 PCs): 17101 [0x5611c3929690,0x5611c396c360), 
+MERGE-OUTER: 1108 files, 0 in the initial corpus, 0 processed earlier
+MERGE-OUTER: attempt 1
+INFO: Running with entropic power schedule (0xFF, 100).
+INFO: Seed: 3252394075
+INFO: Loaded 1 modules   (17101 inline 8-bit counters): 17101 [0x5619efdac3c0, 0x5619efdb068d), 
+INFO: Loaded 1 PC tables (17101 PCs): 17101 [0x5619efdb0690,0x5619efdf3360), 
+INFO: -max_len is not provided; libFuzzer will not generate inputs larger than 1048576 bytes
+MERGE-INNER: using the control file '/tmp/libFuzzerTemp.Merge1339622.txt'
+MERGE-INNER: 1108 total files; 0 processed earlier; will process 1108 files now
+#1	pulse  cov: 90 ft: 91 exec/s: 0 rss: 32Mb
+#2	pulse  cov: 112 ft: 137 exec/s: 0 rss: 32Mb
+#4	pulse  cov: 168 ft: 215 exec/s: 0 rss: 33Mb
+#8	pulse  cov: 176 ft: 233 exec/s: 0 rss: 33Mb
+#16	pulse  cov: 288 ft: 385 exec/s: 0 rss: 34Mb
+#32	pulse  cov: 450 ft: 598 exec/s: 0 rss: 35Mb
+#64	pulse  cov: 629 ft: 949 exec/s: 0 rss: 36Mb
+#128	pulse  cov: 841 ft: 1406 exec/s: 0 rss: 40Mb
+#256	pulse  cov: 1046 ft: 2189 exec/s: 0 rss: 44Mb
+#512	pulse  cov: 1912 ft: 3969 exec/s: 0 rss: 51Mb
+#1024	pulse  cov: 3646 ft: 9800 exec/s: 0 rss: 73Mb
+#1108	DONE   cov: 3664 ft: 10417 exec/s: 0 rss: 105Mb
+MERGE-OUTER: successful in 1 attempt(s)
+MERGE-OUTER: the control file has 191512 bytes
+MERGE-OUTER: consumed 0Mb (39Mb rss) to parse the control file
+MERGE-OUTER: 1037 new files with 10417 new features added; 3664 new coverage edges

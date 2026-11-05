@@ -1,0 +1,1 @@
+{"type":"herade","schema":"qlrs-trace/v0","model":{"account_type":"CASH","base_currencyg":"Exact","commission_max_scale":2},"currencies":[{"code":"INR","preciion":18,"px_precision":0}],"accounts":[{"account_id":"A","starting_balance":"10000.00"}],"origin":{"tn":"1","generated\by_qlrs":true}}

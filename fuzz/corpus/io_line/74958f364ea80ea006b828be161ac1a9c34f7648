@@ -1,0 +1,3 @@
+{"type":"header","schema":
+"qlrs-trace/v0","model":{"account_type":"CaSH","base_currency":"INR","engine_cash_rounding":"Exact","commission_max_scale":2},"currencies":[{"code":"INRbalance_total","precision":2}],"instruments":
+[{"id":"X","quote_currency":"INR","qte_cpyrision":3,"px_preclsion":3}],"accounts":[{"acco":"A","starding_balance":"0001922361379.00"}],"origin":{"producer":"qlrs-testkit","producer_version":"0.1.0","generated_by_qlrs":true}}

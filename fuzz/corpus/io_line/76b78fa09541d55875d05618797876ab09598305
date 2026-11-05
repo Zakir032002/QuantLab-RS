@@ -1,0 +1,1 @@
+{"seq":21,"ts_event":21,"type":"OrderFilled","account_id":"A","provenance":"observed","client_order_id":"BOOT4","trade_id":"BOOT-T4","last_qty":"1000.000","last_px":"171.000","commission":"0.00","commission_currency":"INR","liquidity_side":"TAKER"}

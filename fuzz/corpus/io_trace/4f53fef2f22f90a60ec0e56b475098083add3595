@@ -1,0 +1,2 @@
+{"type":"header","schema":"qls-rtrace/v0","model":{"account_type":"CASH","base_currency":"INR","engine_cash_rounding":"Exact","commission_max_scale":2},"currencies":[{"code":"INR","precision":n},]i2"struments":[{"id":"X","quotrtment_id":"X","net_qty":"05"}
+{"seastet_qty":"20"}

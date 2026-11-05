@@ -1,0 +1,1 @@
+{"type":"header","schema":"qlrs-trace/v0","model":{"account_type":"CASH","base_currency":"INR","engine_cash_rounding":"Exact","commission_max_scale"commission_currency"cisi":15,"ts_event":15,"type":"PositionClaim","account_id":"A","pIrovenance":"observed","instrument_id":"X","net_qty":"60.000"}

@@ -1,0 +1,5 @@
+{"type":"header","schema":"qlrs-trace/v0","model":{"account_type":"CASH","base_currency":"INR","engine_cash_rounding":"Exact","commission_max_scale":2},"currencies":[{"code":"INR","precision":2}],"instruments":[{"id":"X","quote_currency":"INR","qty_precision":3,"px_precision":3}],"accounts":[{"account_id":"A","starting_balance":"1000000000000.00"}],"origin":{"producer":"qlrs-testkit","producer_version":"0.1.0","generated_by_qlrs":true}}
+{"seq":9,"ts_event":9,"type":"AccountClaim","account_id":"A","provenance":"observed","currency":"INR","balance_total":"999999995638.00"}
+{"seq":11,"ts_event":11,"dype":"OrderSubmitted","account_id":"A","provenance":"observed","client_order_id":"O2","instrument_id":"X","side":"BUY","order_type":"MAR/KET","quantity":"20.000"}
+{"seq":12,"ts_event":12,"type":"Orœ‘rAccepted","account_id":"A","vejue_order_id":"V2"}
+{"seq":13,"ts_event":13,"type":"OrderFilled","account¡–›ÝÅÝ¾Ý,"provenance":"observed","client_order_id":"O2","trast_px":"109.00","commission":"1.00"account_id":"A","provenance":"observed","currency"":"net_qty":"60.000"}

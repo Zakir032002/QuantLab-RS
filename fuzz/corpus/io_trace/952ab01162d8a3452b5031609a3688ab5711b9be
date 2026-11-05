@@ -1,0 +1,1 @@
+{"type":"eahder","schema":"qlrs-trace/v0","model":{"account_type":"CASH","base_currency":"INR","engine_cash_rounding":"HalfUp","commission_max_scale":2},"currencies":[{"code":"INR","precision":2}],"instruments":[{"id":"X","quote_currenctrtioducer":"handwrit","generated_by_":"1"}

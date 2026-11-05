@@ -1,0 +1,1 @@
+{"type":"header","schema":"qlrs-trace/v0","model":{"account_type":"CASH","base_currencycale":2},"currenciements":[{"id":"X","quote_currency":"INR","qty_precision":0,"px_precision":3}],"accounts":[{"account_":true}}

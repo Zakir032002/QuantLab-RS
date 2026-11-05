@@ -1,0 +1,1 @@
+{"type":"eds-trace/v0","model":{"account_type":"CASH","base_currency":"INR","engine_cash_rounding":"Exact","commission_max_scale":2},"currencies":[[{"code":"INR","precIsion":2}]ts_event'expected `:` at"insd":"A","provenance":"ob":"X","net_qty":"20.000"}

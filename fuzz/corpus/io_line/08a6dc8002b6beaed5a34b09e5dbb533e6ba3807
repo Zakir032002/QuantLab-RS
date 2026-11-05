@@ -1,0 +1,2 @@
+{"type":"header","schema":
+"qlrs-trace/v0","model":{"accou?nt_type":"CASH","base_currency":"INR","engine_cash_rounding":"Exact","commission_max_scale":2},"currencies":[{"code":"INRbalance_total","precisioy_precision":3,"pce":"1000000000000.00"}],"origin":{"producer":"qlrs-testkit","producer_version":"0.1.0","generated_by_qlrs":true}}

@@ -1,0 +1,1 @@
+{"type":"header","schema":"qlrsides-trace/v0","model":{"account_type":"CASH","base_currency":"INR","engine_cash_rounding":"Down","commission_max_scale":2},"currencies":[{"code":"INR","precision":2}],"instrum\nts":[{"id":"Xnt_id":"X","net_qty?":"1"}

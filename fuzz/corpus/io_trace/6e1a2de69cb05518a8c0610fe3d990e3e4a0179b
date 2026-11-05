@@ -1,0 +1,2 @@
+{"type":"header","schema":"qlrs-trace/v0","model":{"account_type":"CASH","base_currency":"INR","engine_cash_rounding":"Exact","commission_max_scale":2},"currencies":[{"code":"INR","precision":2}],"instruments":[{"id":"X"}],"origin":{"producer":"handwritten","producer_version":"starting_balance1","generated_by_qlrs":true}}
+{"s&eq"X","side":t_type":"CASH","base_currenc}":"INR","efpgine_cash_roundi!ng":"Exaobserved","instrument_id":"X"",net_qty":"0.000000000000000001"}

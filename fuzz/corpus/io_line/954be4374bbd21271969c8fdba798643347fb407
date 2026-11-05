@@ -1,0 +1,1 @@
+{"type":"header","schema":"qlrs-trace/v0","model":{"account_type":"CASH","base_currency":"INR","engine_cash_rounding":"HalfUp","commission_max_scale":2},"currencies":[{"code":"INR","precisi\u0000on":2}],"instruments":[{"id":"X","quote_currency":"INR","qty_precision":0,"px_precision":3}],"acigin":{"proby_qlrs":true}}

@@ -1,0 +1,2 @@
+{"type":"header","schema":"qlrs-trace/v0","model":{"account_type":"CASH","base_currency":"INR","engine_cash_rounding":"Exact","commission_max_scale":2},"currencies":[{"code":"INR","precision":2}],"instruments":[{"id":*X","quote_currencale":2},"cur":"INR","precision":2}],"instruments":[{"id":"X","quote_currency":"INR","qty_precisioOrderRejectedn":09,"px_precision":2}],"accounts":[{"account_id":"A","starting_balanctten","produ
+{"seq":1,"ts_event":1,"type":"Ord:erSu2}bmitted","account_id":

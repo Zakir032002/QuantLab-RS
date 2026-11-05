@@ -97,3 +97,23 @@ passes unchanged. All 85 native tests pass, with no skips; catalogue and goldens
 pass. Two 1M generations match both trace bytes and metadata. ARM confirmation
 is pending, not counted as a pass. Source is ce6480b plus gen/source.patch, with
 exact source hashes in each measurement metadata. No Gate S pass is claimed.
+
+## Resource checks and fuzz foundation
+
+Opt-in resource limits, typed CLI errors, bundle confinement checks and atomic
+bundle staging are implemented. All existing defaults remain pending the R9
+review in PART3_VERDICT_REVIEW. Boundary and CLI outputs are in
+`evidence/part3/limits`; the native suite, protected catalogue and goldens pass.
+This is implementation progress, not CP3.3 completion while review is pending.
+
+F01/F02/F05/F06 each completed a 60-second smoke campaign with final statistics,
+no crashes, and minimized corpora. Stable replay uses the same oracle functions.
+Logs are in `evidence/part3/fuzz-smoke` and `fuzz-cmin`. These smoke runs are not
+claimed as the one-hour Gate S campaigns. The malformed dictionary setup run is
+retained and excluded. Local ASan used detect_leaks=0 because this sandbox does
+not permit LeakSanitizer's ptrace scan. Hosted fuzz smoke is pending.
+
+The exact before source ce6480b has now been measured on both actual macos-15
+ARM and ubuntu-24.04-arm. Both jobs succeeded; transferred outputs include
+verified per-file and source hashes under `baseline-before/<runner>`. Those are
+before results and do not establish the later scale or determinism gates.

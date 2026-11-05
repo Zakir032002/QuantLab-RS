@@ -36,6 +36,7 @@ inherits = "release"
 opt-level = 2
 
 [workspace.dependencies]
+arbitrary = { version = "=1.5.0", default-features = false }
 qlrs-num = { path = "crates/qlrs-num", version = "=0.1.0" }
 qlrs-schema = { path = "crates/qlrs-schema", version = "=0.1.0" }
 qlrs-io = { path = "crates/qlrs-io", version = "=0.1.0" }

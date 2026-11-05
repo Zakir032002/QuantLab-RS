@@ -323,3 +323,21 @@ positions need no invented buy unit. Full financial replay remains authoritative
 - REQ-REDUCE-023: public masks retain fixed predicate bounds; private cache batches reject a different window.
 
 - REQ-CHECK-015: witness scope distinguishes invariants and instruments; unsupported tails retain their diagnostics and suppress unrequested prefix violations.
+
+## Part 3 parser vocabulary (dictionary source)
+
+These are the existing header/event field names; this list does not change the
+accepted schema or unknown-event handling. The fuzz dictionary checks this list
+against the parser's key mask to prevent drift.
+
+<!-- qlrs-schema-keys -->
+```text
+type seq ts_event account_id provenance client_order_id instrument_id side order_type quantity venue_order_id reason trade_id last_qty last_px commission commission_currency liquidity_side balance_total currency net_qty feature schema model currencies instruments accounts origin account_type base_currency engine_cash_rounding commission_max_scale code precision id quote_currency qty_precision px_precision starting_balance producer producer_version generated_by_qlrs
+```
+<!-- /qlrs-schema-keys -->
+
+<!-- qlrs-schema-values -->
+```text
+header OrderSubmitted OrderAccepted OrderRejected OrderFilled OrderCanceled AccountClaim PositionClaim Unsupported CASH MARKET BUY SELL Exact HalfEven HalfUp Down TAKER MAKER observed qlrs-trace/v0
+```
+<!-- /qlrs-schema-values -->

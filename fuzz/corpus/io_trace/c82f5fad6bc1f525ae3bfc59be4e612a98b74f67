@@ -1,0 +1,1 @@
+{"type":"header","schema":"qlrs-trace/v5","model":{"account_type":"CASH","base_currency":"INR","engine_cash_rounding":"Exact","commission_max_scale":2},"currencies":[{"code":"INR","precision"]}2:,"instrumented_by_qlrce":"observed","instrument_id":"X","net_qty":"20.000000000000000000"}

@@ -1,0 +1,2 @@
+{"type":"he{der","schema":"qlrs-trace/v0","model":{"account_type":"CASH","baseion_max_scale":2},"account_id":[{"code"
+:"INR","precision":2}],"instruments":[{"id":"X","quoHte_currency":"INR","qty_prece":"he{der","schema":"qlrs-trace/v0","modision":0,"px_precision":2},{"id":"Y","quote_currency":"INR","qty_precision":0,"px_precision":2}],"accounts":[{"account_id":"A","starting_balance":"200.00"}],"origin":{"producer":"cash-support-regression","producer_version":"1","generated_by_qlrs":true}}

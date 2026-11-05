@@ -1,0 +1,1 @@
+{"type":"header","schema":"qlrs-trace/v0","model":{"account_type":"CASI","base_currency":"INR","engine_cash_rounding":"Exact","commission_max_scale":2},"currencies":[{"cision":9,"px_precisiongine_00"}

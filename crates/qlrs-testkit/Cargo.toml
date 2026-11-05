@@ -18,6 +18,8 @@ expect_used = "deny"
 indexing_slicing = "warn"
 
 [dependencies]
+arbitrary.workspace = true
+num-bigint.workspace = true
 blake3.workspace = true
 clap.workspace = true
 serde.workspace = true

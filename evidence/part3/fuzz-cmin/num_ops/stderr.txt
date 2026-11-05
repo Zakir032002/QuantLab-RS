@@ -1,0 +1,37 @@
+   Compiling qlrs-io v0.1.0 (/workspace/QuantLab-RS/crates/qlrs-io)
+   Compiling qlrs-bundle v0.1.0 (/workspace/QuantLab-RS/crates/qlrs-bundle)
+   Compiling qlrs-testkit v0.1.0 (/workspace/QuantLab-RS/crates/qlrs-testkit)
+   Compiling qlrs-fuzz v0.1.0 (/workspace/QuantLab-RS/fuzz)
+    Finished `release` profile [optimized + debuginfo] target(s) in 11.08s
+    Finished `release` profile [optimized + debuginfo] target(s) in 0.04s
+     Running `fuzz/target/x86_64-unknown-linux-gnu/release/num_ops -artifact_prefix=fuzz/artifacts/num_ops/ -rss_limit_mb=2048 -timeout=10 -print_final_stats=1 -merge=1 /workspace/QuantLab-RS/fuzz/.tmpq61Pbd/corpus fuzz/corpus/num_ops`
+INFO: Running with entropic power schedule (0xFF, 100).
+INFO: Seed: 3589748409
+INFO: Loaded 1 modules   (5486 inline 8-bit counters): 5486 [0x5629f8a21370, 0x5629f8a228de), 
+INFO: Loaded 1 PC tables (5486 PCs): 5486 [0x5629f8a228e0,0x5629f8a37fc0), 
+MERGE-OUTER: 2196 files, 0 in the initial corpus, 0 processed earlier
+MERGE-OUTER: attempt 1
+INFO: Running with entropic power schedule (0xFF, 100).
+INFO: Seed: 3617404614
+INFO: Loaded 1 modules   (5486 inline 8-bit counters): 5486 [0x56208aab3370, 0x56208aab48de), 
+INFO: Loaded 1 PC tables (5486 PCs): 5486 [0x56208aab48e0,0x56208aac9fc0), 
+INFO: -max_len is not provided; libFuzzer will not generate inputs larger than 1048576 bytes
+MERGE-INNER: using the control file '/tmp/libFuzzerTemp.Merge1337599.txt'
+MERGE-INNER: 2196 total files; 0 processed earlier; will process 2196 files now
+#1	pulse  cov: 101 ft: 102 exec/s: 0 rss: 31Mb
+#2	pulse  cov: 102 ft: 103 exec/s: 0 rss: 31Mb
+#4	pulse  cov: 102 ft: 103 exec/s: 0 rss: 32Mb
+#8	pulse  cov: 114 ft: 116 exec/s: 0 rss: 32Mb
+#16	pulse  cov: 182 ft: 197 exec/s: 0 rss: 33Mb
+#32	pulse  cov: 184 ft: 199 exec/s: 0 rss: 33Mb
+#64	pulse  cov: 282 ft: 338 exec/s: 0 rss: 34Mb
+#128	pulse  cov: 638 ft: 923 exec/s: 0 rss: 37Mb
+#256	pulse  cov: 866 ft: 1195 exec/s: 0 rss: 40Mb
+#512	pulse  cov: 939 ft: 1274 exec/s: 0 rss: 44Mb
+#1024	pulse  cov: 983 ft: 1324 exec/s: 0 rss: 50Mb
+#2048	pulse  cov: 1073 ft: 1439 exec/s: 0 rss: 62Mb
+#2196	DONE   cov: 1156 ft: 1525 exec/s: 0 rss: 63Mb
+MERGE-OUTER: successful in 1 attempt(s)
+MERGE-OUTER: the control file has 260112 bytes
+MERGE-OUTER: consumed 0Mb (39Mb rss) to parse the control file
+MERGE-OUTER: 365 new files with 1525 new features added; 1156 new coverage edges
