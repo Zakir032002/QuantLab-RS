@@ -369,8 +369,6 @@ pub struct PositionClaims {
 pub struct Unit {
     #[doc = "order column or schema field."]
     pub order: Option<u32>,
-    #[doc = "first event column or schema field."]
-    pub first_event: usize,
 }
 /// Non-accusatory model/numeric issue detected at import or preparation time.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]

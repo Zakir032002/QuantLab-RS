@@ -1,0 +1,51 @@
+instructions::numeric::decimal_parse
+  Instructions:                                       1333|1333                 (No change)
+  L1 Hits:                                            1379|1380                 (-0.07246%) [-1.00073x]
+  LL Hits:                                               0|0                    (No change)
+  RAM Hits:                                             12|11                   (+9.09091%) [+1.09091x]
+  Total read+write:                                   1391|1391                 (No change)
+  Estimated Cycles:                                   1799|1765                 (+1.92635%) [+1.01926x]
+instructions::numeric::mul_rescale
+  Instructions:                                        125|125                  (No change)
+  L1 Hits:                                             145|145                  (No change)
+  LL Hits:                                               0|0                    (No change)
+  RAM Hits:                                              8|8                    (No change)
+  Total read+write:                                    153|153                  (No change)
+  Estimated Cycles:                                    425|425                  (No change)
+instructions::numeric::replay_1000 prepared:(setup_replay())
+  Instructions:                                      33519|33519                (No change)
+  L1 Hits:                                           48086|48103                (-0.03534%) [-1.00035x]
+  LL Hits:                                             519|502                  (+3.38645%) [+1.03386x]
+  RAM Hits:                                              3|3                    (No change)
+  Total read+write:                                  48608|48608                (No change)
+  Estimated Cycles:                                  50786|50718                (+0.13407%) [+1.00134x]
+instructions::pipeline::parse_100k source:(setup_parse())
+  Instructions:                                  293430636|293330605            (+0.03410%) [+1.00034x]
+  L1 Hits:                                       382459540|381712674            (+0.19566%) [+1.00196x]
+  LL Hits:                                          837010|853215               (-1.89929%) [-1.01936x]
+  RAM Hits:                                        1462101|1440100              (+1.52774%) [+1.01528x]
+  Total read+write:                              384758651|384005989            (+0.19600%) [+1.00196x]
+  Estimated Cycles:                              437818125|436382249            (+0.32904%) [+1.00329x]
+instructions::pipeline::check_100k prepared:(setup_large(None))
+  Instructions:                                   33156472|33155909             (+0.00170%) [+1.00002x]
+  L1 Hits:                                        48998874|48998170             (+0.00144%) [+1.00001x]
+  LL Hits:                                           66255|64647                (+2.48735%) [+1.02487x]
+  RAM Hits:                                         127605|129293               (-1.30556%) [-1.01323x]
+  Total read+write:                               49192734|49192110             (+0.00127%) [+1.00001x]
+  Estimated Cycles:                               53796324|53846660             (-0.09348%) [-1.00094x]
+instructions::pipeline::reduce_100k prepared:(setup_large(Some(qlrs_testkit :: Defect :: D03)))
+  Instructions:                                   67153806|67154719             (-0.00136%) [-1.00001x]
+  L1 Hits:                                        96785161|96786100             (-0.00097%) [-1.00001x]
+  LL Hits:                                          104546|98332                (+6.31941%) [+1.06319x]
+  RAM Hits:                                         135997|142263               (-4.40452%) [-1.04607x]
+  Total read+write:                               97025704|97026695             (-0.00102%) [-1.00001x]
+  Estimated Cycles:                              102067786|102256965            (-0.18500%) [-1.00185x]
+instructions::pipeline::generate_100k
+  Instructions:                                  238765593|238765593            (No change)
+  L1 Hits:                                       340144630|340144626            (+0.00000%) [+1.00000x]
+  LL Hits:                                            1929|1932                 (-0.15528%) [-1.00156x]
+  RAM Hits:                                         276164|276165               (-0.00036%) [-1.00000x]
+  Total read+write:                              340422723|340422723            (No change)
+  Estimated Cycles:                              349820015|349820061            (-0.00001%) [-1.00000x]
+
+Gungraun result: Ok. 7 without regressions; 0 regressed; 0 filtered; 7 benchmarks finished in 62.1183s

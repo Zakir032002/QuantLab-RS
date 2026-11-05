@@ -1046,10 +1046,7 @@ impl TraceStoreBuilder {
     fn new_unit(&mut self, order: Option<u32>, line: usize) -> Result<u32, InputError> {
         let id = qlrs_schema::checked_index(self.store.units.len())
             .map_err(|_| limits::error(line, "U-LIMIT-INDEX", "column index exhausted"))?;
-        self.store.units.push(Unit {
-            order,
-            first_event: self.store.len(),
-        });
+        self.store.units.push(Unit { order });
         Ok(id)
     }
     fn order(&mut self, text: &str, line: usize) -> Result<u32, InputError> {

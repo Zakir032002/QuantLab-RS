@@ -66,9 +66,9 @@ fn setup_parse() -> &'static mut Vec<u8> {
 #[cfg(target_os = "linux")]
 #[library_benchmark]
 #[bench::source(setup_parse())]
-fn parse_100k(bytes: &mut Vec<u8>) -> usize {
+fn parse_100k(bytes: &mut [u8]) -> usize {
     std::hint::black_box(
-        qlrs_io::ParsedTrace::parse(std::hint::black_box(bytes.clone()))
+        qlrs_io::ParsedTrace::parse(std::hint::black_box(bytes.to_vec()))
             .unwrap()
             .store
             .len(),

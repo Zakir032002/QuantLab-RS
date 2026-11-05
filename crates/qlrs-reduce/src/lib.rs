@@ -1791,22 +1791,10 @@ mod helper_tests {
         store.orders.qty_scale = vec![3, 3];
         store.orders.unit = vec![0, 1];
         store.units = vec![
-            Unit {
-                order: Some(0),
-                first_event: 0,
-            },
-            Unit {
-                order: Some(1),
-                first_event: 2,
-            },
-            Unit {
-                order: None,
-                first_event: 5,
-            },
-            Unit {
-                order: None,
-                first_event: 6,
-            },
+            Unit { order: Some(0) },
+            Unit { order: Some(1) },
+            Unit { order: None },
+            Unit { order: None },
         ];
         store.spine.seq = (1..=7).collect();
         store.spine.ts = (1..=7).collect();
