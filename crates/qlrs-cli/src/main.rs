@@ -44,6 +44,9 @@ enum Command {
         /// Cooperative search time limit in milliseconds.
         #[arg(long, default_value_t = 30_000)]
         time_limit_ms: u64,
+        /// Use only the deterministic candidate-call budget.
+        #[arg(long)]
+        no_time_limit: bool,
         /// Maximum candidate predicate calls, including cache hits.
         #[arg(long, default_value_t = 10_000)]
         max_calls: u64,
@@ -118,6 +121,9 @@ impl InputOptions {
         let stdin = path.as_os_str() == "-";
         let regular = !stdin && std::fs::metadata(&path).is_ok_and(|m| m.is_file());
         if regular {
+            if limits.is_none() && self.io_chunk_bytes == 8 << 20 {
+                return qlrs_io::ParsedTrace::read(path);
+            }
             return qlrs_io::ParsedTrace::read_chunked(path, limits, self.io_chunk_bytes);
         }
         if self.no_spool {
@@ -149,6 +155,33 @@ struct CliError {
 }
 impl From<String> for CliError {
     fn from(message: String) -> Self {
+        for code in [
+            "E-BUNDLE-PATH",
+            "E-BUNDLE-ENTRIES",
+            "E-BUNDLE-ENTRY-BYTES",
+            "U-LIMIT-INDEX",
+        ] {
+            if message
+                .strip_prefix(code)
+                .is_some_and(|tail| tail.is_empty() || tail.starts_with(':'))
+            {
+                return qlrs_io::InputError {
+                    kind: if code.starts_with("U-") {
+                        qlrs_io::ErrorKind::Unsupported
+                    } else {
+                        qlrs_io::ErrorKind::Input
+                    },
+                    code,
+                    line: 0,
+                    message: message
+                        .trim_start_matches(code)
+                        .trim_start_matches(':')
+                        .trim()
+                        .to_owned(),
+                }
+                .into();
+            }
+        }
         Self {
             code: 1,
             message,
@@ -186,6 +219,12 @@ fn with_stats(mut bytes: Vec<u8>, stats: Option<qlrs_io::TraceStats>) -> Result<
     }
     Ok(bytes)
 }
+fn print_json(bytes: &[u8]) -> Result<(), String> {
+    io::stdout()
+        .lock()
+        .write_all(bytes)
+        .map_err(|e| e.to_string())
+}
 fn run(cli: Cli) -> Result<u8, CliError> {
     match cli.command {
         Command::Verify {
@@ -210,10 +249,7 @@ fn run(cli: Cli) -> Result<u8, CliError> {
                 qlrs_io::encode(&report).map_err(|e| e.to_string())?,
                 input.stats.then(|| trace.stats()),
             )?;
-            io::stdout()
-                .lock()
-                .write_all(&bytes)
-                .map_err(|e| e.to_string())?;
+            print_json(&bytes)?;
             Ok(report.status.exit_code())
         }
         Command::Reduce {
@@ -223,6 +259,7 @@ fn run(cli: Cli) -> Result<u8, CliError> {
             checkpoint: cp,
             target_seq,
             time_limit_ms,
+            no_time_limit,
             max_calls,
             algorithm,
         } => {
@@ -236,7 +273,11 @@ fn run(cli: Cli) -> Result<u8, CliError> {
                 target_seq,
                 qlrs_reduce::ReductionLimits {
                     max_calls,
-                    time_limit: std::time::Duration::from_millis(time_limit_ms),
+                    time_limit: if no_time_limit {
+                        std::time::Duration::MAX
+                    } else {
+                        std::time::Duration::from_millis(time_limit_ms)
+                    },
                 },
                 if algorithm == "sbr" {
                     qlrs_reduce::Algorithm::Sbr
@@ -249,10 +290,7 @@ fn run(cli: Cli) -> Result<u8, CliError> {
                 qlrs_io::encode(&manifest).map_err(|e| e.to_string())?,
                 input.stats.then(|| trace.stats()),
             )?;
-            io::stdout()
-                .lock()
-                .write_all(&bytes)
-                .map_err(|e| e.to_string())?;
+            print_json(&bytes)?;
             Ok(0)
         }
         Command::Bundle {
@@ -278,10 +316,7 @@ fn run(cli: Cli) -> Result<u8, CliError> {
                     },
                 )?
             };
-            io::stdout()
-                .lock()
-                .write_all(&qlrs_io::encode(&manifest).map_err(|e| e.to_string())?)
-                .map_err(|e| e.to_string())?;
+            print_json(&qlrs_io::encode(&manifest).map_err(|e| e.to_string())?)?;
             Ok(0)
         }
     }

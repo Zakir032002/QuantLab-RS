@@ -17,7 +17,7 @@ wall-time revalidation, not a claimed code optimization.
 | Checkpoint | schema_version 1; orders/trades, independent expected state and observed opening windows |
 | Bundles | v1 writer, v0 reader; verify_with_options and --recheck-certificate |
 | Generator | generate, generate_rich and generate_shape; S1–S9; all existing bytes preserved |
-| Defects D01–D14 | D01–D11 violate; D12/D13 unsupported; D14 consistent. Keep the protected catalogue, including these oracle outcomes. |
+| Defects D01–D14 | D01–D11 violate; D12/D13 unsupported; D14 inconclusive. Keep the protected catalogue, including these oracle outcomes. |
 | Algebraic evaluator | ContributionTable / FastPredicate; checked residual hints, not model/lifecycle admission; None requires full oracle |
 | Fingerprint | qlrs-fp1 class bytes unchanged; InstanceKey is a separate exact identity |
 | Input builder | Private Builder in qlrs-io; promote/reuse it rather than creating a second ingestion implementation |

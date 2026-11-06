@@ -151,6 +151,7 @@ fn req_cli_002_limits_preserve_verified_output_without_minimality_claim() {
         );
         let manifest: qlrs_bundle::Manifest = qlrs_io::decode(&output.stdout).unwrap();
         assert!(!manifest.closure_1_minimal);
+        assert_eq!(manifest.determinism.as_deref(), Some("time-limited"));
         assert!(manifest.stop_reason.is_some());
         assert!(
             Command::new(env!("CARGO_BIN_EXE_qlrs"))
@@ -209,4 +210,61 @@ fn req_cli_003_reference_algorithm_and_certificate_recheck() {
         assert!(String::from_utf8_lossy(&result.stdout).contains("certificate_candidates_tested"));
     }
     std::fs::remove_dir_all(dir).unwrap();
+}
+
+#[test]
+fn hard_002_bundle_errors_are_json_and_call_only_runs_have_no_time_label() {
+    let root = std::env::temp_dir().join(format!("qlrs-cli-resource-{}", std::process::id()));
+    std::fs::create_dir(&root).unwrap();
+    let trace = root.join("trace.jsonl");
+    std::fs::write(
+        &trace,
+        qlrs_testkit::generate(4, 42, Some((qlrs_testkit::Defect::D03, 2)))
+            .unwrap()
+            .bytes,
+    )
+    .unwrap();
+    let bundle = root.join("bundle");
+    let output = Command::new(env!("CARGO_BIN_EXE_qlrs"))
+        .arg("reduce")
+        .arg(&trace)
+        .arg("--output")
+        .arg(&bundle)
+        .args(["--no-time-limit", "--max-calls", "64"])
+        .output()
+        .unwrap();
+    assert!(
+        output.status.success(),
+        "{}",
+        String::from_utf8_lossy(&output.stderr)
+    );
+    let manifest: qlrs_bundle::Manifest = qlrs_io::decode(&output.stdout).unwrap();
+    assert_eq!(manifest.determinism, None);
+    for (flag, code) in [
+        ("--max-entries", "E-BUNDLE-ENTRIES"),
+        ("--max-entry-bytes", "E-BUNDLE-ENTRY-BYTES"),
+    ] {
+        let output = Command::new(env!("CARGO_BIN_EXE_qlrs"))
+            .args(["bundle", "verify"])
+            .arg(&bundle)
+            .args([flag, "0"])
+            .output()
+            .unwrap();
+        assert_eq!(output.status.code(), Some(1));
+        assert!(String::from_utf8_lossy(&output.stdout).contains(&format!("\"code\":\"{code}\"")));
+        assert!(
+            String::from_utf8_lossy(&output.stderr)
+                .lines()
+                .next()
+                .unwrap()
+                .contains(code)
+        );
+    }
+    let output = Command::new(env!("CARGO_BIN_EXE_qlrs"))
+        .args(["verify", "-", "--no-spool"])
+        .output()
+        .unwrap();
+    assert_eq!(output.status.code(), Some(1));
+    assert!(String::from_utf8_lossy(&output.stdout).contains("E-INPUT-NOT-SEEKABLE"));
+    std::fs::remove_dir_all(root).unwrap();
 }

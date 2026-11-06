@@ -17,6 +17,8 @@
 #![forbid(unsafe_code)]
 #![deny(clippy::float_arithmetic, clippy::arithmetic_side_effects)]
 
+#[cfg(kani)]
+mod proofs;
 use std::{cmp::Ordering, error::Error, fmt, str::FromStr};
 
 /// Maximum supported scale of a stored value.

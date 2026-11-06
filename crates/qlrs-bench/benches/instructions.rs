@@ -78,6 +78,7 @@ fn parse_100k(bytes: &mut [u8]) -> usize {
 struct LargeInput {
     trace: qlrs_io::ParsedTrace,
     alive: qlrs_schema::AliveMask,
+    state: qlrs_ledger::ExpectedState,
     digest: String,
 }
 #[cfg(target_os = "linux")]
@@ -86,12 +87,28 @@ fn setup_large(defect: Option<qlrs_testkit::Defect>) -> &'static mut LargeInput 
     let mut trace = qlrs_io::ParsedTrace::parse(fixture.bytes).unwrap();
     qlrs_check::Checker::prepare(&mut trace.store);
     let alive = qlrs_schema::AliveMask::all(trace.store.units.len());
+    let state = qlrs_ledger::Ledger::initial(&trace.store, None).unwrap();
     let digest = qlrs_io::digest(&trace.source);
     Box::leak(Box::new(LargeInput {
         trace,
         alive,
+        state,
         digest,
     }))
+}
+#[cfg(target_os = "linux")]
+#[library_benchmark]
+#[bench::prepared(setup_large(None))]
+fn replay_100k(input: &mut LargeInput) -> i128 {
+    input.state.cash = input.trace.store.starting_cash;
+    input.state.positions.fill(0);
+    qlrs_ledger::Ledger::replay_into(
+        std::hint::black_box(&input.trace.store),
+        &input.alive,
+        &mut input.state,
+    )
+    .unwrap();
+    std::hint::black_box(input.state.cash)
 }
 #[cfg(target_os = "linux")]
 #[library_benchmark]
@@ -130,7 +147,7 @@ fn generate_100k() -> usize {
     std::hint::black_box(bytes).len()
 }
 #[cfg(target_os = "linux")]
-library_benchmark_group!(name=pipeline;benchmarks=parse_100k,check_100k,reduce_100k,generate_100k);
+library_benchmark_group!(name=pipeline;benchmarks=parse_100k,replay_100k,check_100k,reduce_100k,generate_100k);
 #[cfg(target_os = "linux")]
 library_benchmark_group!(name=numeric;benchmarks=decimal_parse,mul_rescale,replay_1000);
 #[cfg(target_os = "linux")]

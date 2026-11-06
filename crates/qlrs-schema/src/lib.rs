@@ -3,6 +3,8 @@
 #![deny(clippy::float_arithmetic)]
 #![allow(clippy::module_name_repetitions, clippy::missing_errors_doc)]
 
+#[cfg(kani)]
+mod proofs;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use std::hash::BuildHasher;
@@ -154,12 +156,12 @@ pub struct Origin {
 /// Interned strings occupy one byte arena; hash collisions use linked dense IDs.
 #[derive(Debug, Clone, Default)]
 pub struct Interner {
-    bytes: Vec<u8>,
+    bytes: String,
     offsets: Vec<u32>,
     lengths: Vec<u32>,
     next: Vec<u32>,
-    heads: HashMap<u64, Id, foldhash::fast::RandomState>,
-    hasher: foldhash::fast::RandomState,
+    heads: HashMap<u64, Id, foldhash::fast::FixedState>,
+    hasher: foldhash::fast::FixedState,
 }
 impl PartialEq for Interner {
     fn eq(&self, other: &Self) -> bool {
@@ -202,7 +204,7 @@ impl Interner {
         self.offsets.push(offset);
         self.lengths.push(length);
         self.next.push(self.heads.insert(hash, id).unwrap_or(NONE));
-        self.bytes.extend_from_slice(text.as_bytes());
+        self.bytes.push_str(text);
         Ok(id)
     }
     /// Resolve an interned identifier.
@@ -210,7 +212,7 @@ impl Interner {
     pub fn get(&self, id: Id) -> Option<&str> {
         let start = *self.offsets.get(id as usize)? as usize;
         let len = *self.lengths.get(id as usize)? as usize;
-        std::str::from_utf8(self.bytes.get(start..start.checked_add(len)?)?).ok()
+        self.bytes.get(start..start.checked_add(len)?)
     }
     /// Number of distinct interned strings.
     #[must_use]
@@ -402,7 +404,7 @@ pub struct TraceStore {
     pub units: Vec<Unit>,
     #[doc = "issues column or schema field."]
     pub issues: Vec<Issue>,
-    #[doc = "delta cash column or schema field."]
+    /// Prepared signed cash delta per fill, indexed by the fill payload index.
     pub delta_cash: Vec<i128>,
     #[doc = "fill qty column or schema field."]
     pub fill_qty: Vec<i128>,
@@ -568,6 +570,17 @@ impl TraceStore {
             + self.units.capacity() * std::mem::size_of::<Unit>()
             + self.strings.heap_bytes()
     }
+}
+
+/// Checked prefix sums with an initial zero. None denotes intermediate overflow.
+#[must_use]
+pub fn checked_prefix_sums(values: &[i128]) -> Option<Vec<i128>> {
+    let mut prefix = Vec::with_capacity(values.len().checked_add(1)?);
+    prefix.push(0_i128);
+    for value in values {
+        prefix.push(prefix.last()?.checked_add(*value)?);
+    }
+    Some(prefix)
 }
 
 /// Dense unit-alive bitset with deterministic set-bit iteration.

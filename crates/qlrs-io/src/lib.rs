@@ -6,6 +6,8 @@
     clippy::module_name_repetitions
 )]
 mod limits;
+#[cfg(kani)]
+mod proofs;
 mod source;
 pub use limits::{Limits, SCHEMA_KEYS, validate_line};
 use qlrs_num::{Fixed, NumericError};
@@ -415,7 +417,17 @@ pub struct ParsedTrace {
 impl ParsedTrace {
     /// Read a trace using safe buffered file I/O.
     pub fn read(path: impl AsRef<Path>) -> Result<Self, InputError> {
-        Self::read_chunked(path, None, 8 << 20)
+        let path = path.as_ref();
+        match Self::read_chunked(path, None, 8 << 20) {
+            Err(error)
+                if error.code == "U-LIMIT-INDEX" && error.message == "line length exceeds u32" =>
+            {
+                // Legacy uncapped input may exceed SourceRef's new u32 span.
+                // Bounded callers never take this compatibility path.
+                Self::parse(fs::read(path).map_err(|e| err(0, e.to_string()))?)
+            }
+            result => result,
+        }
     }
     /// Strictly parse a complete UTF-8 JSONL buffer.
     pub fn parse(source: Vec<u8>) -> Result<Self, InputError> {
@@ -501,12 +513,6 @@ impl ParsedTrace {
                 .ok_or_else(|| err(1, "missing header"))?,
         )
         .map_err(|e| err(1, e.to_string()))?;
-        if header.record_type != "header" || header.schema != "qlrs-trace/v0" {
-            return Err(err(1, "expected header schema qlrs-trace/v0"));
-        }
-        if header.accounts.is_empty() || header.currencies.is_empty() {
-            return Err(err(1, "accounts and currencies cannot be empty"));
-        }
         let mut builder = TraceStoreBuilder::new(header)?;
         builder.limits = limits;
         // Bounded parallel batches borrow the immutable source; merge in source order.
@@ -624,12 +630,6 @@ impl ParsedTrace {
                 }
                 let header: Header =
                     serde_json::from_slice(bytes).map_err(|e| err(1, e.to_string()))?;
-                if header.record_type != "header" || header.schema != "qlrs-trace/v0" {
-                    return Err(err(1, "expected header schema qlrs-trace/v0"));
-                }
-                if header.accounts.is_empty() || header.currencies.is_empty() {
-                    return Err(err(1, "accounts and currencies cannot be empty"));
-                }
                 let mut value = TraceStoreBuilder::new(header)?;
                 value.limits = limits;
                 builder = Some(value);
@@ -833,12 +833,22 @@ impl ParsedTrace {
     pub fn write_kept(&self, alive: &AliveMask, mut writer: impl Write) -> Result<(), InputError> {
         for line in 0..self.line_count() {
             if line == 0 || alive.contains_event(&self.store, line - 1) {
-                let reference = self
-                    .line_ref(line)
-                    .ok_or_else(|| err(line + 1, "missing source reference"))?;
-                writer
-                    .write_all(&self.read_record(&reference)?)
-                    .map_err(|e| err(0, e.to_string()))?;
+                if let Some(range) = self.lines.get(line) {
+                    writer
+                        .write_all(
+                            self.source
+                                .get(range.clone())
+                                .ok_or_else(|| err(line + 1, "missing source range"))?,
+                        )
+                        .map_err(|e| err(0, e.to_string()))?;
+                } else {
+                    let reference = self
+                        .line_ref(line)
+                        .ok_or_else(|| err(line + 1, "missing source reference"))?;
+                    writer
+                        .write_all(&self.read_record(&reference)?)
+                        .map_err(|e| err(0, e.to_string()))?;
+                }
             }
         }
         Ok(())
@@ -893,8 +903,8 @@ fn decimal_syntax(text: &str) -> bool {
 /// One deterministic, resource-bounded builder for JSONL and adapter events.
 pub struct TraceStoreBuilder {
     store: TraceStore,
-    orders: HashMap<u32, u32>,
-    instruments: HashMap<String, u32>,
+    orders: Vec<u32>,
+    instruments: HashMap<String, u32, foldhash::fast::FixedState>,
     limits: Option<Limits>,
 }
 impl TraceStoreBuilder {
@@ -920,7 +930,14 @@ impl TraceStoreBuilder {
         self.store
     }
     fn new(header: Header) -> Result<Self, InputError> {
-        let mut instruments = HashMap::new();
+        if header.record_type != "header" || header.schema != "qlrs-trace/v0" {
+            return Err(err(1, "expected header schema qlrs-trace/v0"));
+        }
+        if header.accounts.is_empty() || header.currencies.is_empty() {
+            return Err(err(1, "accounts and currencies cannot be empty"));
+        }
+
+        let mut instruments = HashMap::default();
         for (index, instrument) in header.instruments.iter().enumerate() {
             if instruments
                 .insert(
@@ -935,7 +952,7 @@ impl TraceStoreBuilder {
         }
         let mut result = Self {
             store: TraceStore::new(header),
-            orders: HashMap::new(),
+            orders: Vec::new(),
             instruments,
             limits: None,
         };
@@ -1051,13 +1068,24 @@ impl TraceStoreBuilder {
     }
     fn order(&mut self, text: &str, line: usize) -> Result<u32, InputError> {
         let symbol = self.intern(text, line)?;
-        if let Some(id) = self.orders.get(&symbol) {
-            return Ok(*id);
+        let slot = symbol as usize;
+        if let Some(id) = self.orders.get(slot).copied().filter(|id| *id != NONE) {
+            return Ok(id);
         }
         let id = qlrs_schema::checked_index(self.store.orders.id.len())
             .map_err(|_| limits::error(line, "U-LIMIT-INDEX", "column index exhausted"))?;
         let unit = self.new_unit(Some(id), line)?;
-        self.orders.insert(symbol, id);
+        if slot >= self.orders.len() {
+            self.orders.resize(
+                slot.checked_add(1)
+                    .ok_or_else(|| limits::error(line, "U-LIMIT-INDEX", "order index overflow"))?,
+                NONE,
+            );
+        }
+        *self
+            .orders
+            .get_mut(slot)
+            .ok_or_else(|| err(line, "missing order slot"))? = id;
         let o = &mut self.store.orders;
         o.id.push(symbol);
         o.instrument.push(NONE);

@@ -46,3 +46,7 @@ Measurements are retained under evidence/part3/streaming. CP3.1's input bytes
 are reused for the 1M comparison. The 10M RSS bound remains an optimization
 target until its independently recorded gate passes; a successful process exit
 alone is not a memory-gate pass.
+
+The uncapped compatibility API falls back to its legacy in-memory parser only
+when a record exceeds SourceRef's u32 span. Strict or explicitly bounded reads
+never take that path. See ADR-0023.

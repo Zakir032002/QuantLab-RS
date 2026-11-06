@@ -17,6 +17,7 @@
 "full_calls"
 "fast_probes"
 "stop_reason"
+"determinism"
 "minimality_guarantee"
 "retained_events"
 "files"

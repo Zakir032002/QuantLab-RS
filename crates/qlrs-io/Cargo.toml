@@ -9,6 +9,7 @@ license.workspace = true
 workspace = true
 
 [dependencies]
+foldhash.workspace = true
 qlrs-schema.workspace = true
 qlrs-num.workspace = true
 serde.workspace = true

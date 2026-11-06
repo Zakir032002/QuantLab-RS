@@ -52,7 +52,7 @@ impl ContributionTable {
                 .ok_or("invalid payload")? as usize;
             let order = *store.fills.order.get(fill).ok_or("invalid order")? as usize;
             let value = match target.invariant_id {
-                Invariant::I1 => store.delta_cash.get(event).copied(),
+                Invariant::I1 => store.delta_cash.get(fill).copied(),
                 Invariant::I2 => {
                     let instrument = store
                         .orders
@@ -80,15 +80,10 @@ impl ContributionTable {
                 linear = false;
             }
         }
-        let mut prefix = vec![0_i128];
-        for value in &values {
-            if let Some(sum) = prefix.last().and_then(|last| last.checked_add(*value)) {
-                prefix.push(sum);
-            } else {
-                linear = false;
-                prefix.push(0);
-            }
-        }
+        let prefix = qlrs_schema::checked_prefix_sums(&values).unwrap_or_else(|| {
+            linear = false;
+            vec![0]
+        });
         let residual = target
             .residual_raw
             .parse::<i128>()

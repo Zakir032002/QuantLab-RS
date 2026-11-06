@@ -162,7 +162,7 @@ impl Checker {
                     .apply(store, event)
                     .map_err(|e| format!("checkpoint {} at {}", e.reason, e.seq))?;
                 cash_delta = cash_delta
-                    .checked_add(store.delta_cash[event])
+                    .checked_add(store.delta_cash[payload])
                     .ok_or("checkpoint cash overflow")?;
                 let order = store.fills.order[payload] as usize;
                 let instrument = store.orders.instrument[order] as usize;

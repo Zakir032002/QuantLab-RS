@@ -369,6 +369,7 @@ name = "qlrs-io"
 version = "0.1.0"
 dependencies = [
  "blake3",
+ "foldhash",
  "qlrs-num",
  "qlrs-schema",
  "rayon",

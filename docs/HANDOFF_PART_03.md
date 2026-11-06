@@ -142,3 +142,32 @@ NOREPLACE rename. Kani 0.68.0 is installed with its own pinned toolchain; proofs
 have not yet run. Main-branch push of 2ce5ff9 was rejected by automatic approval
 review pending explicit permission. Hosted validation will use a new review
 branch as the safer alternative; main approval remains pending. No Gate S tag.
+
+## Active blockers
+
+CP3.11 is stopped under R5: K01 timed out twice at 300 seconds (symbolic scales,
+then all 361 scale pairs), with full i128 values and unchanged scale domain.
+Both failed outputs and metadata are retained under evidence/part3/proofs.
+K02–K07 are written but not verified; no FV-001 or Gate S9 pass is claimed.
+The checkpoint needs explicit reopening before another proof strategy is run.
+Default-limit R9 approval and the requested main push are still pending. A new
+review branch codex/part3-fuzz was successfully created as the safer CI path.
+
+## November 6 continuation
+
+The user-approved foundation commit 2ce5ff9 is on remote main. The newer source
+is being checked separately on codex/part3-fuzz. Local routine checks now pass
+111 native tests with zero skips, audit/deny, dependency boundaries, protected
+goldens, traceability and deterministic reports/bundles. The floor is 111.
+Raw output: evidence/part3/current-quality-3.
+
+P3-ORACLE-002 is an oracle cap bug, committed with its minimized-attempt input
+and failing test before its separate correction. Canonical output can exceed
+the input byte cap by adding null fields; only the round-trip bound changes.
+The original input cap remains tested. It is not a production parser defect.
+
+Cash deltas are now fill-indexed. Dense order lookup and deterministic interning
+avoid a redundant hash lookup and UTF-8 scan. Raw RSS and instruction outputs
+are under hot-path; ADR-0023 records the layout and compatibility decisions.
+K01's full-i128 scale-0/18 probe passed; the 361-query matrix and other proofs
+remain pending. These records do not constitute a Gate S pass or Part 3 finish.

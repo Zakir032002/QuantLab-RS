@@ -91,45 +91,63 @@ impl FileSource {
             hasher.update(data);
             result.blocks.push(blake3::hash(data));
             last = data.last().copied();
-            for (index, byte) in data.iter().enumerate() {
+            for (index, _) in data.iter().enumerate().filter(|(_, byte)| **byte == b'\n') {
                 let end = offset
                     .checked_add(u64::try_from(index).map_err(|e| err(0, e.to_string()))?)
-                    .and_then(|v| v.checked_add(1))
+                    .and_then(|n| n.checked_add(1))
                     .ok_or_else(|| limits::error(0, "U-LIMIT-INDEX", "offset overflow"))?;
                 let length = end.saturating_sub(start);
-                if limits
-                    .is_some_and(|l| length > u64::try_from(l.max_line_bytes).unwrap_or(u64::MAX))
-                {
+                if limits.is_some_and(|l| length > l.max_line_bytes as u64) {
                     return Err(limits::error(
                         result.starts.len() + 1,
                         "E-LIMIT-LINE-BYTES",
                         "line exceeds byte limit",
                     ));
                 }
-                if *byte == b'\n' {
-                    let length = u32::try_from(length).map_err(|_| {
-                        limits::error(
-                            result.starts.len() + 1,
-                            "U-LIMIT-INDEX",
-                            "line length exceeds u32",
-                        )
-                    })?;
-                    result.starts.push(start);
-                    result.lengths.push(length);
-                    start = end;
-                    if limits.is_some_and(|l| result.starts.len().saturating_sub(1) > l.max_events)
-                    {
-                        return Err(limits::error(
-                            result.starts.len(),
-                            "U-LIMIT-EVENTS",
-                            "event count exceeds limit",
-                        ));
-                    }
+                let length = u32::try_from(length).map_err(|_| {
+                    limits::error(
+                        result.starts.len() + 1,
+                        "U-LIMIT-INDEX",
+                        "line length exceeds u32",
+                    )
+                })?;
+                if limits
+                    .and_then(|l| l.memory_budget_bytes)
+                    .is_some_and(|budget| {
+                        (result.starts.len() as u64)
+                            .saturating_add(1)
+                            .saturating_mul(240)
+                            .saturating_add(64 << 20)
+                            > budget
+                    })
+                {
+                    return Err(limits::error(
+                        0,
+                        "I-BUDGET-MEMORY",
+                        "pre-scan allocation estimate exceeds budget",
+                    ));
+                }
+                result.starts.push(start);
+                result.lengths.push(length);
+                start = end;
+                if limits.is_some_and(|l| result.starts.len().saturating_sub(1) > l.max_events) {
+                    return Err(limits::error(
+                        result.starts.len(),
+                        "U-LIMIT-EVENTS",
+                        "event count exceeds limit",
+                    ));
                 }
             }
             offset = offset
                 .checked_add(u64::try_from(used).map_err(|e| err(0, e.to_string()))?)
                 .ok_or_else(|| err(0, "offset overflow"))?;
+            if limits.is_some_and(|l| offset.saturating_sub(start) > l.max_line_bytes as u64) {
+                return Err(limits::error(
+                    result.starts.len() + 1,
+                    "E-LIMIT-LINE-BYTES",
+                    "line exceeds byte limit",
+                ));
+            }
         }
         if last != Some(b'\n') {
             return Err(limits::error(

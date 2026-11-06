@@ -225,7 +225,10 @@ impl Checker {
             expected_cash: String::new(),
             expected_positions: Vec::new(),
         };
-        if !store.prepared || !store.shape_valid() || store.delta_cash.len() != store.len() {
+        if !store.prepared
+            || !store.shape_valid()
+            || store.delta_cash.len() != store.fills.order.len()
+        {
             report.findings.push(limitation(
                 Status::Inconclusive,
                 0,
@@ -590,7 +593,7 @@ impl Checker {
                         financial = false;
                     }
                 }
-                if let Some(sum) = window_delta.checked_add(store.delta_cash[event]) {
+                if let Some(sum) = window_delta.checked_add(store.delta_cash[payload]) {
                     window_delta = sum;
                 } else {
                     report

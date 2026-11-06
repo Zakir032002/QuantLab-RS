@@ -48,3 +48,30 @@ the project and continue with full authorization.
 See HANDOFF_CLAIM_BOUNDARIES.md for the corrections and their evidence;
 HANDOFF_PART_01.md records the previous release. No secret or account connection
 is required for the synthetic workflow.
+
+## Part 3 FV-001 / CP3.11: K01 solver timeout (2026-11-05)
+
+Kani 0.68.0 / bundled CBMC 6.11.0 builds the numeric crate, but K01 failed by
+300-second solver timeout twice: full symbolic i128 operands/scales, then the
+same full domain with all 361 scale pairs enumerated. Neither run produced a
+counterexample. Evidence: evidence/part3/proofs/K01-symbolic-scales and K01.
+No property or bound was weakened; no formal verification pass is claimed.
+
+R5 in docs/PART_03_INSTRUCTIONS.md says: "Two attempts, then stop." CP3.11 is
+stopped. A new proof strategy or larger verification budget requires reopening
+this checkpoint. Remaining checkpoints continue independently. K02–K07 source
+models are present but unverified. The working hypothesis is the cost of
+bit-vector reasoning over i128 rescaling; this is not a demonstrated arithmetic
+bug, nor permission to drop mixed scales from K01.
+
+## November 6 continuation
+
+The user reopened work. K01's scale-0/18 full-i128 probe now verifies after
+splitting the finite scale domain into separate queries. The complete 361-case
+matrix and K02–K07 are not yet proven. No proof bounds have been reduced.
+The specifically approved foundation commit 2ce5ff9 was pushed to main. Newer
+work remains local and on the owned codex/part3-fuzz review branch.
+
+The full local routine suite passes 111 tests, dependency boundaries, audit,
+deny, goldens and thread determinism. Hosted macOS's earlier nextest failure
+still needs its detailed output; the updated workflow now retains raw logs.

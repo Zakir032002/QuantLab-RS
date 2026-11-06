@@ -11,6 +11,7 @@ license = "MIT OR Apache-2.0"
 repository = "https://github.com/Zakir032002/QuantLab-RS"
 
 [workspace.lints.rust]
+unexpected_cfgs = { level = "warn", check-cfg = ["cfg(kani)"] }
 unsafe_code = "forbid"
 missing_docs = "warn"
 

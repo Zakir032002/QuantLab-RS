@@ -139,7 +139,7 @@ impl Ledger {
                 .map(Fixed::raw)
             })
             .collect();
-        store.delta_cash.resize(store.len(), 0);
+        store.delta_cash.resize(store.fills.order.len(), 0);
         store.fill_qty.resize(store.fills.order.len(), 0);
         let Some(currency) = store.header.currencies.first() else {
             return;
@@ -256,7 +256,7 @@ impl Ledger {
             .and_then(|v| v.rescale(store.cash_scale, Rounding::Exact))
             .map_err(numeric_issue)?
             .raw();
-        store.delta_cash[event] = delta;
+        store.delta_cash[fill] = delta;
         store.fill_qty[fill] = qty
             .rescale(instrument.qty_precision, Rounding::Exact)
             .map_err(numeric_issue)?
@@ -452,7 +452,7 @@ impl ExpectedState {
             .checked_add(
                 *store
                     .delta_cash
-                    .get(event)
+                    .get(fill)
                     .ok_or_else(|| fail(Status::Inconclusive, "unprepared-store"))?,
             )
             .ok_or_else(|| fail(Status::Inconclusive, "numeric-overflow"))?;

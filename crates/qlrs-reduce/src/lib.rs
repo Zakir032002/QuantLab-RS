@@ -123,13 +123,13 @@ impl UnitGraph {
                             .binary_search(&from)
                             .map_err(|_| "missing dependency")?,
                     )
-                    .map_err(|_| "too many units")?,
+                    .map_err(|_| "U-LIMIT-INDEX: too many units")?,
                     qlrs_schema::checked_index(
                         unit_ids
                             .binary_search(&to)
                             .map_err(|_| "missing dependent")?,
                     )
-                    .map_err(|_| "too many units")?,
+                    .map_err(|_| "U-LIMIT-INDEX: too many units")?,
                 ))
             })
             .collect();
@@ -172,17 +172,26 @@ impl UnitGraph {
     }
 }
 fn csr(units: usize, edges: &[(u32, u32)]) -> Result<(Vec<u32>, Vec<u32>), String> {
-    let mut offsets = vec![0_u32; units.checked_add(1).ok_or("too many units")?];
+    let mut offsets = vec![
+        0_u32;
+        units
+            .checked_add(1)
+            .ok_or("U-LIMIT-INDEX: too many units")?
+    ];
     for &(from, _) in edges {
         let count = offsets
             .get_mut((from as usize).saturating_add(1))
             .ok_or("invalid edge")?;
-        *count = count.checked_add(1).ok_or("too many edges")?;
+        *count = count
+            .checked_add(1)
+            .ok_or("U-LIMIT-INDEX: too many edges")?;
     }
     for i in 1..offsets.len() {
         let previous = *offsets.get(i.saturating_sub(1)).ok_or("invalid CSR")?;
         let value = offsets.get_mut(i).ok_or("invalid CSR")?;
-        *value = value.checked_add(previous).ok_or("too many edges")?;
+        *value = value
+            .checked_add(previous)
+            .ok_or("U-LIMIT-INDEX: too many edges")?;
     }
     Ok((offsets, edges.iter().map(|(_, to)| *to).collect()))
 }
@@ -313,7 +322,8 @@ impl UnitEvents {
             if window.contains_event(store, event) {
                 pairs.push((
                     *store.spine.unit.get(event).ok_or("invalid spine")?,
-                    qlrs_schema::checked_index(event).map_err(|_| "too many events")?,
+                    qlrs_schema::checked_index(event)
+                        .map_err(|_| "U-LIMIT-INDEX: too many events")?,
                 ));
             }
         }
@@ -324,12 +334,17 @@ impl UnitEvents {
         for (unit, event) in pairs {
             if unit_ids.last() != Some(&unit) {
                 unit_ids.push(unit);
-                offsets
-                    .push(qlrs_schema::checked_index(events.len()).map_err(|_| "too many events")?);
+                offsets.push(
+                    qlrs_schema::checked_index(events.len())
+                        .map_err(|_| "U-LIMIT-INDEX: too many events")?,
+                );
             }
             events.push(event);
         }
-        offsets.push(qlrs_schema::checked_index(events.len()).map_err(|_| "too many events")?);
+        offsets.push(
+            qlrs_schema::checked_index(events.len())
+                .map_err(|_| "U-LIMIT-INDEX: too many events")?,
+        );
         Ok(Self {
             unit_ids,
             offsets,
@@ -827,6 +842,8 @@ fn log_entry(hash: String, units: usize, mask: &AliveMask, result: bool, cached:
 /// Best verified witness and the search's actual certification status.
 #[derive(Debug)]
 pub struct Reduction {
+    /// A finite wall-clock budget was configured; outputs carry its label.
+    pub time_limited: bool,
     /// Unit bits and observation bounds.
     pub alive: AliveMask,
     /// Synthetic state at the preceding claim.
@@ -1300,7 +1317,8 @@ pub fn reduce_with_options(
                     .filter(|id| current.contains(*id))
                     .collect();
                 entries.push(ClosureTest {
-                    root: qlrs_schema::checked_index(unit).map_err(|_| "too many units")?,
+                    root: qlrs_schema::checked_index(unit)
+                        .map_err(|_| "U-LIMIT-INDEX: too many units")?,
                     removed_closure: rle(&removed),
                     outcome: rejection,
                     evaluator: "full".into(),
@@ -1345,6 +1363,7 @@ fn finish_reduction(
     let steps = compact_steps(&predicate, &current, &certificate)?;
     let retained_events = predicate.events.kept(&current).len();
     Ok(Reduction {
+        time_limited: budget.limits.time_limit != Duration::MAX,
         alive: current,
         checkpoint,
         target,
@@ -1444,7 +1463,7 @@ fn build_certificate(
             .copied()
             .ok_or("empty kept unit")?;
         kept_units.push(UnitIdentity {
-            id: qlrs_schema::checked_index(unit).map_err(|_| "too many units")?,
+            id: qlrs_schema::checked_index(unit).map_err(|_| "U-LIMIT-INDEX: too many units")?,
             first_original_seq: first,
         });
     }
@@ -1458,7 +1477,8 @@ fn build_certificate(
             .collect();
         if closure.iter().any(|id| pinned.contains(*id)) {
             entries.push(ClosureTest {
-                root: qlrs_schema::checked_index(unit).map_err(|_| "too many units")?,
+                root: qlrs_schema::checked_index(unit)
+                    .map_err(|_| "U-LIMIT-INDEX: too many units")?,
                 removed_closure: rle(&closure),
                 outcome: Rejection::KeyMissing,
                 evaluator: "fast".into(),
@@ -1565,7 +1585,7 @@ pub fn recheck_certificate(
     for identity in &mut local {
         identity.id =
             qlrs_schema::checked_index(*mapping.get(&identity.id).ok_or("missing mapping")?)
-                .map_err(|_| "too many units")?;
+                .map_err(|_| "U-LIMIT-INDEX: too many units")?;
     }
     if graph_commitment(&graph, &local)? != certificate.graph_digest {
         return Err("certificate graph digest mismatch".into());

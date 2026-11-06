@@ -130,6 +130,9 @@ pub struct Manifest {
     /// Exhausted search budget, when minimality has not been certified.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub stop_reason: Option<qlrs_reduce::LimitReason>,
+    /// Present when wall-clock search limits may affect this output.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub determinism: Option<String>,
     #[doc = "minimality guarantee."]
     pub minimality_guarantee: String,
     #[doc = "retained events."]
@@ -281,6 +284,7 @@ fn write_directory(
         full_calls: reduction.full_calls,
         fast_probes: reduction.fast_probes,
         stop_reason: reduction.stop_reason,
+        determinism: reduction.time_limited.then(|| "time-limited".into()),
         minimality_guarantee: minimality_text(reduction.closure_1_minimal).into(),
         retained_events: reduction.retained_events,
         files,
@@ -390,6 +394,13 @@ pub fn verify_with_observer(
         || manifest.original_trace.blake3.len() != 64
     {
         return Err("unsupported or invalid bundle manifest".into());
+    }
+    if manifest
+        .determinism
+        .as_deref()
+        .is_some_and(|label| label != "time-limited")
+    {
+        return Err("invalid determinism label".into());
     }
     let allowed = [
         "REPRODUCE.md",
