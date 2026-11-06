@@ -15,26 +15,36 @@ jobs:
     env:
       QLRS_DIFFERENTIAL_CASES: 10000
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
       - name: Pinned compiler and tools
         run: |
           rustup toolchain install 1.99.1 --profile minimal --component rustfmt --component clippy
           cargo install cargo-nextest --version 0.9.151 --locked
           cargo install cargo-deny --version 0.20.2 --locked
           cargo install cargo-audit --version 0.22.2 --locked
-      - run: ./ci/check-all.sh
-      - run: python3 ci/catalogue.py
+      - run: scripts/bench_record.sh evidence/part3/quality/check-all ./ci/check-all.sh
+      - run: scripts/bench_record.sh evidence/part3/quality/catalogue python3 ci/catalogue.py
+      - name: Retain exact check output, including failures
+        if: always()
+        run: python3 ci/publish-evidence.py evidence/part3/quality
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: quality-${{ matrix.os }}
+          path: evidence/part3/quality/
+          retention-days: 90
   miri:
     runs-on: ubuntu-24.04
     env:
       RAYON_NUM_THREADS: 1
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
       - run: rustup toolchain install nightly-2026-11-04 --profile minimal --component miri --component rust-src
       - name: Numeric edge paths (bulk stress runs natively in quality)
         run: |
           cargo +nightly-2026-11-04 miri test -p qlrs-num --lib --locked -- --skip req_num_002_checked_operations_and_parser_never_panic --skip req_num_006_roundtrip_100k_values
           cargo +nightly-2026-11-04 miri test -p qlrs-num --test properties --locked req_num_011
+          cargo +nightly-2026-11-04 miri test -p qlrs-schema --lib --locked
           cargo +nightly-2026-11-04 miri test -p qlrs-testkit --test allocations --locked
   scale-and-instructions:
     runs-on: ubuntu-24.04
@@ -42,7 +52,7 @@ jobs:
       GUNGRAUN_ALLOW_ASLR: 'yes'
       RAYON_NUM_THREADS: 5
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
       - run: rustup toolchain install 1.99.1 --profile minimal
       - run: sudo apt-get update && sudo apt-get install -y valgrind
       - run: cargo install gungraun-runner --version 0.20.0 --locked
@@ -52,7 +62,7 @@ jobs:
         run: cargo run -p qlrs-testkit --example rich_gate --release --locked -- 250000 128 2000 > rich-gate.txt
       - run: cargo bench -p qlrs-bench --bench instructions --locked > instructions.txt
       - run: python3 ci/instruction-ratchet.py instructions.txt
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         if: always()
         with:
           name: linux-instruction-results
@@ -64,7 +74,7 @@ jobs:
     env:
       RAYON_NUM_THREADS: 5
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
       - run: rustup toolchain install 1.99.1 --profile minimal
       - name: Measure and retain the complete raw benchmark record
         shell: bash
@@ -79,7 +89,7 @@ jobs:
           target/release/examples/generate 20000 "$qlrs_fixtures/d03-100k.jsonl" D03 12000
           target/release/examples/hash "$qlrs_fixtures" > macos-criterion/input-digests.txt
           python3 ci/package-benchmarks.py macos-criterion
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         if: always()
         with:
           name: macos-criterion-results

@@ -1,0 +1,31 @@
+    Checking qlrs-schema v0.1.0 (/workspace/QuantLab-RS/crates/qlrs-schema)
+   Compiling qlrs-bundle v0.1.0 (/workspace/QuantLab-RS/crates/qlrs-bundle)
+    Checking qlrs-ledger v0.1.0 (/workspace/QuantLab-RS/crates/qlrs-ledger)
+    Checking qlrs-io v0.1.0 (/workspace/QuantLab-RS/crates/qlrs-io)
+    Checking qlrs-check v0.1.0 (/workspace/QuantLab-RS/crates/qlrs-check)
+    Checking qlrs-reduce v0.1.0 (/workspace/QuantLab-RS/crates/qlrs-reduce)
+    Checking qlrs-testkit v0.1.0 (/workspace/QuantLab-RS/crates/qlrs-testkit)
+    Checking qlrs-cli v0.1.0 (/workspace/QuantLab-RS/crates/qlrs-cli)
+    Checking qlrs-bench v0.1.0 (/workspace/QuantLab-RS/crates/qlrs-bench)
+error: used `expect()` on a `Result` value
+  --> crates/qlrs-testkit/tests/fuzz_line_boundary_regression.rs:10:21
+   |
+10 |     let canonical = qlrs_io::canonical_record(input, limits).expect("valid capped input");
+   |                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   |
+   = note: if this value is an `Err`, it will panic
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.99.0/index.html#expect_used
+   = note: requested on the command line with `-D clippy::expect-used`
+
+error: used `expect_err()` on a `Result` value
+  --> crates/qlrs-testkit/tests/fuzz_line_boundary_regression.rs:13:9
+   |
+13 | /         qlrs_io::canonical_record(&canonical, limits)
+14 | |             .expect_err("the original input cap remains enforced")
+   | |__________________________________________________________________^
+   |
+   = note: if this value is an `Ok`, it will panic
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.99.0/index.html#expect_used
+
+error: could not compile `qlrs-testkit` (test "fuzz_line_boundary_regression") due to 2 previous errors
+warning: build failed, waiting for other jobs to finish...

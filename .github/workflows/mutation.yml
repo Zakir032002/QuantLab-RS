@@ -19,7 +19,7 @@ jobs:
       CARGO_PROFILE_TEST_DEBUG: 0
       RAYON_NUM_THREADS: 1
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
       - run: rustup toolchain install 1.99.1 --profile minimal
       - run: cargo install cargo-mutants --version 27.1.0 --locked
       - name: Full numeric, checker, fingerprint and reducer campaign with all workspace tests
@@ -31,7 +31,7 @@ jobs:
           set -e
           test "$result" -eq 0 || test "$result" -eq 2
           python3 ci/mutation-ratchet.py mutants.out/outcomes.json
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         if: always()
         with:
           name: mutation-results
@@ -48,7 +48,7 @@ jobs:
       CARGO_PROFILE_TEST_DEBUG: 0
       BASE_SHA: ${{ github.event.pull_request.base.sha }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
         with:
           fetch-depth: 0
       - run: rustup toolchain install 1.99.1 --profile minimal
@@ -68,7 +68,7 @@ jobs:
           set -e
           test "$result" -eq 0 || test "$result" -eq 2
           python3 ci/mutation-diff.py mutants.out/outcomes.json
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         if: always()
         with:
           name: mutation-diff-results

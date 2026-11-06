@@ -1,0 +1,51 @@
+name: Part 3 instruction gate
+on:
+  pull_request:
+  push:
+    branches: [codex/part3-fuzz, codex/part3-perf-trip]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  compare:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    env:
+      GUNGRAUN_ALLOW_ASLR: 'yes'
+      RAYON_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          path: head
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.event.pull_request.base.sha || '884c06da3f42488902f87ea1a29e51f21354b8da' }}
+          path: base
+      - name: Pinned tools
+        run: |
+          rustup toolchain install 1.99.1 --profile minimal
+          sudo apt-get update && sudo apt-get install -y valgrind
+          cargo install gungraun-runner --version 0.20.0 --locked
+      - name: Measure both sources with the identical harness
+        shell: bash
+        run: |
+          set -euo pipefail
+          cp head/crates/qlrs-bench/benches/instructions.rs base/crates/qlrs-bench/benches/instructions.rs
+          cp head/scripts/bench_record.sh base/scripts/bench_record.sh
+          for qlrs_side in base head; do
+            cd "$GITHUB_WORKSPACE/$qlrs_side"
+            scripts/bench_record.sh "evidence/part3/perf-ci/$qlrs_side" cargo bench -p qlrs-bench --bench instructions --locked
+          done
+          cd "$GITHUB_WORKSPACE/head"
+          python3 ci/perf-gate.py ../base/evidence/part3/perf-ci/base/stdout.txt evidence/part3/perf-ci/head/stdout.txt > evidence/part3/perf-ci/comparison.json
+      - name: Publish measured head output
+        if: always()
+        run: python3 head/ci/publish-evidence.py head/evidence/part3/perf-ci
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: same-runner-instruction-comparison
+          path: |
+            base/evidence/part3/perf-ci/
+            head/evidence/part3/perf-ci/
+          retention-days: 90

@@ -16,16 +16,16 @@ jobs:
     env:
       QLRS_DIFFERENTIAL_CASES: 100000
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
       - run: rustup toolchain install 1.99.1 --profile minimal
       - run: cargo test --locked -p qlrs-testkit --test differential_part2 -- --nocapture
   gate:
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
       - run: rustup toolchain install 1.99.1 --profile minimal
       - run: cargo run --release --locked -p qlrs-testkit --example part2_gate > gate-part2.jsonl
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         if: always()
         with:
           name: part2-gate
@@ -34,7 +34,7 @@ jobs:
     if: github.event_name == 'workflow_dispatch' && inputs.kani
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
       - run: rustup toolchain install 1.99.1 --profile minimal
       - run: cargo install kani-verifier --version 0.68.0 --locked
       - run: cargo kani setup

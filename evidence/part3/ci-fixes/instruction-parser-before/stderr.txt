@@ -1,0 +1,5 @@
+Traceback (most recent call last):
+  File "/workspace/QuantLab-RS/ci/instruction-ratchet.py", line 14, in <module>
+    assert current[name]*100<=expected*105, f'instruction regression {name}: {current[name]} > {expected} + 5%'
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: instruction regression replay_1000: 238765593 > 35063 + 5%
