@@ -1,0 +1,28 @@
+   Compiling qlrs-bundle v0.1.0 (/workspace/QuantLab-RS/crates/qlrs-bundle)
+   Compiling qlrs-testkit v0.1.0 (/workspace/QuantLab-RS/crates/qlrs-testkit)
+   Compiling qlrs-fuzz v0.1.0 (/workspace/QuantLab-RS/fuzz)
+    Finished `release` profile [optimized + debuginfo] target(s) in 10.51s
+    Finished `release` profile [optimized + debuginfo] target(s) in 0.04s
+     Running `fuzz/target/x86_64-unknown-linux-gnu/release/io_line -artifact_prefix=fuzz/artifacts/io_line/ -minimize_crash=1 -runs=255 /tmp/qlrs-line-boundary-seed -max_total_time=60 -rss_limit_mb=2048 -timeout=10 -print_final_stats=1`
+WARNING: Failed to find function "__sanitizer_acquire_crash_state".
+WARNING: Failed to find function "__sanitizer_print_stack_trace".
+WARNING: Failed to find function "__sanitizer_set_death_callback".
+INFO: Running with entropic power schedule (0xFF, 100).
+INFO: Seed: 3477126737
+INFO: Loaded 1 modules   (6105 inline 8-bit counters): 6105 [0x55b3b821e690, 0x55b3b821fe69), 
+INFO: Loaded 1 PC tables (6105 PCs): 6105 [0x55b3b821fe70,0x55b3b8237c00), 
+CRASH_MIN: minimizing crash input: '/tmp/qlrs-line-boundary-seed' (4096 bytes)
+CRASH_MIN: executing: fuzz/target/x86_64-unknown-linux-gnu/release/io_line -artifact_prefix=fuzz/artifacts/io_line/ -runs=255 -max_total_time=60 -rss_limit_mb=2048 -timeout=10 -print_final_stats=1 /tmp/qlrs-line-boundary-seed 2>&1
+CRASH_MIN: '/tmp/qlrs-line-boundary-seed' (4096 bytes) caused a crash. Will try to minimize it further
+CRASH_MIN: executing: fuzz/target/x86_64-unknown-linux-gnu/release/io_line -artifact_prefix=fuzz/artifacts/io_line/ -runs=255 -max_total_time=60 -rss_limit_mb=2048 -timeout=10 -print_final_stats=1 /tmp/qlrs-line-boundary-seed -minimize_crash_internal_step=1 -exact_artifact_path=fuzz/artifacts/io_line/minimized-from-c070cda9bcc1869a2751ecfec5a0161cdeae902f 2>&1
+WARNING: Failed to find function "__sanitizer_acquire_crash_state".
+WARNING: Failed to find function "__sanitizer_print_stack_trace".
+WARNING: Failed to find function "__sanitizer_set_death_callback".
+INFO: Running with entropic power schedule (0xFF, 100).
+INFO: Seed: 3500831708
+INFO: Loaded 1 modules   (6105 inline 8-bit counters): 6105 [0x555dd0ae9690, 0x555dd0aeae69), 
+INFO: Loaded 1 PC tables (6105 PCs): 6105 [0x555dd0aeae70,0x555dd0b02c00), 
+INFO: Starting MinimizeCrashInputInternalStep: 4096
+INFO: -max_len is not provided; libFuzzer will not generate inputs larger than 4096 bytes
+INFO: Done MinimizeCrashInputInternalStep, no crashes found
+CRASH_MIN: failed to minimize beyond /tmp/qlrs-line-boundary-seed (4096 bytes), exiting
