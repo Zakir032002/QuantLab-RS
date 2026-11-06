@@ -19,10 +19,17 @@ fn limits() -> Limits {
 /// Panics when the implementation disagrees with the independent oracle.
 pub fn io_line(data: &[u8]) {
     match qlrs_io::canonical_record(data, limits()) {
-        Ok(canonical) => assert_eq!(
-            qlrs_io::canonical_record(&canonical, limits()).ok(),
-            Some(canonical)
-        ),
+        Ok(canonical) => {
+            // Encoding can add optional fields and a newline to a capped input.
+            let encoded_limits = Limits {
+                max_line_bytes: canonical.len().max(limits().max_line_bytes),
+                ..limits()
+            };
+            assert_eq!(
+                qlrs_io::canonical_record(&canonical, encoded_limits).ok(),
+                Some(canonical)
+            );
+        }
         Err(error) => assert!(
             error.code.starts_with("E-")
                 || error.code.starts_with("U-")

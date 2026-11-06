@@ -1,0 +1,20 @@
+
+running 1 test
+test fuzz_002_canonical_expansion_at_line_limit ... FAILED
+
+failures:
+
+---- fuzz_002_canonical_expansion_at_line_limit stdout ----
+
+thread 'fuzz_002_canonical_expansion_at_line_limit' (11390) panicked at crates/qlrs-testkit/tests/fuzz_line_boundary_regression.rs:14:5:
+assertion `left == right` failed
+  left: "E-LIMIT-LINE-BYTES"
+ right: "E-LIMIT-LINE"
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+
+failures:
+    fuzz_002_canonical_expansion_at_line_limit
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
